@@ -1,0 +1,75 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+.warn{background:#fffbeb;border-left:3px solid #f59e0b;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Ajustes — Cómo Configurar Maestro AI</h2>
+<p>El panel Ajustes es donde configuras cómo Maestro AI se conecta al servidor, qué idioma usa, cómo mide la temperatura y quién puede cambiar los ajustes.</p>
+
+<h3>Conexión al Servidor</h3>
+<p>Maestro AI necesita hablar con un servidor para guardar perfiles y controlar el hardware. Ingresa la dirección del servidor aquí.</p>
+<table>
+<tr><th>Situación</th><th>Qué ingresar</th></tr>
+<tr><td>Maestro AI en el mismo ordenador que esta pantalla</td><td><code>http://localhost:5252</code> (valor por defecto)</td></tr>
+<tr><td>Maestro AI en otro ordenador de tu red</td><td><code>http://192.168.1.XXX:5252</code> — usa la dirección IP del servidor</td></tr>
+<tr><td>Maestro AI en una red diferente</td><td>Debes configurar el reenvío de puertos en tu router</td></tr>
+</table>
+<div class="warn">Después de cambiar la URL del servidor, la página intenta reconectarse. Si el LED permanece rojo, verifica que el servidor esté funcionando y que tu cortafuegos permita conexiones en el puerto 5252.</div>
+
+<h3>Idioma</h3>
+<p>Elige el idioma de la interfaz. Todos los botones, etiquetas y textos de ayuda cambiarán al idioma seleccionado. Actualmente compatibles: inglés, italiano, francés, alemán, español, ruso.</p>
+
+<h3>Unidad de Temperatura</h3>
+<p>Elige entre Celsius (°C) y Fahrenheit (°F). La mayoría de los tostadores usan Celsius, pero si estás acostumbrado a Fahrenheit, cámbialo aquí.</p>
+
+<h3>Modo GUI</h3>
+<p>Maestro AI tiene tres modos de interfaz. Elige el que se ajuste a lo que estás haciendo.</p>
+<table>
+<tr><th>Modo</th><th>Mejor para</th></tr>
+<tr><td><b>Monitoreo</b></td><td>Observar un tostado sin tocar nada. El gráfico se actualiza en vivo, pero no se muestran botones para iniciar o detener. Bueno para una segunda pantalla.</td></tr>
+<tr><td><b>Fácil</b></td><td>Tostado diario. Muestra solo los controles que más necesitas. Las funciones avanzadas están ocultas.</td></tr>
+<tr><td><b>Completo</b></td><td>Todo. Todos los paneles, todos los botones, todas las funciones avanzadas: perfiles IA, sensores extra, firmas digitales, análisis energético, BBP, nube, espectroscopia, calefacción híbrida.</td></tr>
+</table>
+
+<h3>Protección por PIN</h3>
+<p>Puedes proteger el panel Ajustes con un PIN de 4 a 6 dígitos. Esto evita que alguien cambie accidentalmente la URL del servidor o el modo durante un tostado.</p>
+<p><b>Establecer un PIN:</b> Ingresa un nuevo PIN en ambos campos y presiona <b>Guardar</b>.</p>
+<p><b>Eliminar el PIN:</b> Deja el campo «Nuevo PIN» vacío y presiona <b>Guardar</b>.</p>
+<p><b>PIN predeterminado:</b> <b>0000</b> (si nunca lo cambiaste).</p>
+<div class="tip">Si olvidas tu PIN, abre la consola del navegador (F12) y escribe: <code>localStorage.setItem('maestro-pin','')</code>. Esto restablece el PIN.</div>
+
+<h3>Escala UI</h3>
+<p>Haz la interfaz más grande o más pequeña. Usa <b>Grande</b> si usas una pantalla táctil, una pantalla de alta resolución, o si ves la pantalla desde lejos.</p>
+
+<h2>Diagnóstico — Comprobando la Salud del Sistema</h2>
+<p>La pestaña Diagnóstico muestra la salud de tu sistema Maestro AI. Úsala para verificar si todo funciona o para encontrar problemas.</p>
+
+<h3>Estado del Sistema</h3>
+<p>La tarjeta de estado principal muestra tres cosas:</p>
+<table>
+<tr><th>Elemento</th><th>Qué te indica</th></tr>
+<tr><td><b>Servidor</b></td><td>Una luz verde significa que el servidor Maestro AI está funcionando y respondiendo. Rojo significa que está fuera de línea o inaccesible.</td></tr>
+<tr><td><b>Dispositivo</b></td><td>Una luz verde significa que el hardware (tostador, sensores) está conectado. Rojo significa que no se detecta ningún dispositivo.</td></tr>
+<tr><td><b>Tiempo Activo</b></td><td>Cuánto tiempo lleva el servidor funcionando desde su último inicio. Útil para saber si el sistema se ha reiniciado recientemente.</td></tr>
+</table>
+
+<h3>Probar Dispositivo</h3>
+<p>Presiona <b>Probar</b> para ejecutar una prueba rápida de comunicación con el hardware conectado. El resultado aparece en el registro de eventos debajo.</p>
+
+<h3>Parada de Emergencia</h3>
+<p>El botón rojo <b>Parada de Emergencia</b> es solo para situaciones urgentes. Al presionarlo:</p>
+<ul style="margin:4px 0;padding-left:16px;font-size:12px">
+<li>Desconecta inmediatamente todo el hardware (calefacción, sensores, motor del tambor).</li>
+<li>Detiene cualquier sesión de tostado activa.</li>
+<li>Registra el evento en el registro de diagnóstico.</li>
+</ul>
+<p>Aparecerá un diálogo de confirmación preguntando si estás seguro. Esto <b>no</b> es lo mismo que terminar un tostado normalmente — usa DROP y END en el panel Tostado para finalizar normalmente.</p>
+
+<h3>Registro de Eventos</h3>
+<p>El registro en la parte inferior muestra una lista de eventos recientes: inicios del servidor, pruebas de dispositivo, llamadas API, errores y paradas de emergencia. Cada entrada tiene una marca de tiempo. Úsalo para diagnosticar problemas o ver qué sucedió mientras no estabas.</p>

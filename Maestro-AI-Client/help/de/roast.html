@@ -1,0 +1,136 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:11px;font-weight:600;margin-right:4px}
+.blue{background:#dbeafe;color:#1d4ed8}.orange{background:#ffedd5;color:#c2410c}
+.green{background:#dcfce7;color:#15803d}.purple{background:#ede9fe;color:#7c3aed}
+.red{background:#fee2e2;color:#b91c1c}.amber{background:#fef3c7;color:#b45309}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+.warn{background:#fffbeb;border-left:3px solid #f59e0b;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Röstmonitor — Das Herz der Maschine</h2>
+<p>Das Röst-Panel ist der Ort, an dem Sie tatsächlich Kaffee rösten. Es zeigt Ihnen alles in Echtzeit: die Temperatur im Inneren der Trommel und der Bohnen, wie schnell die Temperatur steigt, und alle wichtigen Momente wie das Krachen der Bohnen. Sie können eine Röstung starten, sie auf dem Diagramm verfolgen, während des Vorgangs Notizen hinzufügen und das Ganze als Profil speichern, wenn Sie fertig sind.</p>
+
+<h3>Wie man eine Röstung durchführt — Schritt für Schritt</h3>
+<p><span class="badge blue">1</span> Drücken Sie <b>Röstung Starten</b>. Der Timer startet und das Diagramm beginnt mit der Aufzeichnung. Laden Sie Ihren Kaffee in die Maschine — dieser Moment wird als <b>CHARGE</b> bezeichnet.</p>
+<p><span class="badge blue">2</span> Beobachten Sie die beiden Temperaturlinien im Diagramm. Die blaue Linie (BT, Bohnentemperatur) zeigt, wie heiss die Bohnen sind. Die orangefarbene Linie (ET, Umgebungstemperatur) zeigt die Lufttemperatur in der Trommel. Die orangefarbene Linie sollte immer über der blauen bleiben.</p>
+<p><span class="badge blue">3</span> Behalten Sie den RoR (Anstiegsrate) im Auge — die grün gestrichelte Linie. Sie zeigt, wie schnell sich die Bohnen aufheizen. Eine gute Röstung hat einen RoR, der <b>allmählich sinkt</b>. Wenn er zu steigen beginnt, können die Bohnen verbrennen.</p>
+<p><span class="badge blue">4</span> Wenn die Bohnen die gewünschte Farbe und Entwicklung erreicht haben, drücken Sie <b>⏹ DROP</b>. Dies markiert den Moment, in dem Sie die Bohnen aus der Trommel nehmen. Das Diagramm läuft weiter, um die Abkühlkurve anzuzeigen.</p>
+<p><span class="badge blue">5</span> Wenn Sie zufrieden sind und die Abkühlung abgeschlossen ist, drücken Sie <b>✓ Ende</b>. Die Röstung wird automatisch als Profil gespeichert.</p>
+<div class="tip">DROP markiert den Moment im Diagramm, ENDE schliesst und speichert die Sitzung. Sie können zwischen DROP und ENDE andere Dinge tun (wie Kühlen).</div>
+
+<h3>Das Diagramm — was all diese Linien bedeuten</h3>
+<table>
+<tr><th>Linie</th><th>Farbe</th><th>Was sie zeigt</th></tr>
+<tr><td><b>BT</b> (Bohnentemperatur)</td><td><span class="badge blue">durchgehend blau</span></td><td>Wie heiss die Kaffeebohnen gerade sind. Beginnt niedrig beim Einladen, steigt während der Röstung an und sollte gleichmässig weitersteigen. Wenn sie abflacht, rösten die Bohnen nicht mehr.</td></tr>
+<tr><td><b>ET</b> (Umgebungstemperatur)</td><td><span class="badge orange">durchgehend orange</span></td><td>Wie heiss die Luft in der Trommel ist. Sie liegt über BT — das ist die Wärme, die auf die Bohnen übertragen wird. Wenn ET zu tief fällt oder BT kreuzt, stimmt etwas nicht.</td></tr>
+<tr><td><b>RoR</b> (Anstiegsrate)</td><td><span class="badge green">gestrichelt grün</span></td><td>Die Geschwindigkeit, mit der BT ansteigt, gemessen in Grad pro Minute. Dies ist die wichtigste Zahl: Sie <b>muss während der gesamten Röstung sinken</b>. Ein steigender RoR bedeutet, dass die Bohnen zu schnell erhitzt werden.</td></tr>
+<tr><td><b>Target BT</b> (optional)</td><td><span class="badge purple">gepunktet lila</span></td><td>Eine Referenzlinie, die die ideale Temperaturkurve zeigt, erstellt vom KI-Profil-Tool. Vergleichen Sie Ihre tatsächliche Röstung mit diesem Ziel.</td></tr>
+</table>
+
+<h3>Ereignisse und Markierungen im Diagramm</h3>
+<p>Während der Röstung erscheinen wichtige Momente als vertikale Linien im Diagramm. Jede hat eine Beschriftung und die Temperatur, bei der sie aufgetreten ist.</p>
+<table>
+<tr><th>Ereignis</th><th>Farbe</th><th>Bedeutung</th></tr>
+<tr><td><b>CHARGE</b></td><td><span class="badge" style="background:#1e293b;color:#fff">schwarz</span></td><td>Sie haben den Kaffee eingeladen. Der Timer startet hier.</td></tr>
+<tr><td><b>TP</b> (Wendepunkt)</td><td><span class="badge" style="background:#64748b;color:#fff">grau</span></td><td>Der Moment, in dem die Bohnen aufhören abzukühlen und sich zu erwärmen beginnen. Die BT-Kurve erreicht ihren tiefsten Punkt und dreht nach oben.</td></tr>
+<tr><td><b>DE</b> (Trocknungsende)</td><td><span class="badge amber">bernstein</span></td><td>Die Bohnen sind trocken. Sie wechseln von grün zu gelb. Dies geschieht um 160°C.</td></tr>
+<tr><td><b>FCs / FCe</b> (First Crack)</td><td><span class="badge red">gestrichelt rot</span></td><td>Die Bohnen machen ein knackendes Geräusch, während innere Feuchtigkeit zu Dampf wird. Dies ist ein Schlüsselmoment — die Entwicklung (Geschmacksbildung) beginnt hier. FCs wird zur Berechnung des DTR verwendet.</td></tr>
+<tr><td><b>SCs / SCe</b> (Second Crack)</td><td><span class="badge purple">gestrichelt lila</span></td><td>Ein zweiter, leiserer Crack. Zeigt eine dunklere Röstung an. Öle beginnen auf der Bohnenoberfläche zu erscheinen.</td></tr>
+<tr><td><b>DROP</b></td><td><span class="badge red">durchgehend rot</span></td><td>Sie haben die Bohnen entnommen. Dies ist die dickste Linie im Diagramm.</td></tr>
+</table>
+
+<h3>Phasenfarben im Diagrammhintergrund</h3>
+<p>Der Diagrammhintergrund ändert die Farbe, um anzuzeigen, in welcher Phase der Röstung Sie sich befinden.</p>
+<table>
+<tr><th>Farbe</th><th>Phase</th><th>Was passiert</th></tr>
+<tr><td><span style="background:rgba(254,240,138,0.4);padding:2px 8px;border-radius:3px">gelb</span></td><td><b>Trocknung</b></td><td>Wasser verdunstet, Bohnen wechseln von grün zu gelb. Von CHARGE bis Trocknungsende.</td></tr>
+<tr><td><span style="background:rgba(187,247,208,0.5);padding:2px 8px;border-radius:3px">grün</span></td><td><b>Maillard</b></td><td>Bräunung findet statt, Aromen entwickeln sich. Vom Trocknungsende bis First Crack.</td></tr>
+<tr><td><span style="background:rgba(254,202,202,0.5);padding:2px 8px;border-radius:3px">rot</span></td><td><b>Entwicklung</b></td><td>Säure reduziert sich, Körper entwickelt sich. Vom First Crack bis DROP.</td></tr>
+<tr><td><span style="background:rgba(186,230,253,0.5);padding:2px 8px;border-radius:3px">blau</span></td><td><b>Kühlung</b></td><td>Bohnen kühlen nach DROP ab.</td></tr>
+</table>
+
+<h3>Telemetrie-Panel (rechte Seite)</h3>
+<p>Rechts vom Diagramm sehen Sie die Live-Zahlen. Dies sind die wichtigsten Messwerte während der Röstung.</p>
+<table>
+<tr><th>Wert</th><th>Was er Ihnen sagt</th></tr>
+<tr><td><b>Zeit</b></td><td>Wie lange die Röstung schon läuft, in Minuten und Sekunden.</td></tr>
+<tr><td><b>Phase</b></td><td>In welcher Phase der Röstung Sie sich gerade befinden (Trocknung, Maillard, First Crack, Entwicklung usw.). Angezeigt als farbiges Badge.</td></tr>
+<tr><td><b>BT</b></td><td>Die aktuelle Temperatur der Bohnen. Grosse rote Zahl.</td></tr>
+<tr><td><b>ET</b></td><td>Die aktuelle Lufttemperatur in der Trommel. Grosse orange Zahl.</td></tr>
+<tr><td><b>RoR</b></td><td>Wie schnell BT gerade steigt. Sollte sinken.</td></tr>
+<tr><td><b>Delta (BT-ET)</b></td><td>Der Unterschied zwischen Bohnen- und Lufttemperatur. Normalerweise ist ET höher (positive Zahl). Wird sie negativ, ist die Trommel kalt.</td></tr>
+<tr><td><b>DTR %</b></td><td>Entwicklungszeitverhältnis — wie viel Prozent der gesamten Röstzeit nach dem First Crack verbracht wurde. Ziel für Specialty Coffee: 20–25%.</td></tr>
+<tr><td><b>Charge Temp</b></td><td>Die BT, die beim Einladen des Kaffees gemessen wurde. Hilft Ihnen, beim nächsten Mal die gleichen Startbedingungen zu schaffen.</td></tr>
+</table>
+
+<h3>Heizleistung und Luftstrom</h3>
+<p>Unter den Telemetriezahlen sehen Sie zwei Balken. Der <b>Heizleistung</b>-Balken zeigt, wie viel Wärme die Maschine zuführt (rot). Der <b>Luftstrom</b>-Balken zeigt die Trommelbelüftung (blau). Diese dienen der Überwachung — wenn Ihre Maschine es unterstützt, können Sie sie an den eigenen Bedienelementen der Maschine einstellen.</p>
+
+<h3>Ereignisse während der Röstung aufzeichnen</h3>
+<p>Sie können wichtige Momente während der Röstung markieren. Dies ist nützlich, um festzuhalten, wann Sie die Hitze angepasst haben, wann Sie eine Geruchsveränderung bemerkt haben, oder jede andere Beobachtung, die Sie mit dem Profil speichern möchten.</p>
+<p><b>So zeichnen Sie ein Ereignis auf:</b><br>
+1. Wählen Sie das Ereignis aus der Dropdown-Liste (Wendepunkt, Trocknungsende, FC Start/Ende, SC Start, Drop).<br>
+2. Drücken Sie <b>✓ Markieren</b>, um es zur aktuellen Sekunde aufzuzeichnen.<br>
+3. Das Ereignis erscheint als vertikale Linie im Diagramm.</p>
+<p>Sie können auch eine <b>benutzerdefinierte Bezeichnung</b> in das Textfeld eingeben und auf die Schaltfläche <b>+ Benutzerlabel</b> drücken, um Ihr eigenes Ereignis hinzuzufügen (z.B. "Gas erhöht" oder "Tür geöffnet").</p>
+<div class="warn">Nur die Auswahl des Ereignisses aus der Dropdown-Liste zeichnet es NICHT auf. Sie müssen <b>✓ Markieren</b> drücken.</div>
+
+<h3>Manuelle Proben nehmen</h3>
+<p>Drücken Sie <b>+ Probe</b>, um manuell einen Temperaturmesswert für den aktuellen Moment aufzuzeichnen. Normalerweise zeichnet das System automatisch alle paar Sekunden Daten auf, aber Sie können jederzeit zusätzliche Punkte hinzufügen.</p>
+
+<h3>Erweiterte Steuerungen (unten im Panel)</h3>
+<table>
+<tr><th>Schaltfläche</th><th>Funktion</th></tr>
+<tr><td><b>Spike-Filter</b></td><td>Entfernt plötzliche Temperatursprünge, die durch elektrische Störungen verursacht werden, nicht durch die Röstung. Verwenden Sie ihn, wenn Sie scharfe, unrealistische Spitzen im Diagramm sehen.</td></tr>
+<tr><td><b>Median</b></td><td>Glättet die Temperaturkurve, ohne echte Veränderungen zu entfernen. Gut zum Bereinigen eines verrauschten Signals.</td></tr>
+<tr><td><b>Kühlung</b></td><td>Zeichnet ein "Kühlungs"-Phasenereignis auf. Verwenden Sie es nach DROP, um zu markieren, dass die Bohnen jetzt im Kühltablett sind.</td></tr>
+<tr><td><b>Chargenende</b></td><td>Markiert das Ende der Charge für die Produktionsverfolgung. Nützlich, wenn Sie mehrere aufeinanderfolgende Röstungen durchführen.</td></tr>
+<tr><td><b>AutoSpeichern</b></td><td>Wenn aktiviert, speichert das System automatisch alle 30 Datenpunkte. Falls etwas abstürzt, verlieren Sie nicht alles.</td></tr>
+</table>
+
+<h3>Zusätzliche Kanäle</h3>
+<p>Wenn Sie zusätzliche Sensoren haben (z.B. zur Messung des Gasdrucks oder der Temperatur an einer anderen Stelle), können Sie diese hier hinzufügen. Geben Sie dem Kanal einen Namen, geben Sie BT/ET-Werte ein und drücken Sie <b>+</b>, um eine Probe zu diesem Kanal hinzuzufügen.</p>
+
+<h3>Waage</h3>
+<p>Schliessen Sie eine Digitalwaage an, um den Kaffee vor und nach der Röstung zu wiegen. Geben Sie das Gewicht in Gramm ein und drücken Sie <b>Record</b>. Der Gewichtsverlust wird automatisch berechnet und mit dem Profil gespeichert.</p>
+
+<h3>Alarmsätze</h3>
+<p>Sie können bis zu 5 Alarmbedingungen einstellen, die ausgelöst werden, wenn Temperatur, RoR oder Zeit einen bestimmten Wert erreichen. Sie könnten zum Beispiel einen Alarm einstellen, der piept, wenn Sie den First Crack erreichen, oder die Maschine sogar automatisch auswerfen lassen. Geben Sie dem Satz einen Namen, wählen Sie die Alarmnummer, die Sie bearbeiten möchten, und drücken Sie <b>+</b>, um ihn hinzuzufügen.</p>
+
+<h3>KI-Profil</h3>
+<p>Wenn Sie Daten zu Ihrem Rohkaffee eingeben (Dichte, Feuchtigkeit, Agtron-Farbe, Geschmacksziel, Entwicklungsgrad), kann Maestro AI eine ideale Temperaturkurve für diesen spezifischen Kaffee vorschlagen. Drücken Sie <b>Ziel Erstellen</b> und die KI generiert eine Referenzkurve, die als lila gepunktete Linie in Ihrem Diagramm erscheint.</p>
+
+<h3>Glossar</h3>
+<p>Das Buchsymbol öffnet ein Glossar, das alle technischen Begriffe erklärt: BT, ET, RoR, DTR, Delta, AUC, FC, SC und die Röstphasen. Klicken Sie auf einen Begriff, um seine Bedeutung zu sehen.</p>
+
+<h2>Werkzeuge-Reiter — Zusätzliche Hilfsmittel für Ihre Röstung</h2>
+<p>Der Werkzeuge-Reiter bietet Ihnen praktische Rechner, Messinstrumente und Referenzen, die Ihnen die Arbeit erleichtern.</p>
+
+<h3>Rechner</h3>
+<p>Konvertieren Sie Temperaturen zwischen Celsius und Fahrenheit, Gewichte zwischen Gramm/Kilogramm/Pfund, berechnen Sie den Extraktionsertrag (wie viel des Kaffees sich im Wasser auflöst) und die Dichte aus Gewicht und Volumen. Nützlich zur Überprüfung Ihres Brührezepts oder zur Umrechnung von Einheiten für verschiedene Maschinen.</p>
+
+<h3>NIR-Spektrometer</h3>
+<p>Wenn Sie einen NIR-Sensor (Nahinfrarot) haben, können Sie das Lichtspektrum Ihres Kaffees aufzeichnen. Dies hilft bei der Analyse der chemischen Zusammensetzung. Geben Sie die Sensorwerte (Wellenlängen und Intensitäten) ein und drücken Sie <b>Aufnehmen</b>, um sie mit der aktuellen Sitzung zu speichern.</p>
+
+<h3>Crack-Erkennung</h3>
+<p>Wenn Sie einen akustischen Sensor haben, können Sie den First und Second Crack akustisch erkennen. Geben Sie die Schallamplitude und -zeit ein, stellen Sie eine Erkennungsschwelle ein und drücken Sie <b>Erkennen</b>. Das System zeichnet auf, wann Risse aufgetreten sind, was genauer ist als das Hören nach Gehör.</p>
+
+<h3>Hybrid-Heizung</h3>
+<p>Für Maschinen, die mehrere Wärmequellen unterstützen (traditionelles Gas, Mikrowelle, Infrarot), können Sie den Prozentsatz jeder Quelle einstellen. Drücken Sie <b>Anwenden</b>, um die Mischung an die Maschine zu senden.</p>
+
+<h3>Externe Instrumente</h3>
+<p>Schliessen Sie externe Geräte an und steuern Sie sie von hier aus. Zum können Sie mit einem Variac (Stelltransformator) die Spannung einstellen, die an Ihre Maschine geht. Stellen Sie die Spannung ein und drücken Sie <b>Anwenden</b>.</p>
+
+<h3>Physikalische Werkzeuge & Referenzen</h3>
+<p><b>Agtron-Farbtabelle:</b> Vergleichen Sie Ihren gemahlenen Kaffee mit einer Standard-Farbscheibe, um den Röstgrad objektiv zu messen. #25 ist dunkel, #100+ ist hell. Dies ist der Specialty-Coffee-Standard.<br>
+<b>Probenehmer (Triangulator):</b> Eine Metallschaufel, die in die Trommel gleitet, um während der Röstung eine Bohnenprobe zu entnehmen, ohne die Tür zu öffnen. Damit können Sie Farbe und Geruch in Echtzeit überprüfen.<br>
+<b>Röstprotokoll:</b> Ein druckbares Formular zum handschriftlichen Notieren von Chargendaten, Wetter, Zeiten und sensorischen Eindrücken. Verliert niemals Daten, selbst wenn der Strom ausfällt.</p>
+
+<h3>Umgebungsbedingungen</h3>
+<p>Zeichnen Sie die aktuelle Luftfeuchtigkeit, den Druck und die Temperatur des Röstungsraums auf. Diese Umweltfaktoren beeinflussen das Röstverhalten, besonders an feuchten oder kalten Tagen.</p>

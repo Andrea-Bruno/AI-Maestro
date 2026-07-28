@@ -1,0 +1,75 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+.warn{background:#fffbeb;border-left:3px solid #f59e0b;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Paramètres — Comment Configurer Maestro AI</h2>
+<p>Le panneau Paramètres est l'endroit où vous configurez la connexion de Maestro AI au serveur, la langue, l'unité de température, et qui peut modifier les réglages.</p>
+
+<h3>Connexion au Serveur</h3>
+<p>Maestro AI doit communiquer avec un serveur pour sauvegarder les profils et contrôler le matériel. Entrez l'adresse du serveur ici.</p>
+<table>
+<tr><th>Situation</th><th>Que saisir</th></tr>
+<tr><td>Maestro AI sur le même ordinateur que cet écran</td><td><code>http://localhost:5252</code> (valeur par défaut)</td></tr>
+<tr><td>Maestro AI sur un autre ordinateur du réseau</td><td><code>http://192.168.1.XXX:5252</code> — utilisez l'adresse IP du serveur</td></tr>
+<tr><td>Maestro AI sur un réseau différent</td><td>Vous devez configurer le redirection de ports sur votre routeur</td></tr>
+</table>
+<div class="warn">Après avoir changé l'URL du serveur, la page tente de se reconnecter. Si le voyant LED reste rouge, vérifiez que le serveur fonctionne et que votre pare-feu autorise les connexions sur le port 5252.</div>
+
+<h3>Langue</h3>
+<p>Choisissez la langue de l'interface. Tous les boutons, étiquettes et textes d'aide passeront dans la langue sélectionnée. Actuellement pris en charge : anglais, italien, français, allemand, espagnol, russe.</p>
+
+<h3>Unité de Température</h3>
+<p>Choisissez entre Celsius (°C) et Fahrenheit (°F). La plupart des torréfacteurs utilisent Celsius, mais si vous êtes habitué à Fahrenheit, changez-le ici.</p>
+
+<h3>Mode GUI</h3>
+<p>Maestro AI propose trois modes d'interface. Choisissez celui qui correspond à ce que vous faites.</p>
+<table>
+<tr><th>Mode</th><th>Idéal pour</th></tr>
+<tr><td><b>Surveillance</b></td><td>Regarder une torréfaction sans toucher à rien. Le graphique se met à jour en direct, mais aucun bouton pour démarrer ou arrêter n'est affiché. Bon pour un deuxième écran.</td></tr>
+<tr><td><b>Facile</b></td><td>Torréfaction quotidienne. Affiche seulement les contrôles dont vous avez le plus besoin. Les fonctions avancées sont masquées.</td></tr>
+<tr><td><b>Complet</b></td><td>Tout. Tous les panneaux, tous les boutons, toutes les fonctions avancées : profils IA, capteurs supplémentaires, signatures numériques, analyse énergétique, BBP, cloud, spectroscopie, chauffage hybride.</td></tr>
+</table>
+
+<h3>Protection par PIN</h3>
+<p>Vous pouvez protéger le panneau Paramètres avec un code PIN à 4 à 6 chiffres. Cela empêche quelqu'un de modifier accidentellement l'URL du serveur ou de changer de mode pendant une torréfaction.</p>
+<p><b>Définir un PIN :</b> Entrez un nouveau PIN dans les deux champs et appuyez sur <b>Enregistrer</b>.</p>
+<p><b>Supprimer le PIN :</b> Laissez le champ « Nouveau PIN » vide et appuyez sur <b>Enregistrer</b>.</p>
+<p><b>PIN par défaut :</b> <b>0000</b> (si vous ne l'avez jamais changé).</p>
+<div class="tip">Si vous oubliez votre PIN, ouvrez la console du navigateur (F12) et tapez : <code>localStorage.setItem('maestro-pin','')</code>. Cela réinitialise le PIN.</div>
+
+<h3>Échelle UI</h3>
+<p>Agrandissez ou réduisez l'interface. Utilisez <b>Grande</b> si vous utilisez un écran tactile, un écran haute résolution, ou si vous regardez l'écran à distance.</p>
+
+<h2>Diagnostic — Vérifier la Santé du Système</h2>
+<p>L'onglet Diagnostic montre l'état de votre système Maestro AI. Utilisez-le pour vérifier si tout fonctionne ou pour trouver des problèmes.</p>
+
+<h3>État du Système</h3>
+<p>La carte d'état principale montre trois choses :</p>
+<table>
+<tr><th>Élément</th><th>Ce qu'il indique</th></tr>
+<tr><td><b>Serveur</b></td><td>Un voyant vert signifie que le serveur Maestro AI est en cours d'exécution et répond. Rouge signifie qu'il est hors ligne ou inaccessible.</td></tr>
+<tr><td><b>Périphérique</b></td><td>Un voyant vert signifie que le matériel (torréfacteur, capteurs) est connecté. Rouge signifie qu'aucun périphérique n'est détecté.</td></tr>
+<tr><td><b>Temps de fonctionnement</b></td><td>Depuis combien de temps le serveur tourne depuis son dernier démarrage. Utile pour savoir si le système a récemment planté.</td></tr>
+</table>
+
+<h3>Tester le Périphérique</h3>
+<p>Appuyez sur <b>Tester</b> pour lancer un test de communication rapide avec le matériel connecté. Le résultat apparaît dans le journal d'événements ci-dessous.</p>
+
+<h3>Arrêt d'Urgence</h3>
+<p>Le bouton rouge <b>Arrêt d'Urgence</b> est réservé aux situations urgentes. Appuyer dessus va :</p>
+<ul style="margin:4px 0;padding-left:16px;font-size:12px">
+<li>Déconnecter immédiatement tout le matériel (chauffage, capteurs, moteur du tambour).</li>
+<li>Arrêter toute session de torréfaction active.</li>
+<li>Enregistrer l'événement dans le journal de diagnostic.</li>
+</ul>
+<p>Une boîte de dialogue de confirmation demandera si vous êtes sûr avant de procéder. Ceci n'est <b>pas</b> la même chose que terminer une torréfaction normalement — utilisez DROP et END dans le panneau Torréfaction pour une fin normale.</p>
+
+<h3>Journal d'Événements</h3>
+<p>Le journal en bas montre une liste des événements récents : démarrages du serveur, tests de périphérique, appels API, erreurs et arrêts d'urgence. Chaque entrée a un horodatage. Utilisez-le pour diagnostiquer les problèmes ou voir ce qui s'est passé en votre absence.</p>

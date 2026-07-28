@@ -1,0 +1,39 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Tableau de Bord — Écran d'Accueil</h2>
+<p>Le Tableau de Bord est la première chose que vous voyez quand vous ouvrez Maestro AI. Il vous donne un aperçu rapide de tout : le serveur tourne-t-il, combien de torréfactions ont été sauvegardées, combien sont en cours en ce moment. Considérez-le comme la fenêtre de la salle de contrôle.</p>
+
+<h3>Ce que vous voyez sur le Tableau de Bord</h3>
+
+<table>
+<tr><th>Élément</th><th>Ce qu'il vous indique</th></tr>
+<tr><td><b>Sessions Actives</b></td><td>Combien de torréfactions sont en cours sur le serveur. Si vous voyez un nombre supérieur à 0, quelqu'un (ou vous) est en train de torréfier.</td></tr>
+<tr><td><b>Profils Sauvegardés</b></td><td>Combien de profils de torréfaction sont stockés sur le serveur. Chaque profil est un enregistrement complet d'une torréfaction que vous avez effectuée, avec températures, temps et événements.</td></tr>
+<tr><td><b>Heure du Serveur</b></td><td>La date et l'heure actuelles du serveur Maestro AI. Elle se rafraîchit toutes les 30 secondes pour vous garantir que le serveur est vivant.</td></tr>
+<tr><td><b>Temps de Fonctionnement</b></td><td>Depuis combien de temps le serveur tourne sans interruption depuis le dernier redémarrage. Un nombre élevé signifie que le système est stable.</td></tr>
+</table>
+
+<h3>Voyant d'État (LED)</h3>
+<p>En haut de chaque écran, vous voyez un petit voyant vert ou rouge (LED). <b>Vert</b> signifie que le serveur est connecté et fonctionne. <b>Rouge</b> signifie que la connexion est perdue — vérifiez que le serveur Maestro AI est en cours d'exécution et que l'URL dans les Paramètres est correcte.</p>
+
+<h3>Dernière Torréfaction</h3>
+<p>La boîte en bas montre le nom de la torréfaction la plus récente que vous avez sauvegardée. Si vous n'avez pas encore fait de torréfaction, elle vous invite poliment à en démarrer une.</p>
+
+<h3>Modes de Fonctionnement</h3>
+<p>Maestro AI propose trois façons de l'utiliser. Vous choisissez le mode dans le panneau Paramètres.</p>
+<table>
+<tr><th>Mode</th><th>Quand l'utiliser</th></tr>
+<tr><td><b>Surveillance</b></td><td>Mode lecture seule. Le graphique suit la torréfaction en cours sur le serveur, mais vous ne pouvez rien démarrer ni arrêter. Parfait pour un deuxième écran ou pour regarder la torréfaction d'un collègue.</td></tr>
+<tr><td><b>Facile</b></td><td>La vue simplifiée. Affiche uniquement les commandes essentielles pour la torréfaction et les panneaux les plus importants. Idéal si vous débutez avec Maestro AI ou si vous voulez un écran propre et ciblé.</td></tr>
+<tr><td><b>Complet</b></td><td>Tout est visible. Tous les panneaux, tous les boutons, toutes les fonctionnalités avancées. Utilisez ce mode quand vous avez besoin des profils IA, des capteurs supplémentaires, des signatures numériques ou de l'analyse énergétique.</td></tr>
+</table>
+
+<div class="tip">Le voyant LED vert en haut signifie que le serveur est en ligne. S'il reste rouge, allez dans Paramètres et vérifiez que l'URL du serveur est correcte.</div>

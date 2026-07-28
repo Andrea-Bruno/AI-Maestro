@@ -1,0 +1,136 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:11px;font-weight:600;margin-right:4px}
+.blue{background:#dbeafe;color:#1d4ed8}.orange{background:#ffedd5;color:#c2410c}
+.green{background:#dcfce7;color:#15803d}.purple{background:#ede9fe;color:#7c3aed}
+.red{background:#fee2e2;color:#b91c1c}.amber{background:#fef3c7;color:#b45309}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+.warn{background:#fffbeb;border-left:3px solid #f59e0b;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Monitor Tostatura — Il Cuore della Macchina</h2>
+<p>Il pannello Tostatura è dove tosti davvero il caffè. Ti mostra tutto in tempo reale: la temperatura dentro il tamburo e dentro i chicchi, quanto velocemente sale la temperatura, e tutti i momenti importanti come quando i chicchi scoppiettano. Puoi iniziare una tostatura, guardarla sul grafico, aggiungere note mentre procedi, e salvare tutto come profilo quando hai finito.</p>
+
+<h3>Come fare una tostatura — passo per passo</h3>
+<p><span class="badge blue">1</span> Premi <b>Avvia Tostatura</b>. Il timer parte e il grafico inizia a registrare. Carica il caffè nella macchina — questo momento si chiama <b>CHARGE</b>.</p>
+<p><span class="badge blue">2</span> Osserva le due linee di temperatura sul grafico. La linea blu (BT, Bean Temperature) mostra quanto sono caldi i chicchi. La linea arancione (ET, Environment Temperature) mostra la temperatura dell'aria dentro il tamburo. La linea arancione dovrebbe sempre stare sopra quella blu.</p>
+<p><span class="badge blue">3</span> Tieni d'occhio il RoR (Rate of Rise) — la linea verde tratteggiata. Ti dice quanto velocemente si stanno riscaldando i chicchi. Una buona tostatura ha un RoR che <b>scende gradualmente</b>. Se inizia a salire, i chicchi potrebbero bruciarsi.</p>
+<p><span class="badge blue">4</span> Quando i chicchi raggiungono il colore e lo sviluppo che desideri, premi <b>⏹ DROP</b>. Questo segna il momento in cui togli i chicchi dal tamburo. Il grafico continua per mostrare la curva di raffreddamento.</p>
+<p><span class="badge blue">5</span> Quando sei soddisfatto e il raffreddamento è finito, premi <b>✓ Fine</b>. La tostatura viene salvata automaticamente come profilo.</p>
+<div class="tip">DROP segna il momento sul grafico, END chiude e salva la sessione. Puoi fare altre cose (come il raffreddamento) tra DROP e END.</div>
+
+<h3>Il Grafico — cosa significano tutte quelle linee</h3>
+<table>
+<tr><th>Linea</th><th>Colore</th><th>Cosa mostra</th></tr>
+<tr><td><b>BT</b> (Temperatura Chicco)</td><td><span class="badge blue">blu continuo</span></td><td>Quanto sono caldi i chicchi in questo momento. Parte bassa quando carichi i chicchi, sale durante la tostatura, e dovrebbe continuare a salire costantemente. Se si appiattisce, i chicchi non si stanno più tostando.</td></tr>
+<tr><td><b>ET</b> (Temperatura Ambiente)</td><td><span class="badge orange">arancione continuo</span></td><td>Quanto è calda l'aria dentro il tamburo. Corre sopra BT — è il calore che si trasferisce ai chicchi. Se ET scende troppo o incrocia BT, qualcosa non va.</td></tr>
+<tr><td><b>RoR</b> (Velocità di Salita)</td><td><span class="badge green">verde tratteggiato</span></td><td>La velocità con cui BT sta salendo, misurata in gradi al minuto. È il numero più importante: <b>deve continuare a scendere</b> durante tutta la tostatura. Un RoR in aumento significa che i chicchi si stanno riscaldando troppo velocemente.</td></tr>
+<tr><td><b>Target BT</b> (opzionale)</td><td><span class="badge purple">viola puntinato</span></td><td>Una linea di riferimento che mostra la curva di temperatura ideale, generata dallo strumento Profilo AI. Confronta la tua tostatura reale con questo obiettivo.</td></tr>
+</table>
+
+<h3>Eventi e marcatori sul grafico</h3>
+<p>Con il progredire della tostatura, i momenti importanti appaiono come linee verticali sul grafico. Ognuno ha un'etichetta e la temperatura a cui è avvenuto.</p>
+<table>
+<tr><th>Evento</th><th>Colore</th><th>Cosa significa</th></tr>
+<tr><td><b>CHARGE</b></td><td><span class="badge" style="background:#1e293b;color:#fff">nero</span></td><td>Hai caricato il caffè. Il timer parte da qui.</td></tr>
+<tr><td><b>TP</b> (Punto di Svolta)</td><td><span class="badge" style="background:#64748b;color:#fff">grigio</span></td><td>Il momento in cui i chicchi smettono di raffreddarsi dalla carica e iniziano a scaldarsi. La curva BT raggiunge il suo punto più basso e gira verso l'alto.</td></tr>
+<tr><td><b>DE</b> (Fine Asciugatura)</td><td><span class="badge amber">ambra</span></td><td>I chicchi hanno finito di asciugarsi. Passano dal verde al giallo. Questo avviene intorno ai 160°C.</td></tr>
+<tr><td><b>FCs / FCe</b> (Primo Crack)</td><td><span class="badge red">rosso tratteggiato</span></td><td>I chicchi emettono un suono di scoppiettio mentre l'umidità interna si trasforma in vapore. Questo è un momento chiave — lo sviluppo (creazione del sapore) inizia qui. FCs viene usato per calcolare il DTR.</td></tr>
+<tr><td><b>SCs / SCe</b> (Secondo Crack)</td><td><span class="badge purple">viola tratteggiato</span></td><td>Un secondo scoppiettio più leggero. Indica una tostatura più scura. Gli oli iniziano ad apparire sulla superficie del chicco.</td></tr>
+<tr><td><b>DROP</b></td><td><span class="badge red">rosso continuo</span></td><td>Hai tolto i chicchi. Questa è la linea più spessa sul grafico.</td></tr>
+</table>
+
+<h3>Colori delle fasi sullo sfondo del grafico</h3>
+<p>Lo sfondo del grafico cambia colore per mostrare in quale fase della tostatura ti trovi. Questo ti aiuta a capire a colpo d'occhio dove sei.</p>
+<table>
+<tr><th>Colore</th><th>Fase</th><th>Cosa succede</th></tr>
+<tr><td><span style="background:rgba(254,240,138,0.4);padding:2px 8px;border-radius:3px">giallo</span></td><td><b>Asciugatura</b></td><td>L'acqua evapora, i chicchi passano dal verde al giallo. Da CHARGE a Fine Asciugatura.</td></tr>
+<tr><td><span style="background:rgba(187,247,208,0.5);padding:2px 8px;border-radius:3px">verde</span></td><td><b>Maillard</b></td><td>Avviene la doratura, si sviluppano i sapori. Da Fine Asciugatura al Primo Crack.</td></tr>
+<tr><td><span style="background:rgba(254,202,202,0.5);padding:2px 8px;border-radius:3px">rosso</span></td><td><b>Sviluppo</b></td><td>L'acidità si riduce, il corpo si sviluppa. Dal Primo Crack a DROP.</td></tr>
+<tr><td><span style="background:rgba(186,230,253,0.5);padding:2px 8px;border-radius:3px">blu</span></td><td><b>Raffreddamento</b></td><td>I chicchi si raffreddano dopo DROP.</td></tr>
+</table>
+
+<h3>Pannello di telemetria (lato destro)</h3>
+<p>A destra del grafico vedi i numeri in tempo reale. Sono le misurazioni più importanti durante la tostatura.</p>
+<table>
+<tr><th>Numero</th><th>Cosa ti dice</th></tr>
+<tr><td><b>Tempo</b></td><td>Da quanto dura la tostatura, in minuti e secondi.</td></tr>
+<tr><td><b>Fase</b></td><td>In quale fase della tostatura ti trovi ora (Asciugatura, Maillard, Primo Crack, Sviluppo, ecc.). Mostrato come un badge colorato.</td></tr>
+<tr><td><b>BT</b></td><td>La temperatura attuale dei chicchi. Grande numero rosso.</td></tr>
+<tr><td><b>ET</b></td><td>La temperatura attuale dell'aria dentro il tamburo. Grande numero arancione.</td></tr>
+<tr><td><b>RoR</b></td><td>Quanto velocemente BT sta salendo ora. Dovrebbe scendere.</td></tr>
+<tr><td><b>Delta (BT-ET)</b></td><td>La differenza tra temperatura del chicco e temperatura dell'aria. Normalmente ET è più alta (numero positivo). Se diventa negativo, il tamburo è freddo.</td></tr>
+<tr><td><b>DTR %</b></td><td>Development Time Ratio — percentuale del tempo totale di tostatura trascorso dopo il Primo Crack. Obiettivo specialty: 20–25%.</td></tr>
+<tr><td><b>Temperatura Carico</b></td><td>La BT misurata nel momento in cui hai caricato il caffè. Ti aiuta a riprodurre le stesse condizioni iniziali la prossima volta.</td></tr>
+</table>
+
+<h3>Potenza Riscaldatore e Flusso Aria</h3>
+<p>Sotto i numeri della telemetria vedi due barre. La barra <b>Potenza Riscaldatore</b> mostra quanto calore sta applicando la macchina (rossa). La barra <b>Flusso Aria</b> mostra la ventilazione del tamburo (blu). Servono per monitoraggio — se la tua macchina lo supporta, puoi regolarli dai comandi della macchina stessa.</p>
+
+<h3>Registrazione eventi durante la tostatura</h3>
+<p>Puoi segnare momenti importanti mentre la tostatura procede. È utile per annotare quando hai regolato il calore, quando hai sentito un odore cambiare, o qualsiasi osservazione che vuoi salvare con il profilo.</p>
+<p><b>Come registrare un evento:</b><br>
+1. Scegli l'evento dal menu a discesa (Punto di Svolta, Fine Asciugatura, FC Inizio/ Fine, SC Inizio, Drop).<br>
+2. Premi <b>✓ Segna</b> per registrarlo al secondo corrente.<br>
+3. L'evento appare come una linea verticale sul grafico.</p>
+<p>Puoi anche scrivere una <b>etichetta personalizzata</b> nel campo di testo e premere il pulsante <b>+ Etichetta</b> per aggiungere il tuo evento (per esempio "Aggiunto gas" o "Porta aperta").</p>
+<div class="warn">Scegliere l'evento dal menu a discesa NON lo registra. Devi premere <b>✓ Segna</b>.</div>
+
+<h3>Campioni manuali</h3>
+<p>Premi <b>+ Campione</b> per registrare manualmente un punto dati di temperatura in questo momento. Normalmente il sistema registra i dati automaticamente ogni pochi secondi, ma puoi aggiungere punti extra in qualsiasi momento.</p>
+
+<h3>Comandi avanzati (in fondo al pannello)</h3>
+<table>
+<tr><th>Pulsante</th><th>Cosa fa</th></tr>
+<tr><td><b>Filtro Spike</b></td><td>Rimuove i salti improvvisi di temperatura causati da interferenze elettriche, non dalla tostatura. Usalo se vedi picchi irrealistici sul grafico.</td></tr>
+<tr><td><b>Mediano</b></td><td>Smussa la curva di temperatura senza rimuovere i cambiamenti reali. Buono per pulire un segnale disturbato.</td></tr>
+<tr><td><b>Raffreddamento</b></td><td>Registra un evento di fase "Raffreddamento". Usalo dopo DROP per segnare che i chicchi sono ora nella vaschetta di raffreddamento.</td></tr>
+<tr><td><b>Fine Lotto</b></td><td>Segna la fine del lotto per la tracciabilità di produzione. Utile se fai più tostature consecutive.</td></tr>
+<tr><td><b>AutoSalva</b></td><td>Quando è attivo, il sistema salva automaticamente i dati di tostatura ogni 30 punti. Se qualcosa si blocca, non perdi tutto.</td></tr>
+</table>
+
+<h3>Canali Extra</h3>
+<p>Se hai sensori aggiuntivi (per esempio che misurano la pressione del gas o la temperatura in un punto diverso), puoi aggiungerli qui. Dai un nome al canale, inserisci i valori BT/ET, e premi <b>+</b> per aggiungere un campione a quel canale.</p>
+
+<h3>Bilancia</h3>
+<p>Collega una bilancia digitale per pesare il caffè prima e dopo la tostatura. Inserisci il peso in grammi e premi <b>Registra</b>. La perdita di peso viene calcolata automaticamente e salvata con il profilo.</p>
+
+<h3>Set Allarmi</h3>
+<p>Puoi impostare fino a 5 condizioni di allarme che si attivano quando temperatura, RoR o tempo raggiungono un certo valore. Per esempio, potresti impostare un allarme che suona quando raggiungi il Primo Crack, o persino far fare alla macchina un drop automatico. Dai un nome al set, scegli quale numero di allarme modificare, e premi <b>+</b> per aggiungerlo.</p>
+
+<h3>Profilo AI</h3>
+<p>Se inserisci i dati del tuo caffè verde (densità, umidità, colore Agtron, obiettivo di sapore, livello di sviluppo), Maestro AI può suggerire una curva di temperatura ideale per quel caffè specifico. Premi <b>Crea Target</b> e l'AI genera una curva di riferimento che appare sul tuo grafico come una linea viola puntinata.</p>
+
+<h3>Glossario</h3>
+<p>L'icona del libro apre un glossario che spiega tutti i termini tecnici: BT, ET, RoR, DTR, Delta, AUC, FC, SC, e le fasi di tostatura. Clicca su qualsiasi termine per vedere cosa significa.</p>
+
+<h2>Tab Strumenti — Utensili Extra per la Tua Tostatura</h2>
+<p>Il tab Strumenti ti dà calcolatrici utili, strumenti di misura e riferimenti che ti aiutano a lavorare meglio.</p>
+
+<h3>Calcolatrice</h3>
+<p>Converti temperature tra Celsius e Fahrenheit, pesi tra grammi/chilogrammi/libbre, calcola il rendimento di estrazione (quanto caffè si dissolve in acqua), e calcola la densità da peso e volume. Utile per controllare la tua ricetta o convertire unità per macchine diverse.</p>
+
+<h3>Spettrometro NIR</h3>
+<p>Se hai un sensore NIR (vicino infrarosso), puoi registrare lo spettro luminoso del tuo caffè. Questo aiuta ad analizzare la composizione chimica. Inserisci le letture del sensore (lunghezze d'onda e intensità) e premi <b>Registra</b> per salvarle con la sessione corrente.</p>
+
+<h3>Rilevamento Crack</h3>
+<p>Se hai un sensore acustico, puoi rilevare il Primo e Secondo Crack dal suono. Inserisci l'ampiezza del suono e il tempo, imposta una soglia di rilevamento, e premi <b>Rileva</b>. Il sistema registra quando sono avvenuti i crack, che è più preciso che indovinare a orecchio.</p>
+
+<h3>Riscaldamento Ibrido</h3>
+<p>Per macchine che supportano multiple fonti di calore (gas tradizionale, microonde, infrarossi), puoi impostare la percentuale di ciascuna. Premi <b>Applica</b> per inviare la miscela alla macchina.</p>
+
+<h3>Strumenti Esterni</h3>
+<p>Collega e controlla dispositivi esterni da qui. Per esempio, un Variac (trasformatore variabile) ti permette di regolare la tensione che va alla tua macchina. Imposta la tensione e premi <b>Applica</b>.</p>
+
+<h3>Strumenti Fisici e Riferimenti</h3>
+<p><b>Cartella Colori Agtron:</b> Confronta il tuo caffè macinato con un disco colorato standard per misurare oggettivamente il grado di tostatura. #25 è scuro, #100+ è chiaro. È lo standard del caffè specialty.<br>
+<b>Campionatore (Triangolatore):</b> Una paletta metallica che scorre nel tamburo per prelevare un campione di chicchi durante la tostatura senza aprire lo sportello. Usala per controllare colore e odore in tempo reale.<br>
+<b>Scheda di Tostatura:</b> Un modulo stampabile per scrivere a mano note sul lotto, condizioni meteo, tempi e impressioni sensoriali. Non perde mai dati, anche se salta la corrente.</p>
+
+<h3>Condizioni Ambientali</h3>
+<p>Registra l'umidità, la pressione e la temperatura attuali della sala di tostatura. Questi fattori ambientali influenzano come si comporta la tostatura, specialmente nei giorni umidi o freddi.</p>

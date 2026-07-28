@@ -1,0 +1,39 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Dashboard — Home Screen</h2>
+<p>The Dashboard is the first thing you see when you open Maestro AI. It gives you a quick overview of everything: is the server running, how many roasts have been saved, how many are happening right now. Think of it as the control room window.</p>
+
+<h3>What you see on the Dashboard</h3>
+
+<table>
+<tr><th>Item</th><th>What it tells you</th></tr>
+<tr><td><b>Active Sessions</b></td><td>How many roasts are currently running on the server. If you see a number higher than 0, someone (or you) is roasting right now.</td></tr>
+<tr><td><b>Saved Profiles</b></td><td>How many roast profiles are stored on the server. Each profile is a complete record of a roast you did, including temperatures, times, and events.</td></tr>
+<tr><td><b>Server Time</b></td><td>The current date and time of the Maestro AI server. This refreshes every 30 seconds so you always know the server is alive.</td></tr>
+<tr><td><b>Uptime</b></td><td>How long the server has been running without interruption since the last restart. A high number means the system is stable.</td></tr>
+</table>
+
+<h3>Status LED</h3>
+<p>At the top of every screen you see a small green or red light (LED). <b>Green</b> means the server is connected and working. <b>Red</b> means the connection is lost — check that the Maestro AI server is running, and that the URL in Settings is correct.</p>
+
+<h3>Last Roast</h3>
+<p>The box at the bottom shows the name of the most recent roast you saved. If you haven't done any roasts yet, it will politely tell you to start one.</p>
+
+<h3>Operating Modes</h3>
+<p>Maestro AI has three ways you can use it. You choose the mode in the Settings panel.</p>
+<table>
+<tr><th>Mode</th><th>When to use it</th></tr>
+<tr><td><b>Monitoring</b></td><td>Look-only mode. The chart follows whatever roast is happening on the server, but you cannot start or stop anything. Perfect for a second screen or when you want to watch a colleague's roast.</td></tr>
+<tr><td><b>Easy</b></td><td>The simplified view. Shows only the essential controls for roasting and the most important panels. Great if you are new to Maestro AI or just want a clean, focused screen.</td></tr>
+<tr><td><b>Full</b></td><td>Everything is visible. Every panel, every button, every advanced feature. Use this when you need AI profiles, extra sensors, digital signatures, or energy analysis.</td></tr>
+</table>
+
+<div class="tip">The green LED at the top means the server is online. If it stays red, go to Settings and check that the Server URL is correct.</div>

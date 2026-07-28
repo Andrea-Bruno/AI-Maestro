@@ -1,0 +1,63 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+.warn{background:#fffbeb;border-left:3px solid #f59e0b;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Perfiles — Tu Biblioteca de Tostados</h2>
+<p>El panel Perfiles es donde gestionas todos los tostados que has guardado. Cada vez que terminas un tostado, se convierte en un perfil — un registro completo con temperaturas, tiempos, eventos y notas. Piensa en él como una biblioteca de cada tostado que has hecho.</p>
+
+<h3>Lista de Perfiles</h3>
+<p>Cuando abres la pestaña Perfiles, ves una lista de todos los perfiles guardados. Haz clic en un nombre de perfil para verlo. El botón de actualización recarga la lista desde el servidor (útil si otro ordenador guardó un nuevo perfil).</p>
+<p>Desde la lista puedes:</p>
+<table>
+<tr><th>Acción</th><th>Cómo hacerlo</th></tr>
+<tr><td><b>Ver un perfil</b></td><td>Haz clic en su nombre. Se cargará en el panel Análisis donde puedes ver todos los números.</td></tr>
+<tr><td><b>Eliminar un perfil</b></td><td>Solo en modo Completo. Haz clic en el botón X junto al nombre del perfil para eliminarlo permanentemente.</td></tr>
+</table>
+
+<h3>Diseñador de Curva Objetivo</h3>
+<p>Antes de comenzar un tostado, puedes diseñar una curva de temperatura ideal. Ingresa cuatro puntos clave y Maestro AI dibuja una línea de referencia que puedes seguir durante el tostado.</p>
+<table>
+<tr><th>Qué ingresar</th><th>Qué significa</th></tr>
+<tr><td><b>Temp Carga</b></td><td>La temperatura del tambor cuando cargas el café.</td></tr>
+<tr><td><b>Fin Secado</b></td><td>La temperatura deseada al final de la fase de secado (el café pasa de verde a amarillo, alrededor de 160°C).</td></tr>
+<tr><td><b>Inicio FC</b></td><td>La temperatura donde quieres que ocurra el Primer Crack (generalmente alrededor de 190–200°C).</td></tr>
+<tr><td><b>Drop</b></td><td>La temperatura a la que planeas sacar los granos.</td></tr>
+</table>
+<p>Presiona <b>Crear Objetivo</b> y la curva de referencia aparece en el gráfico durante tu tostado como una línea púrpura punteada.</p>
+
+<h3>Rangos de Fase</h3>
+<p>Puedes indicarle a Maestro AI qué temperaturas marcan el inicio de cada fase. Esto ayuda al sistema a identificar correctamente cuándo los granos entran en las fases de Secado, Maillard y Desarrollo. Si tu máquina funciona más caliente o más fría, ajustar estos rangos hace que la detección de fase sea más precisa.</p>
+
+<h3>Propiedades</h3>
+<p>Cuando cargas un perfil, puedes editar sus propiedades: peso inicial y final (para calcular la pérdida), y el color del grano entero (valor Agtron). Estos números se guardan con el perfil y se usan en el panel Análisis.</p>
+
+<h3>Transformador</h3>
+<p>A veces tienes un perfil que se hizo con un tamaño de lote o máquina diferente, y quieres adaptarlo. El Transformador te permite:</p>
+<table>
+<tr><th>Operación</th><th>Qué hace</th></tr>
+<tr><td><b>Escala Temporal</b></td><td>Estirar o encoger el eje de tiempo. Útil si el tostado original fue de 10 minutos y el tuyo necesita ser de 12.</td></tr>
+<tr><td><b>Desplazamiento Temp</b></td><td>Desplazar todas las temperaturas hacia arriba o abajo una cantidad fija. Útil si tu máquina es 5°C más caliente que la original.</td></tr>
+<tr><td><b>Invertir</b></td><td>Voltear la curva (rara vez usado, pero útil para análisis especiales).</td></tr>
+<tr><td><b>C → F</b></td><td>Convertir todas las temperaturas de Celsius a Fahrenheit.</td></tr>
+</table>
+
+<h3>Importación y Exportación</h3>
+<p>Puedes importar perfiles de otros programas o compartir tus perfiles con otros.</p>
+<p><b>Para importar un perfil:</b></p>
+<ul style="margin:4px 0;padding-left:16px;font-size:12px">
+<li>Arrastra y suelta un archivo .maestro, .alog (Artisan) o .json en la zona de destino.</li>
+<li>O haz clic en el botón Importar para seleccionar un archivo de tu ordenador.</li>
+<li>O pega el contenido del archivo en el área de texto.</li>
+</ul>
+<p><b>Para exportar un perfil:</b> elige un formato (JSON o .alog), selecciona qué perfil exportar y presiona Exportar. Usa esto para respaldar tus perfiles o compartirlos con otro tostador.</p>
+<div class="tip">Los perfiles de Artisan (.alog) se convierten automáticamente al importarse — todos los datos de temperatura y eventos se conservan.</div>
+
+<h3>Firma Digital</h3>
+<p>En modo Completo, puedes firmar tus perfiles con una firma digital. Esto garantiza que el perfil fue creado por ti y no ha sido alterado. Necesitas una clave privada para firmar, y cualquiera con tu clave pública puede verificar la firma. Útil para competiciones o al compartir perfiles profesionalmente.</p>

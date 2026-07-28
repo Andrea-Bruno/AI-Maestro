@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Maestro_AI</RootNamespace>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <UserSecretsId>619b5325-302a-4b31-a137-2817a733a16e</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MQTTnet" Version="5.2.0.1603" />
+    <PackageReference Include="QRCoder" Version="1.8.0" />
+    <PackageReference Include="S7netplus" Version="0.20.0" />
+    <ProjectReference Include="..\..\UISupportBlazor\UISupportBlazor.csproj" Condition="Exists('..\..\UISupportBlazor\UISupportBlazor.csproj')" />
+    <PackageReference Include="UISupportBlazor" Version="1.*" Condition="!Exists('..\..\UISupportBlazor\UISupportBlazor.csproj')" />
+    <PackageReference Include="System.IO.Ports" Version="10.0.0" />
+    <PackageReference Include="System.Device.Gpio" Version="3.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="LICENSE.md">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+    <None Update="README.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="docs/**/*.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\EncryptedMessaging\EncryptedMessaging\EncryptedMessaging.csproj" />
+  </ItemGroup>
+
+</Project>

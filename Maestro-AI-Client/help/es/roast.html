@@ -1,0 +1,94 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:11px;font-weight:600;margin-right:4px}
+.blue{background:#dbeafe;color:#1d4ed8}.orange{background:#ffedd5;color:#c2410c}
+.green{background:#dcfce7;color:#15803d}.purple{background:#ede9fe;color:#7c3aed}
+.red{background:#fee2e2;color:#b91c1c}.amber{background:#fef3c7;color:#b45309}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+.warn{background:#fffbeb;border-left:3px solid #f59e0b;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Monitor de Tostado — El Corazón de la Máquina</h2>
+<p>El panel Tostado es donde realmente tuestas café. Te muestra todo en tiempo real: la temperatura dentro del tambor y dentro de los granos, la velocidad a la que sube la temperatura, y todos los momentos importantes como cuando los granos crujen. Puedes iniciar un tostado, verlo en el gráfico, añadir notas mientras avanzas y guardar todo como perfil cuando termines.</p>
+
+<h3>Cómo hacer un tostado — paso a paso</h3>
+<p><span class="badge blue">1</span> Presiona <b>Iniciar</b>. El cronómetro arranca y el gráfico comienza a grabar. Carga tu café en la máquina — este momento se llama <b>CHARGE</b>.</p>
+<p><span class="badge blue">2</span> Observa las dos líneas de temperatura en el gráfico. La línea azul (BT, Bean Temperature) muestra la temperatura de los granos. La línea naranja (ET, Environment Temperature) muestra la temperatura del aire en el tambor. La línea naranja debe estar siempre por encima de la azul.</p>
+<p><span class="badge blue">3</span> Vigila el RoR (Rate of Rise) — la línea verde punteada. Indica la velocidad a la que se calientan los granos. Un buen tostado tiene un RoR que <b>disminuye gradualmente</b>. Si empieza a subir, los granos pueden quemarse.</p>
+<p><span class="badge blue">4</span> Cuando los granos alcancen el color y desarrollo deseados, presiona <b>⏹ DROP</b>. Esto marca el momento en que sacas los granos del tambor. El gráfico continúa mostrando la curva de enfriamiento.</p>
+<p><span class="badge blue">5</span> Cuando estés satisfecho y el enfriamiento haya terminado, presiona <b>✓ Fin</b>. El tostado se guarda automáticamente como perfil.</p>
+<div class="tip">DROP marca el momento en el gráfico, END cierra y guarda la sesión. Puedes hacer otras cosas (como enfriar) entre DROP y END.</div>
+
+<h3>El Gráfico — qué significan todas esas líneas</h3>
+<table>
+<tr><th>Línea</th><th>Color</th><th>Qué muestra</th></tr>
+<tr><td><b>BT</b> (Bean Temperature)</td><td><span class="badge blue">azul continuo</span></td><td>La temperatura de los granos ahora. Comienza baja en la carga, sube constantemente y debe seguir subiendo. Si se aplana, los granos ya no se tuestan.</td></tr>
+<tr><td><b>ET</b> (Environment Temperature)</td><td><span class="badge orange">naranja continuo</span></td><td>La temperatura del aire en el tambor. Está por encima de BT — es el calor que se transfiere a los granos. Si ET baja demasiado o cruza BT, algo está mal.</td></tr>
+<tr><td><b>RoR</b> (Rate of Rise)</td><td><span class="badge green">verde punteado</span></td><td>La velocidad a la que sube BT, en grados por minuto. Es el número más importante: <b>debe seguir bajando</b> durante todo el tostado. Un RoR que sube significa que los granos se calientan demasiado rápido.</td></tr>
+<tr><td><b>BT Objetivo</b> (opcional)</td><td><span class="badge purple">púrpura punteado</span></td><td>Una línea de referencia que muestra la curva de temperatura ideal, generada por la herramienta Perfil IA. Compara tu tostado real con este objetivo.</td></tr>
+</table>
+
+<h3>Eventos y marcadores en el gráfico</h3>
+<table>
+<tr><th>Evento</th><th>Color</th><th>Significado</th></tr>
+<tr><td><b>CHARGE</b></td><td><span class="badge" style="background:#1e293b;color:#fff">negro</span></td><td>Cargaste el café. El cronómetro comienza aquí.</td></tr>
+<tr><td><b>TP</b> (Turning Point)</td><td><span class="badge" style="background:#64748b;color:#fff">gris</span></td><td>El momento en que los granos dejan de enfriarse tras la carga y empiezan a calentarse. La curva BT alcanza su punto más bajo.</td></tr>
+<tr><td><b>DE</b> (Dry End)</td><td><span class="badge amber">ámbar</span></td><td>Los granos han terminado de secarse. Pasan de verde a amarillo. Alrededor de 160°C.</td></tr>
+<tr><td><b>FCs / FCe</b> (First Crack)</td><td><span class="badge red">rojo punteado</span></td><td>Los granos hacen un crujido. Es un momento clave — el desarrollo (creación de sabores) comienza aquí.</td></tr>
+<tr><td><b>SCs / SCe</b> (Second Crack)</td><td><span class="badge purple">púrpura punteado</span></td><td>Un segundo crujido más suave. Indica un tostado más oscuro.</td></tr>
+<tr><td><b>DROP</b></td><td><span class="badge red">rojo continuo</span></td><td>Sacaste los granos. La línea más gruesa del gráfico.</td></tr>
+</table>
+
+<h3>Colores de fondo de las fases</h3>
+<table>
+<tr><th>Color</th><th>Fase</th><th>Qué ocurre</th></tr>
+<tr><td><span style="background:rgba(254,240,138,0.4);padding:2px 8px;border-radius:3px">amarillo</span></td><td><b>Secado</b></td><td>El agua se evapora, los granos pasan de verde a amarillo. De CHARGE a DE.</td></tr>
+<tr><td><span style="background:rgba(187,247,208,0.5);padding:2px 8px;border-radius:3px">verde</span></td><td><b>Maillard</b></td><td>Dorado, desarrollo de sabores. De DE a FCs.</td></tr>
+<tr><td><span style="background:rgba(254,202,202,0.5);padding:2px 8px;border-radius:3px">rojo</span></td><td><b>Desarrollo</b></td><td>Reducción de acidez, desarrollo del cuerpo. De FCs a DROP.</td></tr>
+<tr><td><span style="background:rgba(186,230,253,0.5);padding:2px 8px;border-radius:3px">azul</span></td><td><b>Enfriamiento</b></td><td>Los granos se enfrían tras DROP.</td></tr>
+</table>
+
+<h3>Panel de telemetría (lado derecho)</h3>
+<table>
+<tr><th>Valor</th><th>Qué indica</th></tr>
+<tr><td><b>Tiempo</b></td><td>Cuánto lleva el tostado (mm:ss).</td></tr>
+<tr><td><b>Fase</b></td><td>En qué etapa del tostado estás (Secado, Maillard, Primer Crack, etc.).</td></tr>
+<tr><td><b>BT</b></td><td>Temperatura actual de los granos.</td></tr>
+<tr><td><b>ET</b></td><td>Temperatura actual del aire del tambor.</td></tr>
+<tr><td><b>RoR</b></td><td>Velocidad a la que sube BT ahora.</td></tr>
+<tr><td><b>Delta BT-ET</b></td><td>Diferencia entre BT y ET. Normalmente ET es más alto. Si se vuelve negativo, el tambor está frío.</td></tr>
+<tr><td><b>DTR %</b></td><td>Porcentaje del tiempo tras el Primer Crack. Objetivo specialty: 20–25%.</td></tr>
+<tr><td><b>Temp Carga</b></td><td>BT en el momento de la carga.</td></tr>
+</table>
+
+<h3>Potencia y Flujo de Aire</h3>
+<p>Dos barras muestran la <b>Potencia</b> (calor aplicado, rojo) y el <b>Flujo de Aire</b> (ventilación, azul).</p>
+
+<h3>Registrar eventos</h3>
+<p>Elige el evento del menú desplegable y presiona <b>✓ Marcar</b> para registrarlo en el segundo actual. También puedes escribir una <b>etiqueta personalizada</b> y presionar <b>+ Etiqueta</b> para añadir tu propio evento.</p>
+<div class="warn">Seleccionar el evento del menú no lo registra. Debes presionar <b>✓ Marcar</b>.</div>
+
+<h3>Controles avanzados</h3>
+<table>
+<tr><th>Botón</th><th>Acción</th></tr>
+<tr><td><b>Filtro Spike</b></td><td>Elimina picos anómalos causados por interferencias eléctricas.</td></tr>
+<tr><td><b>Mediana</b></td><td>Suaviza la curva de temperatura.</td></tr>
+<tr><td><b>Enfriamiento</b></td><td>Marca el inicio del enfriamiento tras DROP.</td></tr>
+<tr><td><b>Fin Lote</b></td><td>Marca el fin del lote para seguimiento de producción.</td></tr>
+<tr><td><b>AutoGuardar</b></td><td>Guarda automáticamente cada 30 datos.</td></tr>
+</table>
+
+<h2>Pestaña Herramientas — Herramientas Adicionales</h2>
+<p>La pestaña Herramientas ofrece calculadoras prácticas e instrumentos de medición.</p>
+<p><b>Calculadora :</b> conversiones temperatura/peso, rendimiento extracción, densidad.<br>
+<b>Espectrómetro NIR :</b> registro del espectro de luz del café.<br>
+<b>Detección de Crack :</b> detección acústica del primer y segundo crack.<br>
+<b>Calefacción Híbrida :</b> ajuste de fuentes de calor (gas, microondas, infrarrojo).<br>
+<b>Instrumentos Externos :</b> control Variac.<br>
+<b>Herramientas Físicas :</b> tabla Agtron, muestreador, hoja de tostado.<br>
+<b>Condiciones Ambientales :</b> humedad, presión, temperatura ambiente.</p>

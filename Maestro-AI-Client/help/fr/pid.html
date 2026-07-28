@@ -1,0 +1,31 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+.warn{background:#fffbeb;border-left:3px solid #f59e0b;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Régulateur PID — Réglage Fin de la Chaleur</h2>
+<p>Le panneau PID contrôle la façon dont votre machine applique la chaleur pendant la torréfaction. PID signifie Proportionnel-Intégral-Dérivé — c'est une façon intelligente de dire « l'ordinateur ajuste automatiquement le brûleur ou le chauffage pour maintenir la température sur la bonne voie ».</p>
+<p>Imaginez que vous conduisez une voiture : vous voulez atteindre une vitesse cible (la consigne) et y rester. Kp correspond à la force avec laquelle vous appuyez sur l'accélérateur quand vous êtes en dessous de la vitesse. Ki correspond à la façon dont vous ajustez pour les côtes. Kd correspond à la façon dont vous anticipez et relâchez avant de dépasser.</p>
+
+<h3>Les trois paramètres de réglage</h3>
+<table>
+<tr><th>Paramètre</th><th>Ce qu'il fait</th><th>Valeur de départ</th></tr>
+<tr><td><b>Kp</b> (Proportionnel)</td><td>La force avec laquelle le régulateur réagit à la différence entre la température cible et la température réelle. Un Kp élevé donne une réponse rapide, mais trop élevé provoque des oscillations.</td><td>15–25</td></tr>
+<tr><td><b>Ki</b> (Intégral)</td><td>Comment le régulateur corrige les petites erreurs qui s'accumulent avec le temps. Si la température reste légèrement en dessous de la cible, Ki ajoute progressivement plus de chaleur. Trop de Ki provoque un dépassement.</td><td>0,03–0,08</td></tr>
+<tr><td><b>Kd</b> (Dérivé)</td><td>Comment le régulateur anticipe les changements. Si la température monte très vite, Kd réduit la chaleur avant qu'elle ne dépasse. Un Kd plus élevé rend la réponse plus douce mais plus lente.</td><td>3–8</td></tr>
+</table>
+<div class="warn">Modifier les valeurs PID pendant une torréfaction peut provoquer des changements soudains de température. Testez toujours les nouvelles valeurs dans le Simulateur d'abord.</div>
+
+<h3>Simulation — testez avant d'appliquer</h3>
+<p>Avant d'utiliser de nouvelles valeurs PID sur une vraie torréfaction, essayez-les dans le simulateur :</p>
+<p><span class="badge blue">1</span> Entrez la <b>Consigne</b> (la température cible à atteindre).</p>
+<p><span class="badge blue">2</span> Entrez le nombre de <b>Pas</b> (combien de secondes de simulation — 60 pas = 1 minute).</p>
+<p><span class="badge blue">3</span> Appuyez sur <b>Simuler PID</b>.</p>
+<p>Le graphique montre comment la température se comporterait : à quelle vitesse elle atteint la cible, si elle la dépasse, et à quel point elle reste stable. Si la ligne oscille beaucoup, votre Kp est trop élevé. Si elle met une éternité à atteindre la cible, votre Kp est trop bas.</p>
+<div class="tip">Méthode de réglage classique : augmentez Kp jusqu'à ce que la température oscille régulièrement, puis réglez Ki = 0,48 × fréquence d'oscillation et Kd = 0,075 × période d'oscillation.</div>

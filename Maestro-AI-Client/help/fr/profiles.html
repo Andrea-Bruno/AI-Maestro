@@ -1,0 +1,63 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+.warn{background:#fffbeb;border-left:3px solid #f59e0b;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Profils — Votre Bibliothèque de Torréfactions</h2>
+<p>Le panneau Profils est l'endroit où vous gérez toutes les torréfactions que vous avez sauvegardées. Chaque fois que vous terminez une torréfaction, elle devient un profil — un enregistrement complet avec températures, temps, événements et notes. Considérez-le comme une bibliothèque de chaque torréfaction que vous avez jamais faite.</p>
+
+<h3>Liste des Profils</h3>
+<p>Quand vous ouvrez l'onglet Profils, vous voyez une liste de tous les profils sauvegardés. Cliquez sur un nom de profil pour le voir. Le bouton d'actualisation recharge la liste depuis le serveur (utile si un autre ordinateur a sauvegardé un nouveau profil).</p>
+<p>Depuis la liste vous pouvez :</p>
+<table>
+<tr><th>Action</th><th>Comment faire</th></tr>
+<tr><td><b>Voir un profil</b></td><td>Cliquez sur son nom. Il se charge dans le panneau Analyse où vous pouvez voir tous les chiffres.</td></tr>
+<tr><td><b>Supprimer un profil</b></td><td>Uniquement en mode Complet. Cliquez sur le bouton X à côté du nom du profil pour le supprimer définitivement.</td></tr>
+</table>
+
+<h3>Concepteur de Courbe Cible</h3>
+<p>Avant de commencer une torréfaction, vous pouvez concevoir une courbe de température idéale. Entrez quatre points clés et Maestro AI dessine une ligne de référence que vous pouvez suivre pendant la torréfaction.</p>
+<table>
+<tr><th>Point à entrer</th><th>Ce que ça signifie</th></tr>
+<tr><td><b>Temp Chargement</b></td><td>La température du tambour quand vous chargez le café.</td></tr>
+<tr><td><b>Fin Séchage</b></td><td>La température souhaitée à la fin de la phase de séchage (le café passe du vert au jaune, vers 160°C).</td></tr>
+<tr><td><b>Début FC</b></td><td>La température où vous voulez que le Premier Crack se produise (généralement autour de 190–200°C).</td></tr>
+<tr><td><b>Drop</b></td><td>La température à laquelle vous prévoyez de sortir les grains.</td></tr>
+</table>
+<p>Appuyez sur <b>Créer Cible</b> et la courbe de référence apparaît sur le graphique pendant votre torréfaction sous forme de ligne violette pointillée.</p>
+
+<h3>Plages de Phases</h3>
+<p>Vous pouvez indiquer à Maestro AI quelles températures marquent le début de chaque phase. Cela aide le système à identifier correctement quand les grains entrent dans les phases de Séchage, Maillard et Développement. Si votre machine fonctionne plus chaud ou plus froid, ajuster ces plages rend la détection de phase plus précise.</p>
+
+<h3>Propriétés</h3>
+<p>Quand vous chargez un profil, vous pouvez modifier ses propriétés : poids d'entrée et de sortie (pour calculer la perte), et la couleur du grain entier (valeur Agtron). Ces chiffres sont sauvegardés avec le profil et utilisés dans le panneau Analyse.</p>
+
+<h3>Transformateur</h3>
+<p>Parfois vous avez un profil qui a été fait avec une taille de lot ou une machine différente, et vous voulez l'adapter. Le Transformateur vous permet de :</p>
+<table>
+<tr><th>Opération</th><th>Ce qu'elle fait</th></tr>
+<tr><td><b>Échelle Temps</b></td><td>Étirer ou réduire l'axe temporel. Utile si la torréfaction originale durait 10 minutes et que la vôtre doit durer 12.</td></tr>
+<tr><td><b>Décalage Temp</b></td><td>Décaler toutes les températures vers le haut ou le bas d'un montant fixe. Utile si votre machine est 5°C plus chaude que l'originale.</td></tr>
+<tr><td><b>Inverser</b></td><td>Retourner la courbe (rarement utilisé, mais pratique pour des analyses spéciales).</td></tr>
+<tr><td><b>C → F</b></td><td>Convertir toutes les températures de Celsius en Fahrenheit.</td></tr>
+</table>
+
+<h3>Importation et Exportation</h3>
+<p>Vous pouvez importer des profils depuis d'autres programmes ou partager vos profils avec d'autres.</p>
+<p><b>Pour importer un profil :</b></p>
+<ul style="margin:4px 0;padding-left:16px;font-size:12px">
+<li>Glissez-déposez un fichier .maestro, .alog (Artisan) ou .json sur la zone de dépôt.</li>
+<li>Ou cliquez sur le bouton Importer pour sélectionner un fichier sur votre ordinateur.</li>
+<li>Ou collez le contenu du fichier dans la zone de texte.</li>
+</ul>
+<p><b>Pour exporter un profil :</b> choisissez un format (JSON ou .alog), sélectionnez le profil à exporter et appuyez sur Exporter. Utilisez ceci pour sauvegarder vos profils ou les partager avec un autre torréfacteur.</p>
+<div class="tip">Les profils Artisan (.alog) sont automatiquement convertis lors de l'importation — toutes les données de température et d'événements sont préservées.</div>
+
+<h3>Signature Numérique</h3>
+<p>En mode Complet, vous pouvez signer vos profils avec une signature numérique. Cela garantit que le profil a été créé par vous et n'a pas été modifié. Vous avez besoin d'une clé privée pour signer, et toute personne possédant votre clé publique peut vérifier la signature. Utile pour les compétitions ou lors du partage professionnel de profils.</p>

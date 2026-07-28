@@ -1,0 +1,62 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+.warn{background:#fffbeb;border-left:3px solid #f59e0b;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Profile — Ihre Röstbibliothek</h2>
+<p>Das Profile-Panel verwaltet alle gespeicherten Röstungen. Jedes Mal, wenn Sie eine Röstung beenden, wird sie zu einem Profil — einer vollständigen Aufzeichnung mit Temperaturen, Zeiten, Ereignissen und Notizen. Betrachten Sie es als eine Bibliothek aller Röstungen, die Sie je durchgeführt haben.</p>
+
+<h3>Profilliste</h3>
+<p>Wenn Sie den Reiter Profile öffnen, sehen Sie eine Liste aller gespeicherten Profile. Klicken Sie auf einen Profilnamen, um es anzuzeigen. Die Aktualisierungsschaltfläche lädt die Liste vom Server neu (nützlich, wenn ein anderer Computer ein neues Profil gespeichert hat).</p>
+<table>
+<tr><th>Aktion</th><th>Ausführung</th></tr>
+<tr><td><b>Profil anzeigen</b></td><td>Klicken Sie auf den Namen. Es wird im Analyse-Panel geladen, wo Sie alle Zahlen sehen können.</td></tr>
+<tr><td><b>Profil löschen</b></td><td>Nur im Vollmodus. Klicken Sie auf die X-Schaltfläche neben dem Profilnamen, um es dauerhaft zu entfernen.</td></tr>
+</table>
+
+<h3>Zielkurven-Designer</h3>
+<p>Vor dem Start einer Röstung können Sie eine ideale Temperaturkurve entwerfen. Geben Sie vier Schlüsselpunkte ein, und Maestro AI zeichnet eine Referenzlinie, der Sie während der Röstung folgen können.</p>
+<table>
+<tr><th>Eingabe</th><th>Bedeutung</th></tr>
+<tr><td><b>Charge Temp</b></td><td>Die Temperatur der Trommel beim Einladen des Kaffees.</td></tr>
+<tr><td><b>Trocknungsende</b></td><td>Die gewünschte Temperatur am Ende der Trocknungsphase (Bohnen wechseln von grün zu gelb, etwa 160°C).</td></tr>
+<tr><td><b>FC Beginn</b></td><td>Die Temperatur, bei der der First Crack stattfinden soll (normalerweise 190–200°C).</td></tr>
+<tr><td><b>Drop</b></td><td>Die Temperatur, bei der Sie die Bohnen entnehmen möchten.</td></tr>
+</table>
+<p>Drücken Sie <b>Ziel Erstellen</b>, und die Referenzkurve erscheint während Ihrer Röstung als lila gepunktete Linie im Diagramm.</p>
+
+<h3>Phasenbereiche</h3>
+<p>Sie können Maestro AI mitteilen, welche Temperaturen den Beginn jeder Phase markieren. Dies hilft dem System, korrekt zu erkennen, wann die Bohnen in die Trocknungs-, Maillard- und Entwicklungsphase eintreten. Wenn Ihre Maschine heisser oder kälter läuft, verbessert die Anpassung dieser Bereiche die Phasenerkennung.</p>
+
+<h3>Eigenschaften</h3>
+<p>Wenn Sie ein Profil laden, können Sie seine Eigenschaften bearbeiten: Einwaage und Auswaage (zur Berechnung des Verlusts) und die Ganzbohnenfarbe (Agtron-Wert). Diese Zahlen werden mit dem Profil gespeichert und im Analyse-Panel verwendet.</p>
+
+<h3>Transformator</h3>
+<p>Manchmal haben Sie ein Profil, das mit einer anderen Chargengrösse oder Maschine erstellt wurde, und möchten es anpassen. Der Transformator ermöglicht Folgendes:</p>
+<table>
+<tr><th>Operation</th><th>Funktion</th></tr>
+<tr><td><b>Zeitskalierung</b></td><td>Die Zeitachse dehnen oder stauchen. Nützlich, wenn die ursprüngliche Röstung 10 Minuten dauerte und Ihre 12 Minuten benötigt.</td></tr>
+<tr><td><b>Temp-Offset</b></td><td>Alle Temperaturen um einen festen Betrag nach oben oder unten verschieben. Nützlich, wenn Ihre Maschine 5°C heisser läuft als das Original.</td></tr>
+<tr><td><b>Invertieren</b></td><td>Die Kurve umkehren (selten verwendet, aber praktisch für spezielle Analysen).</td></tr>
+<tr><td><b>C → F</b></td><td>Alle Temperaturen von Celsius in Fahrenheit umrechnen.</td></tr>
+</table>
+
+<h3>Import und Export</h3>
+<p>Sie können Profile aus anderen Programmen importieren oder Ihre Profile mit anderen teilen.</p>
+<p><b>So importieren Sie ein Profil:</b></p>
+<ul style="margin:4px 0;padding-left:16px;font-size:12px">
+<li>Ziehen Sie eine .maestro-, .alog- (Artisan) oder .json-Datei per Drag & Drop in die Ablagezone.</li>
+<li>Oder klicken Sie auf die Import-Schaltfläche, um eine Datei von Ihrem Computer auszuwählen.</li>
+<li>Oder fügen Sie den Dateiinhalt in das Textfeld ein.</li>
+</ul>
+<p><b>So exportieren Sie ein Profil:</b> Wählen Sie ein Format (JSON oder .alog), wählen Sie das zu exportierende Profil aus und drücken Sie Export. Verwenden Sie dies, um Ihre Profile zu sichern oder mit anderen Röstern zu teilen.</p>
+<div class="tip">Artisan-Profile (.alog) werden beim Import automatisch konvertiert — alle Ereignisse und Temperaturdaten bleiben erhalten.</div>
+
+<h3>Digitale Signatur</h3>
+<p>Im Vollmodus können Sie Ihre Profile mit einer digitalen Signatur versehen. Dies garantiert, dass das Profil von Ihnen erstellt und nicht manipuliert wurde. Sie benötigen einen privaten Schlüssel zum Signieren, und jeder mit Ihrem öffentlichen Schlüssel kann die Signatur überprüfen. Nützlich für Wettbewerbe oder den professionellen Austausch von Profilen.</p>

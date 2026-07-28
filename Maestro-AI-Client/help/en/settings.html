@@ -1,0 +1,75 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+.warn{background:#fffbeb;border-left:3px solid #f59e0b;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Settings — How to Configure Maestro AI</h2>
+<p>The Settings panel is where you set up how Maestro AI connects to the server, what language it speaks, how hot it measures things, and who can change the settings.</p>
+
+<h3>Server Connection</h3>
+<p>Maestro AI needs to talk to a server to save profiles and control the hardware. Enter the server address here.</p>
+<table>
+<tr><th>Situation</th><th>What to enter</th></tr>
+<tr><td>Maestro AI running on the same computer as this screen</td><td><code>http://localhost:5252</code> (this is the default)</td></tr>
+<tr><td>Maestro AI on another computer in your network</td><td><code>http://192.168.1.XXX:5252</code> — use the IP address of the server machine</td></tr>
+<tr><td>Maestro AI on a different network</td><td>You need to set up port forwarding on your router and use the public IP</td></tr>
+</table>
+<div class="warn">After changing the server URL, the page tries to reconnect. If the LED at the top stays red, check that the server is running and that your firewall allows connections on port 5252.</div>
+
+<h3>Language</h3>
+<p>Choose the language for the interface. All buttons, labels, and help texts will switch to your selected language. Currently supported: English, Italian, French, German, Spanish, Russian.</p>
+
+<h3>Temperature Unit</h3>
+<p>Choose between Celsius (°C) and Fahrenheit (°F). Most coffee roasters use Celsius, but if you are used to Fahrenheit, change it here.</p>
+
+<h3>GUI Mode</h3>
+<p>Maestro AI has three interface modes. Choose the one that fits what you are doing.</p>
+<table>
+<tr><th>Mode</th><th>Best for</th></tr>
+<tr><td><b>Monitoring</b></td><td>Watching a roast without touching anything. The chart updates live, but no buttons to start or stop are shown. Good for a second screen or a public display.</td></tr>
+<tr><td><b>Easy</b></td><td>Daily roasting. Shows only the controls you need most: roast panel, profile list, diagnostics, and settings. The advanced features (AI, extra sensors, signing, etc.) are hidden.</td></tr>
+<tr><td><b>Full</b></td><td>Everything. All panels, all buttons, all advanced features. Use this when you need AI profile generation, extra channels, digital signatures, energy analysis, BBP, cloud services, spectroscopy, and hybrid heating.</td></tr>
+</table>
+
+<h3>PIN Protection</h3>
+<p>You can protect the Settings panel with a 4-to-6 digit PIN. This prevents someone from accidentally changing the server URL or switching modes during a roast.</p>
+<p><b>Setting a PIN:</b> Enter a new PIN in both fields and press <b>Save</b>. The next time someone tries to open Settings, they will need to enter the PIN first.</p>
+<p><b>Removing the PIN:</b> Leave the "New PIN" field empty and press <b>Save</b>.</p>
+<p><b>Default PIN:</b> <b>0000</b> (if you never changed it).</p>
+<div class="tip">If you forget your PIN, open the browser console (F12) and type: <code>localStorage.setItem('maestro-pin','')</code>. This resets the PIN to none.</div>
+
+<h3>UI Scale</h3>
+<p>Make the interface larger or smaller. Use <b>Large</b> if you are using a touchscreen, a high-resolution display, or if you are viewing the screen from a distance.</p>
+
+<h2>Diagnostics Tab — Checking the System Health</h2>
+<p>The Diagnostics tab shows you the health of your Maestro AI system. Use it to check if everything is working or to find problems.</p>
+
+<h3>System Status</h3>
+<p>The main status card shows three things:</p>
+<table>
+<tr><th>Item</th><th>What it tells you</th></tr>
+<tr><td><b>Server</b></td><td>A green light means the Maestro AI server is running and responding. Red means the server is offline or unreachable.</td></tr>
+<tr><td><b>Device</b></td><td>A green light means the hardware (roaster, sensors) is connected. Red means no device is detected — check cables and power.</td></tr>
+<tr><td><b>Uptime</b></td><td>How long the server has been running since it was last started. Helpful to know if the system recently crashed or was restarted.</td></tr>
+</table>
+
+<h3>Test Device</h3>
+<p>Press <b>Test Device</b> to run a quick communication test with the connected hardware. The result appears in the event log below. If the test fails, check the hardware connections and restart the server.</p>
+
+<h3>Emergency Stop</h3>
+<p>The red <b>Emergency Stop</b> button is for urgent situations only. Pressing it will:</p>
+<ul style="margin:4px 0;padding-left:16px;font-size:12px">
+<li>Immediately disconnect all hardware (heater, sensors, drum motor).</li>
+<li>Stop any active roast session.</li>
+<li>Log the event in the diagnostics log.</li>
+</ul>
+<p>A confirmation dialog will ask if you are sure before proceeding. This is <b>not</b> the same as ending a roast normally — use DROP and END in the Roast panel for normal completion.</p>
+
+<h3>Event Log</h3>
+<p>The log at the bottom shows a list of recent events: server starts, device tests, API calls, errors, and emergency stops. Each entry has a timestamp. Use this to diagnose problems or to see what happened while you were away. Press the refresh button to load new entries.</p>

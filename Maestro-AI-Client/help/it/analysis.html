@@ -1,0 +1,61 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Analisi — Capire la Tua Tostatura</h2>
+<p>Il pannello Analisi prende un profilo salvato e calcola tutti i numeri importanti che ti dicono com'è andata la tostatura. Usalo per capire cosa è successo, confrontare due tostature fianco a fianco, e monitorare i tuoi miglioramenti nel tempo.</p>
+
+<h3>Statistiche — i numeri che contano</h3>
+<p>Seleziona un profilo dal menu a discesa e premi <b>Calcola Metriche</b>. Maestro AI calcola questi numeri:</p>
+<table>
+<tr><th>Metrica</th><th>Cosa ti dice</th></tr>
+<tr><td><b>DTR %</b> (Development Time Ratio)</td><td>Percentuale del tempo totale di tostatura trascorso dopo il Primo Crack. È il numero più importante per il sapore. Obiettivo specialty: <b>20–25%</b>. Sotto il 15% il caffè sa di erba e acido (poco sviluppato). Sopra il 30% sa di bruciato e scuro.</td></tr>
+<tr><td><b>AUC</b> (Area Under Curve)</td><td>La quantità totale di energia termica che è entrata nei chicchi durante la tostatura. Pensala come la "dose di calore." Utile quando confronti tostature che hanno usato profili di temperatura diversi — anche se la temperatura finale era la stessa, l'energia totale potrebbe essere diversa.</td></tr>
+<tr><td><b>RoR Medio</b></td><td>Il Rate of Rise medio su tutta la tostatura. Ti aiuta a capire se la tua applicazione di calore è stata aggressiva o gentile.</td></tr>
+<tr><td><b>ΔTemp</b></td><td>La differenza di temperatura tra BT e ET. Gap grandi significano che la macchina sta lavorando duramente; gap piccoli significano che i chicchi stanno tenendo il passo con il calore.</td></tr>
+<tr><td><b>Asciugatura %</b></td><td>Porzione del tempo totale spesa nella fase di asciugatura (da CHARGE a Fine Asciugatura).</td></tr>
+<tr><td><b>Maillard %</b></td><td>Porzione spesa nella fase Maillard (doratura) (da Fine Asciugatura al Primo Crack).</td></tr>
+<tr><td><b>Sviluppo %</b></td><td>Porzione spesa nella fase di Sviluppo (dal Primo Crack a DROP).</td></tr>
+<tr><td><b>Perdita Peso %</b></td><td>Quanto peso hanno perso i chicchi durante la tostatura. Il caffè verde contiene acqua; mentre evapora, i chicchi diventano più leggeri. Tostature chiare perdono 12–16%, medie 16–20%.</td></tr>
+</table>
+
+<h3>Confronto tra due profili</h3>
+<p>Seleziona due profili (A e B) e premi <b>Confronta</b>. Il grafico sovrappone entrambe le curve di temperatura così puoi vedere le differenze. Usalo per:</p>
+<ul style="margin:4px 0;padding-left:16px;font-size:12px">
+<li><b>Controllare la consistenza</b> — hai tostato lo stesso caffè nello stesso modo due volte? Le linee dovrebbero essere quasi identiche.</li>
+<li><b>Confrontare sviluppi</b> — vedi come una tostatura chiara vs media dello stesso caffè cambia la curva.</li>
+<li><b>Imparare dagli errori</b> — confronta una tostatura eccellente con una brutta per vedere esattamente dove le cose sono andate male.</li>
+</ul>
+
+<h3>Cupping — valutare il tuo caffè</h3>
+<p>Se fai un cupping (degustazione professionale) del tuo caffè tostato, puoi registrare i punteggi qui. Il sistema segue il modulo standard SCA (Specialty Coffee Association) con queste categorie:</p>
+<p style="font-size:12px">Fragranza, Sapore, Retrogusto, Acidità, Corpo, Equilibrio, Dolcezza, Tazza Pulita, Uniformità</p>
+<p>Inserisci un punteggio da 0 a 10 per ogni categoria (con incrementi di 0,5). Il totale viene calcolato automaticamente. Un punteggio di <b>80 o superiore</b> significa che il caffè è di grado specialty. I punteggi vengono salvati con il profilo così puoi monitorare come diverse tostature dello stesso chicco influenzano il gusto.</p>
+<div class="tip">Un punteggio SCA di 80+ è lo standard del caffè specialty. Usa il modulo cupping costantemente per monitorare i tuoi miglioramenti.</div>
+
+<h3>Report Energetico</h3>
+<p>Solo modalità Completa. Calcola l'energia totale consumata durante la tostatura e le emissioni di CO₂ stimate. Utile per monitorare il tuo impatto ambientale e confrontare l'efficienza di diversi profili di tostatura.</p>
+
+<h3>Certificato Blockchain</h3>
+<p>Solo modalità Completa. Puoi creare un timestamp a prova di manomissione per il tuo profilo di tostatura su una blockchain. Questo è un certificato digitale che prova che la tostatura esisteva a una data e ora specifiche. Utile per competizioni, aste o certificazioni di qualità.</p>
+
+<h3>Report</h3>
+<p>Genera un report HTML stampabile per un profilo. Il report include tutte le metriche, il grafico, gli eventi e le note della sessione. Puoi anche generare un <b>Report di Produzione</b> che riassume più lotti nel tempo.</p>
+
+<h2>Tab Lotti — Tracciabilità di Produzione</h2>
+<p>Il tab Lotti ti aiuta a tenere il conto di quante tostature produci. Utile se tosti a livello commerciale e hai bisogno di numeri di lotto per la tracciabilità.</p>
+
+<h3>Contatore Lotti</h3>
+<p>Un semplice contatore che aumenta ogni volta che registri un lotto. Puoi impostarlo manualmente a qualsiasi numero (per esempio, se vuoi ricominciare da 1 il primo giorno dell'anno).</p>
+
+<h3>Registra Lotto</h3>
+<p>Quando finisci una tostatura, premi <b>Registra Lotto</b> per registrarla nel registro di produzione. Il contatore aumenta automaticamente di uno.</p>
+
+<h3>Report di Produzione</h3>
+<p>Mostra un riepilogo di tutti i lotti registrati: numero totale di lotti, caffè verde totale usato (in kg) e percentuale media di perdita di peso. Usalo per monitorare il tuo volume di produzione e la consistenza nel tempo.</p>

@@ -1,0 +1,31 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+.warn{background:#fffbeb;border-left:3px solid #f59e0b;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>PID Controller — Fine-Tuning the Heat</h2>
+<p>The PID panel controls how your machine applies heat during the roast. PID stands for Proportional-Integral-Derivative — it's a smart way of saying "the computer adjusts the burner or heater automatically to keep the temperature on track."</p>
+<p>Think of it like driving a car: you want to reach a target speed (the setpoint) and stay there. Kp is how hard you press the gas pedal when you are below the speed. Ki is how you adjust for hills. Kd is how you anticipate and ease off before overshooting.</p>
+
+<h3>The three tuning knobs</h3>
+<table>
+<tr><th>Parameter</th><th>What it does</th><th>Starting value</th></tr>
+<tr><td><b>Kp</b> (Proportional)</td><td>How strongly the controller reacts to the current difference between the target temperature and the actual temperature. A high Kp makes the machine respond fast, but too high makes it oscillate (temperature swings up and down).</td><td>15–25</td></tr>
+<tr><td><b>Ki</b> (Integral)</td><td>How the controller corrects small errors that build up over time. If the temperature stays slightly below the target for a long time, Ki gradually adds more heat. Too much Ki causes overshoot (temperature jumps above the target).</td><td>0.03–0.08</td></tr>
+<tr><td><b>Kd</b> (Derivative)</td><td>How the controller anticipates changes. If the temperature is rising very fast, Kd reduces the heat before it overshoots. A higher Kd makes the response smoother but slower.</td><td>3–8</td></tr>
+</table>
+<div class="warn">Changing PID values while a roast is running can cause sudden temperature changes. Always test new values in the Simulator first.</div>
+
+<h3>Simulation — test before you apply</h3>
+<p>Before you use new PID values on a real roast, try them in the simulator:</p>
+<p><span class="badge blue">1</span> Enter the <b>Setpoint</b> (the target temperature you want to reach).</p>
+<p><span class="badge blue">2</span> Enter the number of <b>Steps</b> (how many seconds of simulation to run — 60 steps = 1 minute).</p>
+<p><span class="badge blue">3</span> Press <b>Simulate PID</b>.</p>
+<p>The chart shows how the temperature would behave: how fast it reaches the target, whether it overshoots, and how stable it stays. If the line wobbles a lot, your Kp is too high. If it takes forever to reach the target, your Kp is too low.</p>
+<div class="tip">Classic tuning method: increase Kp until the temperature starts oscillating steadily, then set Ki = 0.48 × oscillation frequency and Kd = 0.075 × oscillation period.</div>

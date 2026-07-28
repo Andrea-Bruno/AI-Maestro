@@ -1,0 +1,94 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:11px;font-weight:600;margin-right:4px}
+.blue{background:#dbeafe;color:#1d4ed8}.orange{background:#ffedd5;color:#c2410c}
+.green{background:#dcfce7;color:#15803d}.purple{background:#ede9fe;color:#7c3aed}
+.red{background:#fee2e2;color:#b91c1c}.amber{background:#fef3c7;color:#b45309}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+.warn{background:#fffbeb;border-left:3px solid #f59e0b;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Moniteur de Torréfaction — Le Cœur de la Machine</h2>
+<p>Le panneau Torréfaction est l'endroit où vous torréfiez réellement le café. Il vous montre tout en temps réel : la température à l'intérieur du tambour et à l'intérieur des grains, la vitesse à laquelle la température monte, et tous les moments importants comme quand les grains craquent. Vous pouvez démarrer une torréfaction, la regarder sur le graphique, ajouter des notes en cours de route et sauvegarder le tout en profil quand vous avez terminé.</p>
+
+<h3>Comment faire une torréfaction — étape par étape</h3>
+<p><span class="badge blue">1</span> Appuyez sur <b>Démarrer</b>. Le chronomètre démarre et le graphique commence à enregistrer. Chargez votre café dans la machine — ce moment s'appelle la <b>CHARGE</b>.</p>
+<p><span class="badge blue">2</span> Regardez les deux lignes de température sur le graphique. La ligne bleue (BT, Bean Temperature) montre la température des grains. La ligne orange (ET, Environment Temperature) montre la température de l'air dans le tambour. La ligne orange doit toujours rester au-dessus de la bleue.</p>
+<p><span class="badge blue">3</span> Surveillez le RoR (Rate of Rise) — la ligne verte pointillée. Elle indique la vitesse à laquelle les grains chauffent. Une bonne torréfaction a un RoR qui <b>diminue progressivement</b>. S'il commence à monter, les grains risquent de brûler.</p>
+<p><span class="badge blue">4</span> Quand les grains atteignent la couleur et le développement souhaités, appuyez sur <b>⏹ DROP</b>. Cela marque le moment où vous sortez les grains du tambour. Le graphique continue pour montrer la courbe de refroidissement.</p>
+<p><span class="badge blue">5</span> Quand vous êtes satisfait et que le refroidissement est terminé, appuyez sur <b>✓ Fin</b>. La torréfaction est automatiquement sauvegardée en profil.</p>
+<div class="tip">DROP marque le moment sur le graphique, END ferme et sauvegarde la session. Vous pouvez faire d'autres choses (comme le refroidissement) entre DROP et END.</div>
+
+<h3>Le Graphique — ce que toutes ces lignes signifient</h3>
+<table>
+<tr><th>Ligne</th><th>Couleur</th><th>Ce qu'elle montre</th></tr>
+<tr><td><b>BT</b> (Bean Temperature)</td><td><span class="badge blue">bleu continu</span></td><td>La température des grains de café maintenant. Commence bas à la charge, monte régulièrement et doit continuer à monter. Si elle s'aplatit, les grains ne torréfient plus.</td></tr>
+<tr><td><b>ET</b> (Environment Temperature)</td><td><span class="badge orange">orange continu</span></td><td>La température de l'air dans le tambour. Elle est au-dessus de BT — c'est la chaleur qui se transmet aux grains. Si ET descend trop ou croise BT, quelque chose ne va pas.</td></tr>
+<tr><td><b>RoR</b> (Rate of Rise)</td><td><span class="badge green">vert pointillé</span></td><td>La vitesse à laquelle BT augmente, en degrés par minute. C'est le chiffre le plus important : il <b>doit continuer à baisser</b> pendant toute la torréfaction. Un RoR qui monte signifie que les grains chauffent trop vite.</td></tr>
+<tr><td><b>BT Cible</b> (optionnel)</td><td><span class="badge purple">violet pointillé</span></td><td>Une ligne de référence montrant la courbe de température idéale, générée par l'outil Profil IA. Comparez votre torréfaction réelle à cette cible.</td></tr>
+</table>
+
+<h3>Événements et marqueurs sur le graphique</h3>
+<table>
+<tr><th>Événement</th><th>Couleur</th><th>Signification</th></tr>
+<tr><td><b>CHARGE</b></td><td><span class="badge" style="background:#1e293b;color:#fff">noir</span></td><td>Vous avez chargé le café. Le chronomètre commence ici.</td></tr>
+<tr><td><b>TP</b> (Turning Point)</td><td><span class="badge" style="background:#64748b;color:#fff">gris</span></td><td>Le moment où les grains arrêtent de refroidir après la charge et commencent à chauffer. La courbe BT atteint son point le plus bas.</td></tr>
+<tr><td><b>DE</b> (Dry End)</td><td><span class="badge amber">ambre</span></td><td>Les grains ont fini de sécher. Ils passent du vert au jaune. Vers 160°C.</td></tr>
+<tr><td><b>FCs / FCe</b> (First Crack)</td><td><span class="badge red">rouge pointillé</span></td><td>Les grains font un bruit de craquement. C'est un moment clé — le développement (création des arômes) commence ici.</td></tr>
+<tr><td><b>SCs / SCe</b> (Second Crack)</td><td><span class="badge purple">violet pointillé</span></td><td>Un deuxième craquement plus doux. Indique une torréfaction plus foncée.</td></tr>
+<tr><td><b>DROP</b></td><td><span class="badge red">rouge continu</span></td><td>Vous avez sorti les grains. La ligne la plus épaisse du graphique.</td></tr>
+</table>
+
+<h3>Couleurs de fond des phases</h3>
+<table>
+<tr><th>Couleur</th><th>Phase</th><th>Ce qui se passe</th></tr>
+<tr><td><span style="background:rgba(254,240,138,0.4);padding:2px 8px;border-radius:3px">jaune</span></td><td><b>Séchage</b></td><td>L'eau s'évapore, les grains passent du vert au jaune. De CHARGE à DE.</td></tr>
+<tr><td><span style="background:rgba(187,247,208,0.5);padding:2px 8px;border-radius:3px">vert</span></td><td><b>Maillard</b></td><td>Brunissement, développement des arômes. De DE à FCs.</td></tr>
+<tr><td><span style="background:rgba(254,202,202,0.5);padding:2px 8px;border-radius:3px">rouge</span></td><td><b>Développement</b></td><td>Réduction de l'acidité, développement du corps. De FCs à DROP.</td></tr>
+<tr><td><span style="background:rgba(186,230,253,0.5);padding:2px 8px;border-radius:3px">bleu</span></td><td><b>Refroidissement</b></td><td>Les grains refroidissent après DROP.</td></tr>
+</table>
+
+<h3>Le panneau de télémétrie (côté droit)</h3>
+<table>
+<tr><th>Valeur</th><th>Ce qu'elle indique</th></tr>
+<tr><td><b>Temps</b></td><td>Depuis combien de temps la torréfaction dure (mm:ss).</td></tr>
+<tr><td><b>Phase</b></td><td>À quelle étape de la torréfaction vous êtes (Séchage, Maillard, Premier Crack, etc.).</td></tr>
+<tr><td><b>BT</b></td><td>La température actuelle des grains.</td></tr>
+<tr><td><b>ET</b></td><td>La température actuelle de l'air du tambour.</td></tr>
+<tr><td><b>RoR</b></td><td>La vitesse à laquelle BT monte actuellement.</td></tr>
+<tr><td><b>Delta BT-ET</b></td><td>L'écart entre BT et ET. Normalement ET est plus élevé. S'il devient négatif, le tambour est froid.</td></tr>
+<tr><td><b>DTR %</b></td><td>Development Time Ratio — pourcentage du temps après le Premier Crack. Cible specialty : 20–25%.</td></tr>
+<tr><td><b>Temp Charge</b></td><td>La BT au moment de la charge.</td></tr>
+</table>
+
+<h3>Puissance et Débit d'Air</h3>
+<p>Sous les chiffres de télémétrie, deux barres montrent la <b>Puissance</b> (chaleur appliquée, rouge) et le <b>Débit d'Air</b> (ventilation, bleu).</p>
+
+<h3>Enregistrer des événements</h3>
+<p>Choisissez l'événement dans la liste déroulante et appuyez sur <b>✓ Marquer</b> pour l'enregistrer à la seconde actuelle. Vous pouvez aussi taper une <b>étiquette personnalisée</b> et appuyer sur <b>+ Étiquette</b> pour ajouter votre propre événement.</p>
+<div class="warn">Sélectionner l'événement dans la liste ne l'enregistre pas. Vous devez appuyer sur <b>✓ Marquer</b>.</div>
+
+<h3>Commandes avancées</h3>
+<table>
+<tr><th>Bouton</th><th>Action</th></tr>
+<tr><td><b>Filtre Spike</b></td><td>Supprime les pics anormaux causés par des interférences électriques.</td></tr>
+<tr><td><b>Médian</b></td><td>Lisse la courbe de température.</td></tr>
+<tr><td><b>Refroidissement</b></td><td>Marque le début du refroidissement après DROP.</td></tr>
+<tr><td><b>Fin de Lot</b></td><td>Marque la fin du lot pour le suivi de production.</td></tr>
+<tr><td><b>AutoSauvegarde</b></td><td>Sauvegarde automatique toutes les 30 données.</td></tr>
+</table>
+
+<h2>Onglet Outils — Outils Supplémentaires</h2>
+<p>L'onglet Outils donne des calculateurs pratiques et des instruments de mesure.</p>
+<p><b>Calculatrice :</b> conversions température/poids, rendement d'extraction, densité.<br>
+<b>Spectromètre NIR :</b> enregistrement du spectre lumineux du café.<br>
+<b>Détection de Crack :</b> détection acoustique du premier et second crack.<br>
+<b>Chauffage Hybride :</b> réglage des sources de chaleur (gaz, micro-ondes, infrarouge).<br>
+<b>Instruments Externes :</b> contrôle Variac.<br>
+<b>Outils Physiques :</b> tableau Agtron, échantillonneur, fiche de torréfaction.<br>
+<b>Conditions Ambiantes :</b> humidité, pression, température de la salle.</p>

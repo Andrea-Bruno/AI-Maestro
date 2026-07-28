@@ -1,0 +1,53 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Analyse — Comprendre Votre Torréfaction</h2>
+<p>Le panneau Analyse prend un profil sauvegardé et calcule tous les chiffres importants qui vous disent comment la torréfaction s'est déroulée. Utilisez-le pour comprendre ce qui s'est passé, comparer deux torréfactions côte à côte et suivre votre progression.</p>
+
+<h3>Statistiques — les chiffres qui comptent</h3>
+<p>Sélectionnez un profil dans la liste déroulante et appuyez sur <b>Calculer les Métriques</b>. Maestro AI calcule ces nombres :</p>
+<table>
+<tr><th>Métrique</th><th>Ce qu'elle vous indique</th></tr>
+<tr><td><b>DTR %</b> (Development Time Ratio)</td><td>Quel pourcentage du temps total de torréfaction s'est écoulé après le Premier Crack. Le chiffre le plus important pour la saveur. Café specialty : <b>20–25%</b>. En dessous de 15% le café aura un goût herbacé et acide (pas assez développé). Au-dessus de 30% il aura un goût foncé et brûlé.</td></tr>
+<tr><td><b>AUC</b> (Area Under Curve)</td><td>La quantité totale d'énergie calorifique qui a été transmise aux grains pendant la torréfaction. Utile pour comparer des torréfactions utilisant des profils de température différents.</td></tr>
+<tr><td><b>RoR Moyen</b></td><td>La vitesse moyenne d'augmentation de la température (RoR) sur l'ensemble de la torréfaction. Vous aide à voir si votre apport de chaleur était agressif ou doux.</td></tr>
+<tr><td><b>ΔTemp</b></td><td>La différence de température entre BT et ET. Un grand écart signifie que la machine travaille dur ; un petit écart signifie que les grains suivent bien la chaleur.</td></tr>
+<tr><td><b>Séchage %</b></td><td>Quelle partie du temps total a été passée en phase de séchage (de CHARGE à Fin Séchage).</td></tr>
+<tr><td><b>Maillard %</b></td><td>Quelle partie a été passée en phase Maillard (brunissement) (de Fin Séchage au Premier Crack).</td></tr>
+<tr><td><b>Développement %</b></td><td>Quelle partie a été passée en phase de Développement (du Premier Crack à DROP).</td></tr>
+<tr><td><b>Perte de Poids %</b></td><td>Combien de poids les grains ont perdu pendant la torréfaction. Le café vert contient de l'eau ; à mesure qu'elle s'évapore, les grains deviennent plus légers. Torréfactions claires : 12–16%, moyennes : 16–20%.</td></tr>
+</table>
+
+<h3>Comparer deux profils</h3>
+<p>Sélectionnez deux profils (A et B) et appuyez sur <b>Comparer</b>. Le graphique superpose les deux courbes de température pour voir les différences. Utilisez ceci pour vérifier la régularité entre lots ou pour apprendre de vos erreurs.</p>
+
+<h3>Dégustation — noter votre café</h3>
+<p>Si vous faites une dégustation (cupping) professionnelle de votre café torréfié, vous pouvez enregistrer les notes ici. Le système suit le formulaire standard SCA. Un score de <b>80 ou plus</b> signifie que le café est de qualité specialty.</p>
+
+<h3>Rapport Énergétique</h3>
+<p>Mode Complet uniquement. Calcule l'énergie totale consommée pendant la torréfaction et les émissions de CO₂ estimées. Utile pour suivre votre impact environnemental.</p>
+
+<h3>Certificat Blockchain</h3>
+<p>Mode Complet uniquement. Créez une preuve infalsifiable de votre profil de torréfaction sur une blockchain. Utile pour les compétitions ou la certification qualité.</p>
+
+<h3>Rapports</h3>
+<p>Générez un rapport HTML imprimable pour un profil. Le rapport inclut toutes les métriques, le graphique, les événements et les notes de session.</p>
+
+<h2>Onglet Lots — Suivi de Production</h2>
+<p>L'onglet Lots vous aide à compter combien de torréfactions vous produisez. Utile si vous torréfiez commercialement.</p>
+
+<h3>Compteur de Lots</h3>
+<p>Un compteur simple qui augmente chaque fois que vous enregistrez un lot. Vous pouvez le régler manuellement.</p>
+
+<h3>Enregistrer un Lot</h3>
+<p>Quand vous terminez une torréfaction, appuyez sur <b>Enregistrer le Lot</b> pour l'ajouter au journal de production.</p>
+
+<h3>Rapport de Production</h3>
+<p>Affiche un résumé : nombre total de lots, café vert total utilisé (kg) et pourcentage moyen de perte de poids.</p>

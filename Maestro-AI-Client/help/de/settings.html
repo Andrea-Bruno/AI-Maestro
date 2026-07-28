@@ -1,0 +1,75 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+.warn{background:#fffbeb;border-left:3px solid #f59e0b;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Einstellungen — Maestro AI konfigurieren</h2>
+<p>Im Einstellungen-Panel legen Sie fest, wie Maestro AI mit dem Server verbunden wird, welche Sprache es spricht, wie es Temperaturen misst und wer die Einstellungen ändern kann.</p>
+
+<h3>Serververbindung</h3>
+<p>Maestro AI muss mit einem Server kommunizieren, um Profile zu speichern und die Hardware zu steuern. Geben Sie hier die Serveradresse ein.</p>
+<table>
+<tr><th>Situation</th><th>Eingabe</th></tr>
+<tr><td>Maestro AI läuft auf demselben Computer wie dieser Bildschirm</td><td><code>http://localhost:5252</code> (dies ist die Standardeinstellung)</td></tr>
+<tr><td>Maestro AI auf einem anderen Computer in Ihrem Netzwerk</td><td><code>http://192.168.1.XXX:5252</code> — verwenden Sie die IP-Adresse des Server-Rechners</td></tr>
+<tr><td>Maestro AI in einem anderen Netzwerk</td><td>Sie müssen Port-Weiterleitung auf Ihrem Router einrichten und die öffentliche IP verwenden</td></tr>
+</table>
+<div class="warn">Nach dem Ändern der Server-URL versucht die Seite, sich neu zu verbinden. Bleibt die LED oben rot, überprüfen Sie, ob der Server läuft und ob Ihre Firewall Verbindungen auf Port 5252 zulässt.</div>
+
+<h3>Sprache</h3>
+<p>Wählen Sie die Sprache für die Benutzeroberfläche. Alle Schaltflächen, Beschriftungen und Hilfetexte wechseln in die ausgewählte Sprache. Derzeit unterstützt: Englisch, Italienisch, Französisch, Deutsch, Spanisch, Russisch.</p>
+
+<h3>Temperatureinheit</h3>
+<p>Wählen Sie zwischen Celsius (°C) und Fahrenheit (°F). Die meisten Kaffeeröster verwenden Celsius, aber wenn Sie Fahrenheit gewohnt sind, stellen Sie es hier um.</p>
+
+<h3>GUI-Modus</h3>
+<p>Maestro AI hat drei Oberflächenmodi. Wählen Sie den, der zu dem passt, was Sie tun.</p>
+<table>
+<tr><th>Modus</th><th>Am besten geeignet für</th></tr>
+<tr><td><b>Überwachung</b></td><td>Beobachten einer Röstung, ohne etwas zu berühren. Das Diagramm wird live aktualisiert, aber es werden keine Schaltflächen zum Starten oder Stoppen angezeigt. Gut für einen zweiten Bildschirm oder eine öffentliche Anzeige.</td></tr>
+<tr><td><b>Einfach</b></td><td>Tägliches Rösten. Zeigt nur die wichtigsten Bedienelemente: Röst-Panel, Profilliste, Diagnose und Einstellungen. Die erweiterten Funktionen (KI, zusätzliche Sensoren, Signieren usw.) sind ausgeblendet.</td></tr>
+<tr><td><b>Voll</b></td><td>Alles. Alle Panels, alle Schaltflächen, alle erweiterten Funktionen. Verwenden Sie dies, wenn Sie KI-Profilgenerierung, zusätzliche Kanäle, digitale Signaturen, Energieanalyse, BBP, Cloud-Dienste, Spektroskopie und Hybridheizung benötigen.</td></tr>
+</table>
+
+<h3>PIN-Schutz</h3>
+<p>Sie können das Einstellungen-Panel mit einer 4- bis 6-stelligen PIN schützen. Dies verhindert, dass jemand während einer Röstung versehentlich die Server-URL ändert oder den Modus wechselt.</p>
+<p><b>PIN festlegen:</b> Geben Sie eine neue PIN in beide Felder ein und drücken Sie <b>Speichern</b>. Beim nächsten Öffnen der Einstellungen muss die PIN eingegeben werden.</p>
+<p><b>PIN entfernen:</b> Lassen Sie das Feld "Neue PIN" leer und drücken Sie <b>Speichern</b>.</p>
+<p><b>Standard-PIN:</b> <b>0000</b> (falls Sie sie nie geändert haben).</p>
+<div class="tip">Wenn Sie Ihre PIN vergessen haben, öffnen Sie die Browser-Konsole (F12) und geben Sie ein: <code>localStorage.setItem('maestro-pin','')</code>. Damit wird die PIN zurückgesetzt.</div>
+
+<h3>UI-Skalierung</h3>
+<p>Die Oberfläche vergrössern oder verkleinern. Verwenden Sie <b>Gross</b>, wenn Sie einen Touchscreen, ein hochauflösendes Display verwenden oder wenn Sie den Bildschirm aus der Ferne betrachten.</p>
+
+<h2>Diagnose-Reiter — Systemzustand prüfen</h2>
+<p>Der Diagnose-Reiter zeigt Ihnen den Gesundheitszustand Ihres Maestro AI Systems. Nutzen Sie ihn, um zu überprüfen, ob alles funktioniert, oder um Probleme zu finden.</p>
+
+<h3>Systemstatus</h3>
+<p>Die Hauptstatuskarte zeigt drei Dinge:</p>
+<table>
+<tr><th>Anzeige</th><th>Bedeutung</th></tr>
+<tr><td><b>Server</b></td><td>Grünes Licht bedeutet, der Maestro AI Server läuft und antwortet. Rot bedeutet, der Server ist offline oder nicht erreichbar.</td></tr>
+<tr><td><b>Gerät</b></td><td>Grünes Licht bedeutet, die Hardware (Röster, Sensoren) ist verbunden. Rot bedeutet, kein Gerät erkannt — überprüfen Sie Kabel und Stromversorgung.</td></tr>
+<tr><td><b>Betriebszeit</b></td><td>Wie lange der Server seit dem letzten Start läuft. Hilfreich zu wissen, ob das System kürzlich abgestürzt oder neu gestartet wurde.</td></tr>
+</table>
+
+<h3>Gerätetest</h3>
+<p>Drücken Sie <b>Gerät Testen</b>, um einen schnellen Kommunikationstest mit der angeschlossenen Hardware durchzuführen. Das Ergebnis erscheint im untenstehenden Ereignisprotokoll. Wenn der Test fehlschlägt, überprüfen Sie die Hardwareanschlüsse und starten Sie den Server neu.</p>
+
+<h3>Notstopp</h3>
+<p>Die rote <b>Notstopp</b>-Schaltfläche ist nur für Notfälle vorgesehen. Wenn Sie sie drücken, wird:</p>
+<ul style="margin:4px 0;padding-left:16px;font-size:12px">
+<li>Die gesamte Hardware sofort getrennt (Heizung, Sensoren, Trommelmotor).</li>
+<li>Jede aktive Röstsitzung gestoppt.</li>
+<li>Das Ereignis im Diagnoseprotokoll aufgezeichnet.</li>
+</ul>
+<p>Ein Bestätigungsdialog fragt, ob Sie sicher sind, bevor der Vorgang ausgeführt wird. Dies ist <b>nicht</b> dasselbe wie das normale Beenden einer Röstung — verwenden Sie DROP und ENDE im Röst-Panel für den normalen Abschluss.</p>
+
+<h3>Ereignisprotokoll</h3>
+<p>Das Protokoll unten zeigt eine Liste der letzten Ereignisse: Serverstarts, Gerätetests, API-Aufrufe, Fehler und Notstopps. Jeder Eintrag hat einen Zeitstempel. Nutzen Sie dies, um Probleme zu diagnostizieren oder zu sehen, was passiert ist, während Sie weg waren. Drücken Sie die Aktualisierungsschaltfläche, um neue Einträge zu laden.</p>

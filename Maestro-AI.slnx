@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="../EncryptedMessaging/EncryptedMessaging/EncryptedMessaging.csproj" />
+  <Project Path="../UISupportBlazor/UISupportBlazor.csproj" />
+  <Project Path="../UISupportGeneric/UISupportGeneric.csproj" />
+  <Project Path="Maestro-AI/Maestro-AI.csproj" />
+</Solution>

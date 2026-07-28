@@ -1,0 +1,31 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+.warn{background:#fffbeb;border-left:3px solid #f59e0b;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>PID-Regler — Die Hitze feinjustieren</h2>
+<p>Das PID-Panel steuert, wie Ihre Maschine während der Röstung Wärme zuführt. PID steht für Proportional-Integral-Derivative — eine intelligente Art zu sagen: "Der Computer passt den Brenner oder die Heizung automatisch an, um die Temperatur auf Kurs zu halten."</p>
+<p>Stellen Sie es sich wie Autofahren vor: Sie möchten eine Zielgeschwindigkeit erreichen (den Sollwert) und dort bleiben. Kp ist, wie stark Sie das Gaspedal drücken, wenn Sie unter der Geschwindigkeit liegen. Ki ist, wie Sie für Steigungen korrigieren. Kd ist, wie Sie vorausschauend vom Gas gehen, bevor Sie zu schnell werden.</p>
+
+<h3>Die drei Einstellknöpfe</h3>
+<table>
+<tr><th>Parameter</th><th>Funktion</th><th>Startwert</th></tr>
+<tr><td><b>Kp</b> (Proportional)</td><td>Wie stark der Regler auf die aktuelle Abweichung zwischen Zieltemperatur und Ist-Temperatur reagiert. Ein hohes Kp lässt die Maschine schnell reagieren, aber zu hoch führt zu Schwingungen (die Temperatur schwankt auf und ab).</td><td>15–25</td></tr>
+<tr><td><b>Ki</b> (Integral)</td><td>Wie der Regler kleine Fehler korrigiert, die sich im Laufe der Zeit aufbauen. Wenn die Temperatur längere Zeit leicht unter dem Ziel bleibt, fügt Ki allmählich mehr Wärme hinzu. Zu viel Ki verursacht Überschwingen (die Temperatur springt über das Ziel hinaus).</td><td>0.03–0.08</td></tr>
+<tr><td><b>Kd</b> (Derivative)</td><td>Wie der Regler Veränderungen voraussieht. Wenn die Temperatur sehr schnell steigt, reduziert Kd die Wärme, bevor es überschwingt. Ein höheres Kd macht die Reaktion sanfter, aber langsamer.</td><td>3–8</td></tr>
+</table>
+<div class="warn">Das Ändern von PID-Werten während einer laufenden Röstung kann plötzliche Temperatursprünge verursachen. Testen Sie neue Werte immer zuerst im Simulator.</div>
+
+<h3>Simulation — testen vor dem Anwenden</h3>
+<p>Bevor Sie neue PID-Werte bei einer echten Röstung verwenden, probieren Sie sie im Simulator aus:</p>
+<p><span class="badge blue">1</span> Geben Sie den <b>Sollwert</b> ein (die Zieltemperatur, die Sie erreichen möchten).</p>
+<p><span class="badge blue">2</span> Geben Sie die Anzahl der <b>Schritte</b> ein (wie viele Sekunden simuliert werden sollen — 60 Schritte = 1 Minute).</p>
+<p><span class="badge blue">3</span> Drücken Sie <b>PID Simulieren</b>.</p>
+<p>Das Diagramm zeigt, wie sich die Temperatur verhalten würde: wie schnell sie das Ziel erreicht, ob sie überschwingt und wie stabil sie bleibt. Wenn die Linie stark schwankt, ist Ihr Kp zu hoch. Wenn es ewig dauert, das Ziel zu erreichen, ist Ihr Kp zu niedrig.</p>
+<div class="tip">Klassische Abstimmungsmethode: Kp erhöhen, bis die Temperatur gleichmässig zu schwingen beginnt, dann Ki = 0.48 × Schwingungsfrequenz und Kd = 0.075 × Schwingungsdauer einstellen.</div>

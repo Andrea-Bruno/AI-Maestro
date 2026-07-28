@@ -1,0 +1,63 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+.warn{background:#fffbeb;border-left:3px solid #f59e0b;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Profili — La Tua Biblioteca di Tostature</h2>
+<p>Il pannello Profili è dove gestisci tutte le tostature che hai salvato. Ogni volta che termini una tostatura, diventa un profilo — una registrazione completa con temperature, tempi, eventi e note. Pensalo come una libreria di ogni tostatura che hai mai fatto.</p>
+
+<h3>Elenco Profili</h3>
+<p>Quando apri il tab Profili, vedi un elenco di tutti i profili salvati. Clicca sul nome di un profilo per visualizzarlo. Il pulsante di aggiornamento ricarica l'elenco dal server (utile se un altro computer ha salvato un nuovo profilo).</p>
+<p>Dall'elenco puoi:</p>
+<table>
+<tr><th>Azione</th><th>Come fare</th></tr>
+<tr><td><b>Visualizzare un profilo</b></td><td>Clicca sul suo nome. Viene caricato nel pannello Analisi dove puoi vedere tutti i numeri.</td></tr>
+<tr><td><b>Eliminare un profilo</b></td><td>Solo in modalità Completa. Clicca il pulsante X accanto al nome del profilo per rimuoverlo permanentemente.</td></tr>
+</table>
+
+<h3>Progettazione Curva Target</h3>
+<p>Prima di iniziare una tostatura, puoi progettare una curva di temperatura ideale. Inserisci quattro punti chiave e Maestro AI disegna una linea di riferimento che puoi seguire durante la tostatura.</p>
+<table>
+<tr><th>Cosa inserire</th><th>Cosa significa</th></tr>
+<tr><td><b>Temperatura Carico</b></td><td>La temperatura del tamburo quando carichi il caffè.</td></tr>
+<tr><td><b>Fine Asciugatura</b></td><td>La temperatura che vuoi alla fine della fase di asciugatura (i chicchi passano dal verde al giallo, circa 160°C).</td></tr>
+<tr><td><b>FC Inizio</b></td><td>La temperatura a cui vuoi che avvenga il Primo Crack (di solito intorno a 190–200°C).</td></tr>
+<tr><td><b>Drop</b></td><td>La temperatura a cui prevedi di togliere i chicchi.</td></tr>
+</table>
+<p>Premi <b>Crea Target</b> e la curva di riferimento appare sul grafico durante la tua tostatura come una linea viola puntinata.</p>
+
+<h3>Range Fasi</h3>
+<p>Puoi dire a Maestro AI quali temperature segnano l'inizio di ogni fase. Questo aiuta il sistema a identificare correttamente quando i chicchi entrano nelle fasi di Asciugatura, Maillard e Sviluppo. Se la tua macchina è più calda o più fredda, regolare questi range rende il rilevamento delle fasi più accurato.</p>
+
+<h3>Proprietà</h3>
+<p>Quando carichi un profilo, puoi modificarne le proprietà: peso in entrata e in uscita (per calcolare la perdita), e il colore del chicco intero (valore Agtron). Questi numeri vengono salvati con il profilo e usati nel pannello Analisi.</p>
+
+<h3>Trasformatore</h3>
+<p>A volte hai un profilo fatto con una dimensione di lotto o una macchina diversa, e vuoi adattarlo. Il Trasformatore ti permette di:</p>
+<table>
+<tr><th>Operazione</th><th>Cosa fa</th></tr>
+<tr><td><b>Scala Tempo</b></td><td>Allunga o accorcia l'asse temporale. Utile se la tostatura originale era di 10 minuti e la tua deve essere di 12.</td></tr>
+<tr><td><b>Offset Temperatura</b></td><td>Sposta tutte le temperature in su o in giù di una quantità fissa. Utile se la tua macchina è 5°C più calda dell'originale.</td></tr>
+<tr><td><b>Inverti</b></td><td>Capovolge la curva (usato raramente, ma utile per analisi speciali).</td></tr>
+<tr><td><b>C → F</b></td><td>Converte tutte le temperature da Celsius a Fahrenheit.</td></tr>
+</table>
+
+<h3>Importa ed Esporta</h3>
+<p>Puoi importare profili da altri programmi o condividere i tuoi profili con altri.</p>
+<p><b>Per importare un profilo:</b></p>
+<ul style="margin:4px 0;padding-left:16px;font-size:12px">
+<li>Trascina e rilascia un file .maestro, .alog (Artisan) o .json nella zona di rilascio.</li>
+<li>Oppure clicca il pulsante Importa per selezionare un file dal tuo computer.</li>
+<li>Oppure incolla il contenuto del file nell'area di testo.</li>
+</ul>
+<p><b>Per esportare un profilo:</b> scegli un formato (JSON o .alog), seleziona quale profilo esportare, e premi Esporta. Usalo per fare backup dei tuoi profili o condividerli con un altro tostatore.</p>
+<div class="tip">I profili Artisan (.alog) vengono convertiti automaticamente all'importazione — tutti gli eventi e i dati di temperatura vengono preservati.</div>
+
+<h3>Firma Digitale</h3>
+<p>In modalità Completa, puoi firmare i tuoi profili con una firma digitale. Questo garantisce che il profilo sia stato creato da te e non sia stato manomesso. Hai bisogno di una chiave privata per firmare, e chiunque abbia la tua chiave pubblica può verificare la firma. Utile per competizioni o quando condividi profili professionalmente.</p>

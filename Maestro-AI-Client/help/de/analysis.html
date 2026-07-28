@@ -1,0 +1,61 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Analyse — Ihre Röstung verstehen</h2>
+<p>Das Analyse-Panel nimmt ein gespeichertes Profil und berechnet alle wichtigen Zahlen, die Ihnen sagen, wie die Röstung verlaufen ist. Nutzen Sie es, um zu verstehen, was passiert ist, zwei Röstungen nebeneinander zu vergleichen und Ihre Fortschritte im Laufe der Zeit zu verfolgen.</p>
+
+<h3>Statistiken — die wichtigsten Zahlen</h3>
+<p>Wählen Sie ein Profil aus dem Dropdown und drücken Sie <b>Metriken Berechnen</b>. Maestro AI berechnet diese Zahlen:</p>
+<table>
+<tr><th>Metrik</th><th>Bedeutung</th></tr>
+<tr><td><b>DTR %</b> (Entwicklungszeitverhältnis)</td><td>Wie viel Prozent der gesamten Röstzeit nach dem First Crack vergingen. Dies ist die wichtigste Zahl für den Geschmack. Ziel für Specialty Coffee: <b>20–25%</b>. Unter 15% schmeckt der Kaffee grasig und sauer (unterentwickelt). Über 30% schmeckt er dunkel und verbrannt.</td></tr>
+<tr><td><b>AUC</b> (Fläche unter der Kurve)</td><td>Die gesamte Wärmeenergie, die während der Röstung in die Bohnen eingebracht wurde. Betrachten Sie es als die "Hitzdosis". Nützlich beim Vergleich von Röstungen mit unterschiedlichen Temperaturprofilen — selbst wenn die Endtemperatur gleich war, kann die Gesamtenergie unterschiedlich sein.</td></tr>
+<tr><td><b>Durchschn. RoR</b></td><td>Die durchschnittliche Anstiegsrate während der gesamten Röstung. Hilft Ihnen zu erkennen, ob Ihre gesamte Wärmezufuhr aggressiv oder sanft war.</td></tr>
+<tr><td><b>ΔTemp</b></td><td>Der Temperaturunterschied zwischen BT und ET. Grosse Abstände bedeuten, dass die Maschine hart arbeitet; kleine Abstände bedeuten, dass die Bohnen mit der Hitze mithalten.</td></tr>
+<tr><td><b>Trocknung %</b></td><td>Wie viel der Gesamtzeit in der Trocknungsphase verbracht wurde (von CHARGE bis Trocknungsende).</td></tr>
+<tr><td><b>Maillard %</b></td><td>Wie viel in der Maillard-Phase (von Trocknungsende bis First Crack) verbracht wurde.</td></tr>
+<tr><td><b>Entwicklung %</b></td><td>Wie viel in der Entwicklungsphase (von First Crack bis DROP) verbracht wurde.</td></tr>
+<tr><td><b>Gewichtsverlust %</b></td><td>Wie viel Gewicht die Bohnen während der Röstung verloren haben. Rohkaffee enthält Wasser; wenn es verdunstet, werden die Bohnen leichter. Helle Röstungen verlieren 12–16%, mittlere Röstungen 16–20%.</td></tr>
+</table>
+
+<h3>Zwei Profile vergleichen</h3>
+<p>Wählen Sie zwei Profile (A und B) und drücken Sie <b>Vergleichen</b>. Das Diagramm überlagert beide Temperaturkurven, sodass Sie die Unterschiede sehen können. Nutzen Sie dies, um:</p>
+<ul style="margin:4px 0;padding-left:16px;font-size:12px">
+<li><b>Konsistenz zu prüfen</b> — haben Sie denselben Kaffee zweimal gleich geröstet? Die Linien sollten nahezu identisch sein.</li>
+<li><b>Entwicklungen zu vergleichen</b> — sehen Sie, wie eine helle vs. mittlere Röstung desselben Kaffees die Kurve verändert.</li>
+<li><b>Aus Fehlern zu lernen</b> — vergleichen Sie eine gute mit einer schlechten Röstung, um genau zu sehen, wo etwas schiefgelaufen ist.</li>
+</ul>
+
+<h3>Cupping — Ihre Kaffeebewertung</h3>
+<p>Wenn Sie ein Cupping (professionelle Verkostung) Ihres gerösteten Kaffees durchführen, können Sie die Bewertungen hier festhalten. Das System folgt dem SCA (Specialty Coffee Association) Standardformular mit diesen Kategorien:</p>
+<p style="font-size:12px">Duft, Geschmack, Nachgeschmack, Säure, Körper, Balance, Süsse, saubere Tasse, Gleichmässigkeit</p>
+<p>Geben Sie für jede Kategorie eine Punktzahl von 0 bis 10 ein (in 0,5er Schritten). Die Gesamtpunktzahl wird automatisch berechnet. Eine Punktzahl von <b>80 oder höher</b> bedeutet, dass der Kaffee Specialty-Qualität hat. Die Bewertungen werden mit dem Profil gespeichert, sodass Sie verfolgen können, wie verschiedene Röstungen derselben Bohne schmecken.</p>
+<div class="tip">Ein SCA-Score von 80+ ist der Specialty-Coffee-Standard. Verwenden Sie das Cupping-Formular konsequent, um Ihre Verbesserungen zu verfolgen.</div>
+
+<h3>Energiebericht</h3>
+<p>Nur im Vollmodus. Berechnet den gesamten Energieverbrauch während der Röstung und die geschätzten CO₂-Emissionen. Nützlich zur Verfolgung Ihrer Umweltauswirkungen und zum Vergleich der Effizienz verschiedener Röstprofile.</p>
+
+<h3>Blockchain-Zertifikat</h3>
+<p>Nur im Vollmodus. Sie können einen manipulationssicheren Zeitstempel für Ihr Röstprofil auf einer Blockchain erstellen. Dies ist ein digitales Zertifikat, das belegt, dass die Röstung zu einem bestimmten Datum und einer bestimmten Uhrzeit existiert hat. Nützlich für Wettbewerbe, Auktionen oder Qualitätszertifizierungen.</p>
+
+<h3>Berichte</h3>
+<p>Generieren Sie einen druckbaren HTML-Bericht für ein Profil. Der Bericht enthält alle Metriken, das Diagramm, Ereignisse und Sitzungsnotizen. Sie können auch einen <b>Produktionsbericht</b> erstellen, der mehrere Chargen im Zeitverlauf zusammenfasst.</p>
+
+<h2>Chargen-Reiter — Produktionsverfolgung</h2>
+<p>Der Chargen-Reiter hilft Ihnen, den Überblick über Ihre produzierten Röstungen zu behalten. Dies ist nützlich, wenn Sie kommerziell rösten und Chargennummern für die Rückverfolgbarkeit benötigen.</p>
+
+<h3>Chargenzähler</h3>
+<p>Ein einfacher Zähler, der bei jeder registrierten Charge erhöht wird. Sie können ihn manuell auf jede beliebige Zahl setzen (z.B. wenn Sie am ersten Tag des Jahres bei 1 beginnen möchten).</p>
+
+<h3>Charge Registrieren</h3>
+<p>Wenn Sie eine Röstung beenden, drücken Sie <b>Charge Registrieren</b>, um sie im Produktionsprotokoll zu erfassen. Der Zähler erhöht sich automatisch um eins.</p>
+
+<h3>Produktionsbericht</h3>
+<p>Zeigt eine Zusammenfassung aller registrierten Chargen: Gesamtzahl der Chargen, gesamter verwendeter Rohkaffee (in kg) und durchschnittlicher prozentualer Gewichtsverlust. Verwenden Sie dies, um Ihr Produktionsvolumen und die Konsistenz im Laufe der Zeit zu verfolgen.</p>

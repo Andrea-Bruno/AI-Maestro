@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="en" x-data="appState()" x-init="initApp()">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title x-text="$t('app.title')"></title>
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="bg-light">
+
+<!-- 16:9 centered container -->
+<div class="container-fluid p-0" id="appContainer" style="max-width:1440px;margin:0 auto;" :class="'ui-'+uiScale">
+  <div class="d-flex flex-column" style="height:100vh;">
+
+    <!-- ─── Toolbar ── -->
+    <header class="app-toolbar d-flex align-items-center gap-3">
+      <span class="app-brand">✦ Maestro AI</span>
+      <span class="app-subtitle d-none d-sm-inline" x-text="$t('app.subtitle')"></span>
+      <span class="mode-badge" x-show="isMode('monitoring')" x-text="$t('settings.modeMonitoring')"></span>
+      <span class="mode-badge" x-show="isMode('easy')" x-text="$t('settings.modeEasy')"></span>
+      <span class="mode-badge mode-badge-full" x-show="isMode('full')" x-text="$t('settings.modeFull')"></span>
+      <div class="ms-auto d-flex align-items-center gap-2">
+        <span class="status-led" :class="serverOnline ? 'online' : 'offline'"></span>
+        <small class="text-muted" x-text="serverOnline ? $t('diagnostics.online') : $t('diagnostics.offline')"></small>
+      </div>
+    </header>
+
+    <!-- ─── Nav Tabs ── -->
+    <div class="bg-white border-bottom px-3">
+      <ul class="nav-tabs-custom pt-1">
+        <template x-for="tab in tabs" :key="tab.id">
+          <li class="nav-item" x-show="guiMode === 'full' || guiMode === 'easy' || ['dashboard','roast','diagnostics','tools','settings'].includes(tab.id)">
+            <button class="nav-link" :class="{ active: activeTab === tab.id }"
+                    @click="activeTab = tab.id; initTabCharts(tab.id)"
+                    x-text="$t(tab.label)"></button>
+          </li>
+        </template>
+      </ul>
+    </div>
+
+    <!-- ─── Help Panel ── -->
+    <div class="help-panel" x-show="help.open" x-transition:enter="animate-fade-in">
+      <div class="help-header">
+        <span class="text-primary"><img src="icons/book.svg" class="icon" alt=""></span> <span x-text="help.title"></span>
+        <button class="btn btn-sm btn-outline-secondary ms-auto py-0 px-2" @click="closeHelp()"><img src="icons/x-lg.svg" class="icon" alt=""></button>
+      </div>
+      <div class="help-body" x-html="help.html"></div>
+    </div>
+
+    <!-- ─── PIN Dialog ── -->
+    <div class="pin-overlay" x-show="pinDialog.open" x-transition:enter="animate-fade-in">
+      <div class="card-maestro" style="width:300px;margin:auto;" @click.outside="closePinDialog()">
+        <div class="card-label mb-2"><img src="icons/lock.svg" class="icon" alt=""> <span x-text="$t('settings.enterPin')"></span></div>
+        <input class="form-maestro form-control mb-1" type="password" inputmode="numeric" maxlength="6"
+               x-model="pinDialog.input" @keyup.enter="checkPin()" placeholder="0000" />
+        <div x-show="pinDialog.error" class="small text-danger mb-1" x-text="pinDialog.error"></div>
+        <div class="d-flex gap-1">
+          <button class="btn btn-sm btn-accent" @click="checkPin()" x-text="$t('settings.unlock')"></button>
+          <button class="btn btn-sm btn-outline-secondary" @click="closePinDialog()" x-text="$t('settings.cancel')"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Glossary Dialog ── -->
+    <div class="pin-overlay" x-show="glossary.open" x-transition:enter="animate-fade-in">
+      <div class="card-maestro" style="width:480px;max-height:80vh;overflow-y:auto;margin:auto;" @click.outside="closeGlossary()">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="card-label mb-0" x-text="$t('roast.glossary')"></div>
+          <button class="btn btn-sm btn-outline-secondary py-0 px-2" @click="closeGlossary()"><img src="icons/x-lg.svg" class="icon" alt=""></button>
+        </div>
+        <div class="glossary-grid">
+          <span class="glossary-term">BT</span><span class="glossary-desc" x-text="$t('roast.glossaryBt')"></span>
+          <span class="glossary-term">ET</span><span class="glossary-desc" x-text="$t('roast.glossaryEt')"></span>
+          <span class="glossary-term">RoR</span><span class="glossary-desc" x-text="$t('roast.glossaryRor')"></span>
+          <span class="glossary-term">DTR</span><span class="glossary-desc" x-text="$t('roast.glossaryDtr')"></span>
+          <span class="glossary-term">Δ BT-ET</span><span class="glossary-desc" x-text="$t('roast.glossaryDelta')"></span>
+          <span class="glossary-term">AUC</span><span class="glossary-desc" x-text="$t('roast.glossaryAuc')"></span>
+          <span class="glossary-term">FC</span><span class="glossary-desc" x-text="$t('roast.glossaryFc')"></span>
+          <span class="glossary-term">SC</span><span class="glossary-desc" x-text="$t('roast.glossarySc')"></span>
+          <span class="glossary-term" x-text="$t('analysis.drying')"></span><span class="glossary-desc" x-text="$t('roast.glossaryDrying')"></span>
+          <span class="glossary-term" x-text="$t('analysis.maillard')"></span><span class="glossary-desc" x-text="$t('roast.glossaryMaillard')"></span>
+          <span class="glossary-term" x-text="$t('analysis.development')"></span><span class="glossary-desc" x-text="$t('roast.glossaryDevelopment')"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Main Content (scrollable) ── -->
+    <main class="flex-fill overflow-auto p-3 animate-fade-in">
+
+      <!-- ══════ DASHBOARD ══════ -->
+      <div x-show="activeTab === 'dashboard'" x-transition:enter="animate-fade-in">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0 fw-semibold" x-text="$t('dashboard.title')"></h5>
+          <button class="btn btn-sm btn-outline-secondary py-0 px-2" @click="openHelp('dashboard')">?</button>
+        </div>
+        <div class="row g-2 mb-3">
+          <div class="col-6 col-md-3"><div class="card-maestro"><div class="card-label" x-text="$t('dashboard.activeSessions')"></div><div class="card-value" x-text="dashboard.activeSessions ?? 0"></div></div></div>
+          <div class="col-6 col-md-3"><div class="card-maestro"><div class="card-label" x-text="$t('dashboard.savedProfiles')"></div><div class="card-value" x-text="dashboard.savedProfiles ?? 0"></div></div></div>
+          <div class="col-6 col-md-3"><div class="card-maestro"><div class="card-label" x-text="$t('dashboard.serverTime')"></div><div class="card-value" x-text="dashboard.serverTime ?? '--'"></div></div></div>
+          <div class="col-6 col-md-3"><div class="card-maestro"><div class="card-label" x-text="$t('diagnostics.uptime')"></div><div class="card-value" x-text="dashboard.uptime ?? '--'"></div></div></div>
+        </div>
+        <div class="card-maestro">
+          <div class="card-label mb-1" x-text="$t('dashboard.lastRoast')"></div>
+          <div x-show="!dashboard.lastRoast" class="empty-state"><p class="mb-0 small" x-text="$t('dashboard.noData')"></p></div>
+          <p x-show="dashboard.lastRoast" class="mb-0 small" x-text="'Profile: ' + dashboard.lastRoast"></p>
+        </div>
+      </div>
+
+      <!-- ══════ ROAST — Professional Dashboard ══════ -->
+      <div x-show="activeTab === 'roast'" x-transition:enter="animate-fade-in">
+        <!-- Monitoring mode banner -->
+        <div class="alert alert-warning py-1 px-2 mb-2 small text-center fw-semibold" x-show="isMode('monitoring')" style="background:#fff3cd;border:1px solid #ffc107;border-radius:4px;"><img src="icons/search.svg" class="icon" alt=""> <span x-text="$t('roast.monitoringBanner')"></span></div>
+        <!-- Top bar: controls + help -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="d-flex align-items-center gap-2">
+            <div x-show="isMode('full') || isMode('easy')">
+              <div class="d-flex gap-1">
+                <button class="btn btn-sm btn-accent" x-show="!roast.sessionId" @click="startRoast()"><img src="icons/play-fill.svg" class="icon" alt=""> <span x-text="$t('roast.start')"></span></button>
+                <button class="btn btn-sm btn-outline-danger" x-show="roast.sessionId && !roast.stopped" @click="dropRoast()"><img src="icons/stop-fill.svg" class="icon" alt=""> <span x-text="$t('roast.drop')"></span></button>
+                <button class="btn btn-sm btn-success" x-show="roast.stopped" @click="endRoast()"><img src="icons/hand-thumbs-up.svg" class="icon" alt=""> <span x-text="$t('roast.end')"></span></button>
+              </div>
+            </div>
+            <span class="status-led" :class="serverOnline ? 'online' : 'offline'" style="width:6px;height:6px"></span>
+            <small class="text-muted" x-text="serverOnline ? $t('diagnostics.online') : $t('diagnostics.offline')"></small>
+            <div x-show="instruments.coAlarm" class="ms-2">
+              <span class="badge bg-danger">⚠️ CO ALARM</span>
+            </div>
+          </div>
+          <div class="d-flex gap-1">
+            <button class="btn btn-sm btn-outline-secondary py-0 px-2" @click="openGlossary()"><img src="icons/book.svg" class="icon" alt=""></button>
+            <button class="btn btn-sm btn-outline-secondary py-0 px-2" @click="openHelp('roast')">?</button>
+          </div>
+        </div>
+
+        <!-- Main dashboard: chart (left) + telemetry (right) -->
+        <div class="row g-2">
+          <!-- Left: Chart area -->
+          <div class="col-12 col-lg-8">
+            <div class="card-maestro p-1">
+              <div id="roastChart" style="width:100%;height:340px"></div>
+              <!-- Mini phase bar below chart -->
+              <div class="d-flex small text-center mt-1" style="height:16px;border-radius:4px;overflow:hidden;">
+                <div class="bg-warning bg-opacity-25" id="phaseDry" style="flex:0;transition:flex 0.5s" x-bind:style="'flex:'+phaseBar.dryPct"></div>
+                <div class="bg-success bg-opacity-25" id="phaseMai" style="flex:0;transition:flex 0.5s" x-bind:style="'flex:'+phaseBar.maiPct"></div>
+                <div class="bg-danger bg-opacity-25" id="phaseDev" style="flex:0;transition:flex 0.5s" x-bind:style="'flex:'+phaseBar.devPct"></div>
+              </div>
+              <div class="d-flex small text-muted justify-content-between px-1">
+                <span x-text="$t('analysis.drying')"></span>
+                <span x-text="$t('analysis.maillard')"></span>
+                <span x-text="$t('analysis.development')"></span>
+              </div>
+            </div>
+            <!-- Extra channels chart -->
+            <div class="card-maestro mt-2" x-show="extraChannels.length > 0">
+              <div id="extraChart" style="width:100%;height:120px"></div>
+            </div>
+          </div>
+
+          <!-- Right: Telemetry dashboard -->
+          <div class="col-12 col-lg-4">
+            <div class="card-maestro">
+              <div class="row g-1 text-center">
+                <div class="col-6"><div class="small text-muted" x-text="$t('roast.time')"></div><div class="fw-bold fs-5 text-primary" x-text="roast.time"></div></div>
+                <div class="col-6"><div class="small text-muted" x-text="$t('roast.phase')"></div><span class="phase-badge" :class="roast.phaseClass" x-text="roast.phase"></span></div>
+                <div class="col-6 mt-2"><div class="small text-muted" x-text="$t('roast.bt')"></div><div class="fw-bold fs-4 text-danger" x-text="roast.bt"></div></div>
+                <div class="col-6 mt-2"><div class="small text-muted" x-text="$t('roast.et')"></div><div class="fw-bold fs-4 text-warning" x-text="roast.et"></div></div>
+                <div class="col-6"><div class="small text-muted" x-text="$t('roast.ror')"></div><div class="fw-bold fs-5 text-info" x-text="roast.ror"></div></div>
+                <div class="col-6"><div class="small text-muted" x-text="$t('roast.delta')"></div><div class="fw-bold fs-5" :class="roast.delta > 0 ? 'text-success' : 'text-danger'" x-text="roast.delta"></div></div>
+                <div class="col-6 mt-2"><div class="small text-muted" x-text="$t('roast.dtr')"></div><div class="fw-bold fs-5 text-primary" x-text="roast.dtr"></div></div>
+                <div class="col-6 mt-2"><div class="small text-muted" x-text="$t('roast.chargeTemp')"></div><div class="fw-bold fs-5" x-text="roast.chargeTemp"></div></div>
+              </div>
+            </div>
+            <!-- Power/Gas + Airflow indicators -->
+            <div class="card-maestro mt-1">
+              <div class="small text-muted mb-1" x-text="$t('roast.heaterPower')"></div>
+              <div class="progress" style="height:10px">
+                <div class="progress-bar bg-danger" role="progressbar" x-bind:style="'width:'+roast.powerPct+'%'" x-text="roast.powerPct"></div>
+              </div>
+              <div class="small text-muted mt-1" x-text="$t('roast.airflow')"></div>
+              <div class="progress" style="height:10px">
+                <div class="progress-bar bg-info" role="progressbar" x-bind:style="'width:'+roast.airflowPct+'%'" x-text="roast.airflowPct"></div>
+              </div>
+            </div>
+            <!-- Event recorder -->
+            <div class="card-maestro mt-1" x-show="isMode('full') || isMode('easy')">
+              <div class="row g-1">
+                <div class="col-6">
+                  <select class="form-maestro form-select form-select-sm" x-model="roast.selectedEvent">
+                    <option value="TurningPoint" x-text="$t('roast.turningPoint')"></option><option value="DryEnd" x-text="$t('roast.dryEnd')"></option>
+                  <option value="FirstCrackStart"><img src="icons/play-fill.svg" class="icon" alt=""> <span x-text="$t('roast.fcEvent')"></span></option><option value="FirstCrackEnd" x-text="$t('roast.fcEnd')"></option>
+                    <option value="SecondCrackStart" x-text="$t('roast.scStart')"></option><option value="Drop" x-text="$t('roast.drop')"></option>
+                  </select>
+                </div>
+                <div class="col-3"><button class="btn btn-sm btn-outline-secondary w-100" :disabled="!roast.sessionId" @click="recordEvent()" x-text="$t('roast.mark')"></button></div>
+                <div class="col-3"><button class="btn btn-sm btn-accent w-100" :disabled="!roast.sessionId" @click="addSample()"><span x-text="$t('roast.sample')"></span></button></div>
+              </div>
+              <div class="row g-1 mt-1">
+                <div class="col-8"><input class="form-maestro form-control form-control-sm" type="text" x-bind:placeholder="$t('roast.eventLabel')" x-model="roast.eventLabel" /></div>
+                <div class="col-4"><button class="btn btn-sm btn-outline-accent w-100" @click="addUserEvent()">+ <span x-text="$t('roast.customLabel')"></span></button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom: Advanced controls (collapsible) -->
+        <div class="card-maestro mt-2" x-show="isMode('full') || isMode('easy')">
+          <div class="d-flex flex-wrap gap-1 align-items-center">
+            <button class="btn btn-sm btn-outline-accent" @click="applySpikeFilter()" x-text="$t('roast.spikeFilter')"></button>
+            <button class="btn btn-sm btn-outline-accent" @click="applyMedianFilter()" x-text="$t('roast.medianFilter')"></button>
+            <button class="btn btn-sm btn-outline-accent" @click="addCooling()"><img src="icons/thermometer-snow.svg" class="icon" alt=""> <span x-text="$t('roast.cooling')"></span></button>
+            <button class="btn btn-sm btn-outline-accent" @click="recordBatchEndBbp()"><img src="icons/box.svg" class="icon" alt=""> <span x-text="$t('roast.batchEnd')"></span></button>
+            <div class="d-flex align-items-center gap-1 ms-2">
+              <small class="text-muted" x-text="$t('roast.autoSave')"></small>
+              <input type="checkbox" x-model="autosave.enabled" @change="toggleAutoSave()" />
+            </div>
+            <div x-show="bbp.status" class="small ms-2 text-primary" x-text="'BBP: '+bbp.status?.recoveryPct+'%'"></div>
+          </div>
+        </div>
+
+        <!-- Extras row: Extra channels, Scale, Alarms, AI Profile -->
+        <div class="row g-2 mt-1" x-show="isMode('full') || isMode('easy')">
+          <div class="col-md-6">
+            <div class="card-maestro" x-show="showFeature('extraSensors')">
+              <div class="d-flex justify-content-between"><div class="card-label" x-text="$t('roast.extraChannels')"></div><button class="btn btn-sm btn-outline-accent py-0" @click="addExtraChannel()">+ <span x-text="$t('roast.addChannel')"></span></button></div>
+              <div class="small text-muted mb-1" x-show="extraChannels.length === 0"><span x-text="$t('roast.addChannel')"></span></div>
+              <template x-for="(ch, ci) in extraChannels" :key="ci">
+                <div class="row g-1 mb-1 align-items-center">
+                  <div class="col-3"><input class="form-maestro form-control form-control-sm" type="text" x-bind:placeholder="$t('roast.namePlaceholder')" x-model="ch.name" /></div>
+                  <div class="col-3"><input class="form-maestro form-control form-control-sm" type="number" x-bind:placeholder="$t('roast.btPlaceholder')" x-model="ch.bt" /></div>
+                  <div class="col-3"><input class="form-maestro form-control form-control-sm" type="number" x-bind:placeholder="$t('roast.etPlaceholder')" x-model="ch.et" /></div>
+                  <div class="col-3 d-flex gap-1">
+                    <button class="btn btn-sm btn-outline-accent py-0" @click="addExtraSample(ci)">+</button>
+                    <button class="btn btn-sm btn-outline-danger py-0" @click="removeExtraChannel(ci)"><img src="icons/x-lg.svg" class="icon" alt=""></button>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card-maestro">
+              <div class="row g-1">
+                <div class="col-4">
+                  <div class="card-label" x-text="$t('roast.scale')"></div>
+                  <span class="fw-bold text-primary" x-text="weight.current ?? '--'"></span><small class="text-muted"> g</small>
+                  <input class="form-maestro form-control form-control-sm mt-1" type="number" x-model="weight.input" />
+                  <button class="btn btn-sm btn-outline-accent mt-1 w-100" @click="recordWeight()">Record</button>
+                </div>
+                <div class="col-8">
+                  <div class="d-flex justify-content-between"><div class="card-label" x-text="$t('roast.alarmSets')"></div><button class="btn btn-sm btn-outline-secondary py-0" @click="loadAlarmSets()"><img src="icons/arrow-repeat.svg" class="icon" alt=""></button></div>
+                  <div class="row g-1"><div class="col-7"><input class="form-maestro form-control form-control-sm" x-bind:placeholder="$t('roast.setName')" x-model="alarmSet.name" /></div><div class="col-3"><select class="form-maestro form-select form-select-sm" x-model="alarmSet.index"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option></select></div><div class="col-2"><button class="btn btn-sm btn-accent w-100" @click="addAlarmSet()">+</button></div></div>
+                  <div x-show="alarmSets.list.length > 0" class="mt-1">
+                    <template x-for="(set, si) in alarmSets.list" :key="si">
+                      <div class="small p-1 bg-light rounded mb-1"><span class="fw-semibold" x-text="(si+1)+'. '+set.name"></span> <span class="text-muted" x-text="'guard:'+set.guardSec+'s'"></span></div>
+                    </template>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Profile -->
+        <div class="card-maestro mt-2" x-show="showFeature('profileGeneration') && (isMode('full') || isMode('easy'))">
+          <div class="card-label" x-text="$t('roast.aiProfile')"></div>
+          <div class="row g-1">
+            <div class="col-3"><input class="form-maestro form-control form-control-sm" type="number" x-bind:placeholder="$t('roast.densityPlaceholder')" x-model="ai.density" /></div>
+            <div class="col-3"><input class="form-maestro form-control form-control-sm" type="number" x-bind:placeholder="$t('roast.moisturePlaceholder')" x-model="ai.moisture" step="0.1" /></div>
+            <div class="col-3"><input class="form-maestro form-control form-control-sm" type="number" x-bind:placeholder="$t('roast.agtronPlaceholder')" x-model="ai.agtronGreen" /></div>
+            <div class="col-3 d-flex gap-1">
+              <select class="form-maestro form-select form-select-sm" x-model="ai.flavor"><option value="balanced">Bal</option><option value="fruity">Fruit</option><option value="nutty">Nut</option><option value="chocolate">Choc</option></select>
+              <select class="form-maestro form-select form-select-sm" x-model="ai.development"><option value="medium">Med</option><option value="light">Lit</option><option value="dark">Drk</option></select>
+            </div>
+          </div>
+          <div class="row g-1 mt-1">
+            <div class="col-auto"><button class="btn btn-sm btn-accent" @click="generateAiProfile()"><img src="icons/lightning.svg" class="icon" alt=""> <span x-text="$t('profiles.designer.create')"></span></button></div>
+            <div class="col" x-show="ai.profile"><small class="text-primary" x-text="'Agtron: '+ai.profile?.predictedAgtron+' | Conf: '+ai.profile?.confidenceScore"></small></div>
+          </div>
+          <div x-show="ai.profile?.targetBt" class="chart-container" style="height:80px" id="aiChart"></div>
+        </div>
+      </div>
+
+      <!-- ══════ PROFILES ══════ -->
+      <div x-show="activeTab === 'profiles'" x-transition:enter="animate-fade-in">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5 class="mb-0 fw-semibold" x-text="$t('profiles.title')"></h5>
+          <div class="d-flex gap-1">
+            <button class="btn btn-sm btn-outline-accent" @click="loadProfiles()"><img src="icons/arrow-repeat.svg" class="icon" alt=""></button>
+            <button class="btn btn-sm btn-outline-secondary py-0 px-2" @click="openHelp('profiles')">?</button>
+          </div>
+        </div>
+        <div class="card-maestro mb-2">
+          <div class="card-label mb-1" x-text="$t('profiles.list')"></div>
+          <div x-show="profiles.list.length === 0" class="empty-state small" x-text="$t('profiles.empty')"></div>
+          <div class="row g-1" x-show="profiles.list.length > 0">
+            <template x-for="p in profiles.list" :key="p">
+              <div class="col-12 col-md-6">
+                <div class="d-flex justify-content-between align-items-center p-1 border-bottom">
+                  <small class="fw-semibold" x-text="p"></small>
+                  <div>
+                    <button class="btn btn-sm btn-outline-accent py-0 me-1" @click="analysis.profile = p; activeTab = 'analysis'"><img src="icons/graph-up.svg" class="icon" alt=""></button>
+                    <button class="btn btn-sm btn-outline-danger py-0" @click="deleteProfile(p)" x-show="isMode('full')"><img src="icons/x-lg.svg" class="icon" alt=""></button>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+        <!-- Designer -->
+        <div class="card-maestro mb-2">
+          <div class="card-label" x-text="$t('profiles.designer.title')"></div>
+          <div class="row g-1 mb-1">
+            <div class="col-3"><label class="small text-muted" x-text="$t('profiles.chargeTemp')"></label><input class="form-maestro form-control form-control-sm" type="number" x-model="designer.chargeTemp" /></div>
+            <div class="col-3"><label class="small text-muted" x-text="$t('profiles.dryTemp')"></label><input class="form-maestro form-control form-control-sm" type="number" x-model="designer.dryEndTemp" /></div>
+            <div class="col-3"><label class="small text-muted" x-text="$t('profiles.fcTemp')"></label><input class="form-maestro form-control form-control-sm" type="number" x-model="designer.fcsTemp" /></div>
+            <div class="col-3"><label class="small text-muted" x-text="$t('profiles.dropTempLabel')"></label><input class="form-maestro form-control form-control-sm" type="number" x-model="designer.dropTemp" /></div>
+          </div>
+          <button class="btn btn-sm btn-accent" @click="createTarget()" x-text="$t('profiles.designer.create')"></button>
+        </div>
+        <!-- Phase Ranges -->
+        <div class="card-maestro mb-2">
+          <div class="card-label" x-text="$t('profiles.phaseRanges')"></div>
+          <div class="row g-1">
+            <div class="col"><label class="small text-muted" x-text="$t('profiles.dryEndLabel')"></label><input class="form-maestro form-control form-control-sm" type="number" x-model="phaseRanges.dryEndTemp" /></div>
+            <div class="col"><label class="small text-muted" x-text="$t('profiles.fcStartLabel')"></label><input class="form-maestro form-control form-control-sm" type="number" x-model="phaseRanges.fcsTemp" /></div>
+            <div class="col"><label class="small text-muted" x-text="$t('profiles.scStartLabel')"></label><input class="form-maestro form-control form-control-sm" type="number" x-model="phaseRanges.scsTemp" /></div>
+            <div class="col-auto d-flex align-items-end"><button class="btn btn-sm btn-accent" @click="savePhaseRanges()" x-text="$t('profiles.saveRanges')"></button></div>
+          </div>
+        </div>
+        <!-- Properties -->
+        <div class="card-maestro mb-2" x-show="props.data && isMode('full')">
+          <div class="card-label" x-text="$t('profiles.properties')"></div>
+          <div class="row g-1">
+            <div class="col-4"><label class="small text-muted" x-text="$t('profiles.weightIn')"></label><input class="form-maestro form-control form-control-sm" type="number" x-model="props.data.weightInG" /></div>
+            <div class="col-4"><label class="small text-muted" x-text="$t('profiles.weightOut')"></label><input class="form-maestro form-control form-control-sm" type="number" x-model="props.data.weightOutG" /></div>
+            <div class="col-4"><label class="small text-muted" x-text="$t('profiles.color')"></label><input class="form-maestro form-control form-control-sm" type="number" x-model="props.data.wholeBeanColor" /></div>
+            <div class="col-12 mt-1"><button class="btn btn-sm btn-accent" @click="saveProperties()" x-text="$t('profiles.save')"></button></div>
+          </div>
+        </div>
+        <!-- Transformer -->
+        <div class="card-maestro mb-2" x-show="isMode('full')">
+          <div class="card-label" x-text="$t('profiles.transformer')"></div>
+          <div class="row g-1">
+            <div class="col"><select class="form-maestro form-select form-select-sm" x-model="transform.profile"><option value="">Profile</option><template x-for="p in profiles.list" :key="p"><option :value="p" x-text="p"></option></template></select></div>
+            <div class="col"><select class="form-maestro form-select form-select-sm" x-model="transform.op"><option value="timescale" x-text="$t('profiles.timeScale')"></option><option value="tempoffset" x-text="$t('profiles.tempOffset')"></option><option value="invert" x-text="$t('profiles.invert')"></option><option value="ctof" x-text="$t('profiles.ctof')"></option></select></div>
+            <div class="col"><input class="form-maestro form-control form-control-sm" type="number" x-bind:placeholder="$t('profiles.factorPlaceholder')" x-model="transform.factor" /></div>
+            <div class="col-auto"><button class="btn btn-sm btn-outline-accent" @click="applyTransform()" x-text="$t('profiles.apply')"></button></div>
+          </div>
+        </div>
+        <!-- Import/Export -->
+        <div class="card-maestro mb-2" x-show="showFeature('importExport') && isMode('full')">
+          <div class="card-label" x-text="$t('profiles.importExport')"></div>
+          <!-- Drag & Drop Zone -->
+          <div class="drop-zone" :class="{ 'drop-zone-active': io.dragOver }"
+               @dragover.prevent="io.dragOver = true"
+               @dragleave.prevent="io.dragOver = false"
+               @drop.prevent="handleFileDrop($event)">
+            <div class="drop-zone-content">
+              <span class="drop-zone-icon">📁</span>
+              <span class="drop-zone-text" x-text="io.dropText || $t('profiles.dropHere')"></span>
+              <small class="text-muted" x-text="$t('profiles.or')"></small>
+              <button class="btn btn-sm btn-outline-accent" type="button" @click="$refs.fileInput.click()" x-text="$t('profiles.import')"></button>
+              <input type="file" accept=".maestro,.alog,.json" x-ref="fileInput" class="d-none" @change="handleFileSelect($event)" />
+            </div>
+          </div>
+          <!-- Paste fallback -->
+          <div class="row g-1 mt-1">
+            <div class="col"><input class="form-maestro form-control form-control-sm" type="text" x-bind:placeholder="$t('profiles.filename')" x-model="io.filename" /></div>
+            <div class="col"><textarea class="form-maestro form-control form-control-sm" rows="1" x-bind:placeholder="$t('profiles.paste')" x-model="io.content"></textarea></div>
+            <div class="col-auto d-flex align-items-end"><button class="btn btn-sm btn-outline-accent" @click="importPastedFile()" x-text="$t('profiles.import')"></button></div>
+          </div>
+          <!-- Result feedback -->
+          <small x-show="io.result" class="text-primary d-block mt-1" x-text="io.result"></small>
+          <!-- Export row -->
+          <div class="d-flex gap-1 mt-1">
+            <select class="form-maestro form-select form-select-sm w-auto" x-model="io.format"><option value="json">JSON</option><option value="alog">.alog</option></select>
+            <select class="form-maestro form-select form-select-sm w-auto" x-model="io.exportProfile"><option value="" x-text="$t('profiles.export')"></option><template x-for="p in profiles.list" :key="p"><option :value="p" x-text="p"></option></template></select>
+            <button class="btn btn-sm btn-outline-accent" @click="exportFile()" x-text="$t('profiles.export')"></button>
+          </div>
+        </div>
+        <!-- Signature -->
+        <div class="card-maestro mb-2" x-show="showFeature('profileSigning') && isMode('full')">
+          <div class="card-label" x-text="$t('profiles.signing')"></div>
+          <div class="d-flex gap-1">
+            <select class="form-maestro form-select form-select-sm" x-model="sig.profile"><option value="">Profile</option><template x-for="p in profiles.list" :key="p"><option :value="p" x-text="p"></option></template></select>
+            <button class="btn btn-sm btn-outline-accent" @click="generateKeys()" x-text="$t('profiles.keys')"></button>
+            <input class="form-maestro form-control form-control-sm" type="text" x-bind:placeholder="$t('profiles.privateKey')" x-model="sig.privKey" />
+            <button class="btn btn-sm btn-outline-accent" @click="signProfile()" x-text="$t('profiles.sign')"></button>
+            <input class="form-maestro form-control form-control-sm" type="text" x-bind:placeholder="$t('profiles.publicKey')" x-model="sig.pubKey" />
+            <button class="btn btn-sm btn-outline-accent" @click="verifyProfile()" x-text="$t('profiles.verify')"></button>
+          </div>
+          <small x-show="sig.result" class="text-primary" x-text="sig.result"></small>
+        </div>
+      </div>
+
+      <!-- ══════ ANALYSIS ══════ -->
+      <div x-show="activeTab === 'analysis'" x-transition:enter="animate-fade-in">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5 class="mb-0 fw-semibold" x-text="$t('analysis.title')"></h5>
+          <button class="btn btn-sm btn-outline-secondary py-0 px-2" @click="openHelp('analysis')">?</button>
+        </div>
+        <div class="row g-2">
+          <div class="col-md-6">
+            <div class="card-maestro">
+              <div class="card-label mb-1" x-text="$t('analysis.stats')"></div>
+              <select class="form-maestro form-select form-select-sm mb-1" x-model="analysis.profile"><option value="">Profile</option><template x-for="p in profiles.list" :key="p"><option :value="p" x-text="p"></option></template></select>
+              <button class="btn btn-sm btn-accent mb-1" @click="computeMetrics()" x-text="$t('analysis.compute')"></button>
+              <div x-show="analysis.metrics">
+                <table class="table-maestro"><tr><td>DTR</td><td class="text-end" x-text="analysis.metrics?.dtrPercent?.toFixed(1)+'%'"></td></tr>
+                <tr><td>AUC</td><td class="text-end" x-text="analysis.metrics?.totalAuc?.toFixed(0)"></td></tr>
+                <tr><td>RoR avg</td><td class="text-end" x-text="analysis.metrics?.totalRor?.toFixed(1)+'°C/min'"></td></tr>
+                <tr><td x-text="$t('analysis.drying')"></td><td class="text-end" x-text="analysis.metrics?.dryPhasePercent?.toFixed(1)+'%'"></td></tr>
+                <tr><td x-text="$t('analysis.maillard')"></td><td class="text-end" x-text="analysis.metrics?.maillardPhasePercent?.toFixed(1)+'%'"></td></tr>
+                <tr><td x-text="$t('analysis.development')"></td><td class="text-end" x-text="analysis.metrics?.developmentPhasePercent?.toFixed(1)+'%'"></td></tr>
+                <tr><td x-text="$t('analysis.weightLoss')"></td><td class="text-end" x-text="analysis.metrics?.weightLossPercent?.toFixed(1)+'%'"></td></tr></table>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card-maestro">
+              <div class="card-label mb-1"><img src="icons/graph-up.svg" class="icon" alt=""> <span x-text="$t('analysis.compareTitle')"></span></div>
+              <select class="form-maestro form-select form-select-sm mb-1" x-model="compare.a"><option value="">A</option><template x-for="p in profiles.list" :key="p"><option :value="p" x-text="p"></option></template></select>
+              <select class="form-maestro form-select form-select-sm mb-1" x-model="compare.b"><option value="">B</option><template x-for="p in profiles.list" :key="p"><option :value="p" x-text="p"></option></template></select>
+              <button class="btn btn-sm btn-outline-accent mb-1" @click="compareProfiles()" x-text="$t('analysis.compare')"></button>
+              <div class="chart-container chart-container-sm" id="compareChart"></div>
+            </div>
+          </div>
+        </div>
+        <!-- Cupping + Reports + Energy + Blockchain -->
+        <div class="row g-2 mt-1">
+          <div class="col-md-6">
+            <div class="card-maestro" x-show="showFeature('cupping')">
+              <div class="card-label mb-1" x-text="$t('analysis.cupping')"></div>
+              <select class="form-maestro form-select form-select-sm mb-1" x-model="cupping.profile" @change="loadCupping()"><option value="">Profile</option><template x-for="p in profiles.list" :key="p"><option :value="p" x-text="p"></option></template></select>
+              <div x-show="cupping.profile" class="row g-1">
+                <template x-for="(val, key) in cupping.scores" :key="key">
+                  <div class="col-4"><label class="small text-muted" x-text="key"></label><input class="form-maestro form-control form-control-sm" type="number" min="0" max="10" step="0.5" x-model="cupping.scores[key]" /></div>
+                </template>
+                <div class="col-12 mt-1"><button class="btn btn-sm btn-accent" @click="saveCupping()"><span x-text="$t('profiles.save')"></span> (<span x-text="cuppingTotal()"></span>)</button></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card-maestro" x-show="showFeature('energyAnalysis') && isMode('full')">
+              <div class="card-label mb-1" x-text="$t('analysis.energyReport')"></div>
+              <select class="form-maestro form-select form-select-sm mb-1" x-model="energy.profile"><option value="">Profile</option><template x-for="p in profiles.list" :key="p"><option :value="p" x-text="p"></option></template></select>
+              <button class="btn btn-sm btn-outline-accent" @click="getEnergyReport()" x-text="$t('analysis.getReport')"></button>
+              <div x-show="energy.report" class="small mt-1"><span class="text-primary" x-text="'AUC: '+energy.report?.energyAuc+' | '+energy.report?.durationSec+'s'"></span></div>
+            </div>
+            <div class="card-maestro mt-1" x-show="showFeature('blockchain') && isMode('full')">
+              <div class="card-label mb-1" x-text="$t('analysis.blockchain')"></div>
+              <select class="form-maestro form-select form-select-sm mb-1" x-model="blockchain.profile"><option value="">Profile</option><template x-for="p in profiles.list" :key="p"><option :value="p" x-text="p"></option></template></select>
+              <button class="btn btn-sm btn-outline-accent" @click="timestampCertificate()"><img src="icons/link.svg" class="icon" alt=""> <span x-text="$t('analysis.timestamp')"></span></button>
+              <div x-show="blockchain.result" class="small mt-1 text-primary" x-text="blockchain.result"></div>
+            </div>
+          </div>
+        </div>
+        <!-- Reports -->
+        <div class="card-maestro mt-2">
+          <div class="card-label mb-1" x-text="$t('analysis.reports')"></div>
+          <div class="d-flex gap-1">
+            <select class="form-maestro form-select form-select-sm" x-model="report.profile"><option value="">Profile</option><template x-for="p in profiles.list" :key="p"><option :value="p" x-text="p"></option></template></select>
+            <button class="btn btn-sm btn-outline-accent" @click="generateReport()" x-text="$t('analysis.roastReport')"></button>
+            <button class="btn btn-sm btn-outline-accent" @click="generateProdReport()" x-text="$t('analysis.prodReport')"></button>
+          </div>
+          <div x-show="report.html" class="mt-1"><iframe class="w-100 border rounded" style="height:200px;background:#fff;" :srcdoc="report.html"></iframe></div>
+        </div>
+      </div>
+
+      <!-- ══════ BATCHES ══════ -->
+      <div x-show="activeTab === 'batches'" x-transition:enter="animate-fade-in">
+        <div class="d-flex justify-content-between align-items-center mb-2"><h5 class="mb-0 fw-semibold" x-text="$t('batches.title')"></h5><button class="btn btn-sm btn-outline-secondary py-0 px-2" @click="openHelp('batches')">?</button></div>
+        <div class="row g-2">
+          <div class="col-md-4"><div class="card-maestro"><div class="card-label" x-text="$t('batches.counter')"></div><div class="card-value mb-1" x-text="batches.current"></div><div class="input-group input-group-sm"><input class="form-maestro form-control" type="number" x-model="batches.setVal" /><button class="btn btn-sm btn-accent" @click="setBatchCounter()" x-text="$t('batches.set')"></button></div></div></div>
+          <div class="col-md-8"><div class="card-maestro"><div class="card-label" x-text="$t('batches.production')"></div><div class="hud-grid"><div class="hud-item"><div class="hud-label" x-text="$t('batches.total')"></div><div class="hud-value" x-text="batches.report?.totalBatches ?? 0"></div></div><div class="hud-item"><div class="hud-label" x-text="$t('batches.greenKg')"></div><div class="hud-value" x-text="batches.report?.totalGreenKg ?? '--'"></div></div><div class="hud-item"><div class="hud-label" x-text="$t('batches.avgLoss')"></div><div class="hud-value" x-text="batches.report?.avgLossPercent?.toFixed(1)+'%' ?? '--'"></div></div></div></div></div>
+        </div>
+      </div>
+
+      <!-- ══════ PID ══════ -->
+      <div x-show="activeTab === 'pid'" x-transition:enter="animate-fade-in">
+        <div class="d-flex justify-content-between align-items-center mb-2"><h5 class="mb-0 fw-semibold" x-text="$t('pid.title')"></h5><button class="btn btn-sm btn-outline-secondary py-0 px-2" @click="openHelp('pid')">?</button></div>
+        <div class="row g-2">
+          <div class="col-md-4"><div class="card-maestro"><div class="card-label" x-text="$t('pid.tuning')"></div><div class="mb-1"><label class="small text-muted" x-text="$t('pid.kp')"></label><input class="form-maestro form-control form-control-sm" type="number" step="0.1" x-model="pid.kp" /></div><div class="mb-1"><label class="small text-muted" x-text="$t('pid.ki')"></label><input class="form-maestro form-control form-control-sm" type="number" step="0.01" x-model="pid.ki" /></div><div class="mb-1"><label class="small text-muted" x-text="$t('pid.kd')"></label><input class="form-maestro form-control form-control-sm" type="number" step="0.1" x-model="pid.kd" /></div><button class="btn btn-sm btn-accent w-100" @click="updatePidTuning()" x-text="$t('profiles.save')"></button></div></div>
+          <div class="col-md-8"><div class="card-maestro"><div class="card-label" x-text="$t('pid.simulate')"></div><div class="row g-1 mb-1"><div class="col"><label class="small text-muted" x-text="$t('pid.setpoint')"></label><input class="form-maestro form-control form-control-sm" type="number" x-model="pid.setpointVal" /></div><div class="col"><label class="small text-muted" x-text="$t('pid.steps')"></label><input class="form-maestro form-control form-control-sm" type="number" x-model="pid.steps" /></div></div><button class="btn btn-sm btn-outline-accent mb-1" @click="simulatePid()" x-text="$t('pid.title')"></button><div class="chart-container chart-container-sm" id="pidChart"></div></div></div>
+        </div>
+      </div>
+
+      <!-- ══════ DIAGNOSTICS ══════ -->
+      <div x-show="activeTab === 'diagnostics'" x-transition:enter="animate-fade-in">
+        <div class="d-flex justify-content-between align-items-center mb-2"><h5 class="mb-0 fw-semibold" x-text="$t('diagnostics.title')"></h5><button class="btn btn-sm btn-outline-secondary py-0 px-2" @click="openHelp('diagnostics')">?</button></div>
+        <div class="row g-2">
+          <div class="col-md-6"><div class="card-maestro"><div class="card-label" x-text="$t('diagnostics.status')"></div><div class="hud-grid"><div class="hud-item"><div class="hud-label" x-text="$t('diagnostics.server')"></div><span class="status-led" :class="diagnostics.status?.online ? 'online' : 'offline'"></span></div><div class="hud-item"><div class="hud-label" x-text="$t('diagnostics.device')"></div><span class="status-led" :class="diagnostics.status?.deviceConnected ? 'online' : 'offline'"></span></div><div class="hud-item"><div class="hud-label" x-text="$t('diagnostics.uptime')"></div><div class="hud-value" x-text="diagnostics.status?.uptimeHours?.toFixed(1)+'h' ?? '--'"></div></div></div><button class="btn btn-sm btn-outline-accent mt-1" @click="testDevice()" x-text="$t('diagnostics.test')"></button></div>
+            <!-- Emergency stop card — separate from roast panel, hardware-only -->
+            <div class="card-maestro mt-1 border-danger">
+              <div class="card-label text-danger" x-text="$t('hardware.emergencyStop')"></div>
+              <p class="small text-muted mb-1" x-text="$t('hardware.emergencyStopDesc')"></p>
+              <button class="btn btn-sm btn-danger w-100" @click="emergencyStop()"><img src="icons/stop-fill.svg" class="icon" alt=""> <span x-text="$t('hardware.emergencyStop')"></span></button>
+            </div></div>
+          <div class="col-md-6"><div class="card-maestro"><div class="d-flex justify-content-between"><div class="card-label" x-text="$t('diagnostics.logs')"></div><button class="btn btn-sm btn-outline-accent py-0" @click="loadLogs()"><img src="icons/arrow-repeat.svg" class="icon" alt=""></button></div><pre class="mb-0 small text-muted" style="max-height:200px;overflow-y:auto;"><template x-for="entry in diagnostics.logs" :key="entry"><div x-text="entry"></div></template></pre></div></div>
+        </div>
+      </div>
+
+      <!-- ══════ TOOLS ══════ -->
+      <div x-show="activeTab === 'tools'" x-transition:enter="animate-fade-in">
+        <div class="d-flex justify-content-between align-items-center mb-2"><h5 class="mb-0 fw-semibold" x-text="$t('calc.title')"></h5><button class="btn btn-sm btn-outline-secondary py-0 px-2" @click="openHelp('tools')">?</button></div>
+        <div class="row g-2">
+          <!-- Calculator -->
+          <div class="col-md-6">
+            <div class="card-maestro">
+              <div class="card-label"><img src="icons/calculator.svg" class="icon" alt=""> <span x-text="$t('calc.title')"></span></div>
+              <div class="mb-1"><label class="small text-muted" x-text="$t('calc.temp')"></label>
+                <div class="input-group input-group-sm">
+                  <input class="form-maestro form-control" type="number" x-model="calc.tempVal" />
+                  <select class="form-maestro form-select w-auto" x-model="calc.tempFrom"><option value="C">°C</option><option value="F">°F</option></select>
+                  <span class="input-group-text bg-light border">→</span>
+                  <select class="form-maestro form-select w-auto" x-model="calc.tempTo"><option value="F">°F</option><option value="C">°C</option></select>
+                  <button class="btn btn-sm btn-outline-accent" @click="doConvertTemp()">=</button>
+                </div>
+                <small class="text-primary" x-text="calc.tempResult"></small>
+              </div>
+              <div class="mb-1"><label class="small text-muted" x-text="$t('calc.weight')"></label>
+                <div class="input-group input-group-sm">
+                  <input class="form-maestro form-control" type="number" x-model="calc.weightVal" />
+                  <select class="form-maestro form-select w-auto" x-model="calc.weightFrom"><option value="g">g</option><option value="kg">kg</option><option value="lb">lb</option></select>
+                  <span class="input-group-text bg-light border">→</span>
+                  <select class="form-maestro form-select w-auto" x-model="calc.weightTo"><option value="kg">kg</option><option value="g">g</option><option value="lb">lb</option></select>
+                  <button class="btn btn-sm btn-outline-accent" @click="doConvertWeight()">=</button>
+                </div>
+                <small class="text-primary" x-text="calc.weightResult"></small>
+              </div>
+              <div><label class="small text-muted" x-text="$t('calc.extractionYield')"></label>
+                <div class="row g-1"><div class="col"><input class="form-maestro form-control form-control-sm" type="number" x-bind:placeholder="$t('calc.beverageG')" x-model="calc.brewG" /></div>
+                <div class="col"><input class="form-maestro form-control form-control-sm" type="number" x-bind:placeholder="$t('calc.tds')" x-model="calc.tds" /></div>
+                <div class="col"><input class="form-maestro form-control form-control-sm" type="number" x-bind:placeholder="$t('calc.coffeeG')" x-model="calc.coffeeG" /></div>
+                <div class="col-auto"><button class="btn btn-sm btn-outline-accent" @click="doExtractionYield()">=</button></div></div>
+                <small class="text-primary" x-text="calc.yieldResult"></small>
+              </div>
+              <div class="mt-1"><label class="small text-muted" x-text="$t('calc.density')"></label>
+                <div class="row g-1"><div class="col"><input class="form-maestro form-control form-control-sm" type="number" x-bind:placeholder="$t('calc.weightG')" x-model="calc.densityW" /></div>
+                <div class="col"><input class="form-maestro form-control form-control-sm" type="number" x-bind:placeholder="$t('calc.volumeMl')" x-model="calc.densityV" /></div>
+                <div class="col-auto"><button class="btn btn-sm btn-outline-accent" @click="doCalcDensity()">=</button></div></div>
+                <small class="text-primary" x-text="calc.densityResult"></small>
+              </div>
+            </div>
+          </div>
+          <!-- NIR Spectrometer -->
+          <div class="col-md-6" x-show="showFeature('spectroscopy')">
+            <div class="card-maestro">
+              <div class="card-label mb-1" x-text="$t('tools.nir')"></div>
+              <div class="row g-1 mb-1">
+                <div class="col-4"><input class="form-maestro form-control form-control-sm" type="text" x-bind:placeholder="$t('tools.nirSession')" x-model="spectra.sessionId" /></div>
+                <div class="col-4"><input class="form-maestro form-control form-control-sm" type="text" x-bind:placeholder="$t('tools.nirWavelengths')" x-model="spectra.wavelengths" /></div>
+                <div class="col-4"><input class="form-maestro form-control form-control-sm" type="text" x-bind:placeholder="$t('tools.nirIntensities')" x-model="spectra.intensities" /></div>
+              </div>
+              <div class="d-flex gap-1 mb-1">
+                <button class="btn btn-sm btn-accent" @click="recordSpectra()" x-text="$t('tools.nirRecord')"></button>
+                <button class="btn btn-sm btn-outline-accent" @click="getSpectra()" x-text="$t('tools.nirGet')"></button>
+              </div>
+              <small x-show="spectra.result" class="text-primary" x-text="spectra.result"></small>
+            </div>
+          </div>
+          <!-- Crack Detection -->
+          <div class="col-md-6" x-show="showFeature('crackDetection')">
+            <div class="card-maestro">
+              <div class="card-label mb-1" x-text="$t('tools.crack')"></div>
+              <div class="row g-1 mb-1">
+                <div class="col-4"><input class="form-maestro form-control form-control-sm" type="number" step="0.1" x-bind:placeholder="$t('tools.crackAmplitude')" x-model="crack.amplitude" /></div>
+                <div class="col-4"><input class="form-maestro form-control form-control-sm" type="number" x-bind:placeholder="$t('tools.crackTime')" x-model="crack.timeSec" /></div>
+                <div class="col-4"><input class="form-maestro form-control form-control-sm" type="number" step="0.1" x-bind:placeholder="$t('tools.crackThreshold')" x-model="crack.threshold" /></div>
+              </div>
+              <div class="d-flex gap-1 mb-1">
+                <button class="btn btn-sm btn-accent" @click="detectCrack()" x-text="$t('tools.crackDetect')"></button>
+                <button class="btn btn-sm btn-outline-accent" @click="setCrackThreshold()" x-text="$t('tools.crackSetThreshold')"></button>
+                <button class="btn btn-sm btn-outline-danger" @click="resetCrackDetector()" x-text="$t('tools.crackReset')"></button>
+              </div>
+              <small class="text-muted" x-text="`${$t('tools.crackCount')}: ${crack.count}`"></small>
+              <small x-show="crack.result" class="text-primary ms-2" x-text="crack.result"></small>
+            </div>
+          </div>
+          <!-- Hybrid Heating -->
+          <div class="col-md-6" x-show="showFeature('hybridHeating')">
+            <div class="card-maestro">
+              <div class="card-label mb-1" x-text="$t('tools.heating')"></div>
+              <div class="row g-1 mb-1">
+                <div class="col-3"><input class="form-maestro form-control form-control-sm" type="number" x-bind:placeholder="$t('tools.heatingTraditional')" x-model="heating.traditional" /></div>
+                <div class="col-3"><input class="form-maestro form-control form-control-sm" type="number" x-bind:placeholder="$t('tools.heatingMicrowave')" x-model="heating.microwave" /></div>
+                <div class="col-3"><input class="form-maestro form-control form-control-sm" type="number" x-bind:placeholder="$t('tools.heatingInfrared')" x-model="heating.infrared" /></div>
+                <div class="col-3"><input class="form-maestro form-control form-control-sm" type="number" x-bind:placeholder="$t('tools.heatingFrequency')" x-model="heating.frequency" /></div>
+              </div>
+              <div class="d-flex gap-1 mb-1">
+                <button class="btn btn-sm btn-accent" @click="setHybridHeating()" x-text="$t('tools.heatingApply')"></button>
+                <button class="btn btn-sm btn-outline-accent" @click="getHeatingStatus()" x-text="$t('tools.heatingStatus')"></button>
+              </div>
+              <div x-show="heating.status" class="small"><pre class="mb-0 text-primary" style="max-height:60px;overflow:auto;" x-text="JSON.stringify(heating.status, null, 1)"></pre></div>
+            </div>
+          </div>
+          <!-- Instruments: Read-only Gauges (output only) -->
+          <div class="col-12" x-show="showFeature('externalInstruments')">
+            <div class="card-maestro">
+              <div class="d-flex justify-content-between">
+                <div class="card-label" x-text="$t('instruments.title')"></div>
+                <button class="btn btn-sm btn-outline-accent py-0" @click="pollInstruments()"><img src="icons/arrow-repeat.svg" class="icon" alt=""></button>
+              </div>
+              <div x-show="!instruments.data" class="small text-muted">Refresh to load instrument data</div>
+              <div x-show="instruments.data" class="row g-1">
+                <!-- Gas Manometer -->
+                <div class="col-6 col-md-3" x-show="instruments.data?.GasManometer">
+                  <div class="hud-item p-2" :class="instruments.data.GasManometer.alarmTriggered ? 'border-danger' : ''">
+                    <div class="hud-label">Gas Manometer</div>
+                    <div class="hud-value" x-text="instruments.data.GasManometer.connected ? instruments.data.GasManometer.value.toFixed(1)+' kPa' : '--'"></div>
+                    <div class="small" :class="instruments.data.GasManometer.connected ? 'text-success' : 'text-danger'" x-text="instruments.data.GasManometer.connected ? 'Connected' : (instruments.data.GasManometer.error || 'Disconnected')"></div>
+                    <div x-show="instruments.data.GasManometer.alarmTriggered" class="small text-danger fw-bold mt-1">⚠️ ALARM</div>
+                  </div>
+                </div>
+                <!-- Airflow -->
+                <div class="col-6 col-md-3" x-show="instruments.data?.AirflowMeter">
+                  <div class="hud-item p-2">
+                    <div class="hud-label">Airflow</div>
+                    <div class="hud-value" x-text="instruments.data.AirflowMeter.connected ? instruments.data.AirflowMeter.value.toFixed(1)+' m/s' : '--'"></div>
+                    <div class="small" :class="instruments.data.AirflowMeter.connected ? 'text-success' : 'text-danger'" x-text="instruments.data.AirflowMeter.connected ? 'Connected' : (instruments.data.AirflowMeter.error || 'Disconnected')"></div>
+                  </div>
+                </div>
+                <!-- Drum RPM -->
+                <div class="col-6 col-md-3" x-show="instruments.data?.DrumRpm">
+                  <div class="hud-item p-2">
+                    <div class="hud-label">Drum RPM</div>
+                    <div class="hud-value" x-text="instruments.data.DrumRpm.connected ? instruments.data.DrumRpm.value.toFixed(0)+' RPM' : '--'"></div>
+                    <div class="small" :class="instruments.data.DrumRpm.connected ? 'text-success' : 'text-danger'" x-text="instruments.data.DrumRpm.connected ? 'Connected' : (instruments.data.DrumRpm.error || 'Disconnected')"></div>
+                  </div>
+                </div>
+                <!-- Hygrometer -->
+                <div class="col-6 col-md-3" x-show="instruments.data?.Hygrometer">
+                  <div class="hud-item p-2">
+                    <div class="hud-label">Hygrometer</div>
+                    <div class="hud-value" x-text="instruments.data.Hygrometer.connected ? instruments.data.Hygrometer.value.toFixed(0)+'%RH' : '--'"></div>
+                    <div class="small" :class="instruments.data.Hygrometer.connected ? 'text-success' : 'text-danger'" x-text="instruments.data.Hygrometer.connected ? 'Connected' : (instruments.data.Hygrometer.error || 'Disconnected')"></div>
+                  </div>
+                </div>
+                <!-- Barometer -->
+                <div class="col-6 col-md-3" x-show="instruments.data?.Barometer">
+                  <div class="hud-item p-2">
+                    <div class="hud-label">Barometer</div>
+                    <div class="hud-value" x-text="instruments.data.Barometer.connected ? instruments.data.Barometer.value.toFixed(0)+' hPa' : '--'"></div>
+                    <div class="small" :class="instruments.data.Barometer.connected ? 'text-success' : 'text-danger'" x-text="instruments.data.Barometer.connected ? 'Connected' : (instruments.data.Barometer.error || 'Disconnected')"></div>
+                  </div>
+                </div>
+                <!-- CO Detector -->
+                <div class="col-6 col-md-3" x-show="instruments.data?.CoDetector">
+                  <div class="hud-item p-2" :class="instruments.data.CoDetector.alarmTriggered ? 'border-danger' : ''">
+                    <div class="hud-label">CO Detector</div>
+                    <div class="hud-value" x-text="instruments.data.CoDetector.connected ? instruments.data.CoDetector.value.toFixed(0)+' ppm' : '--'"></div>
+                    <div class="small" :class="instruments.data.CoDetector.connected ? 'text-success' : 'text-danger'" x-text="instruments.data.CoDetector.connected ? 'Connected' : (instruments.data.CoDetector.error || 'Disconnected')"></div>
+                    <div x-show="instruments.data.CoDetector.alarmTriggered" class="small text-danger fw-bold mt-1">⚠️ ALARM</div>
+                  </div>
+                </div>
+                <!-- Moisture Tester -->
+                <div class="col-6 col-md-3" x-show="instruments.data?.MoistureTester">
+                  <div class="hud-item p-2">
+                    <div class="hud-label">Moisture Tester</div>
+                    <div class="hud-value" x-text="instruments.data.MoistureTester.connected ? instruments.data.MoistureTester.value.toFixed(1)+'%' : '--'"></div>
+                    <div class="small" :class="instruments.data.MoistureTester.connected ? 'text-success' : 'text-danger'" x-text="instruments.data.MoistureTester.connected ? 'Connected' : (instruments.data.MoistureTester.error || 'Disconnected')"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Variac: Interactive Control (input + output) -->
+          <div class="col-md-6" x-show="showFeature('externalInstruments')">
+            <div class="card-maestro">
+              <div class="card-label mb-1"><img src="icons/lightning.svg" class="icon" alt=""> Variac Control</div>
+              <div class="row g-2 align-items-end">
+                <div class="col-6">
+                  <div class="hud-item p-2 text-center">
+                    <div class="hud-label">Output Voltage</div>
+                    <div class="hud-value" x-text="instruments.data?.Variac?.connected ? instruments.data.Variac.value.toFixed(0)+'V' : '--'"></div>
+                    <div class="small" :class="instruments.data?.Variac?.connected ? 'text-success' : 'text-danger'" x-text="instruments.data?.Variac?.connected ? 'Connected' : 'Disconnected'"></div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <label class="small text-muted">Set Voltage (V)</label>
+                  <input class="form-maestro form-control form-control-sm mb-1" type="number" min="0" max="250" x-model="variacControl.setpoint" />
+                  <button class="btn btn-sm btn-accent w-100" @click="setVariacVoltage()">Apply</button>
+                  <small x-show="variacControl.result" class="text-primary" x-text="variacControl.result"></small>
+                </div>
+              </div>
+              <!-- Slider -->
+              <div class="mt-2" x-show="instruments.data?.Variac?.connected">
+                <input type="range" min="0" max="250" class="w-100" x-model="variacControl.setpoint" @input="setVariacVoltage()" style="accent-color:var(--accent);height:6px;border-radius:3px;" />
+                <div class="d-flex justify-content-between small text-muted"><span>0V</span><span>250V</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- Reference: Physical Tools -->
+          <div class="col-md-6">
+            <div class="card-maestro">
+              <div class="card-label mb-1">📋 <span x-text="$t('tools.physicalTools')"></span></div>
+              <div class="small mb-1"><strong x-text="$t('tools.agtronChart')"></strong><br><span x-text="$t('tools.agtronDesc')"></span></div>
+              <div class="small mb-1"><strong x-text="$t('tools.triangulator')"></strong><br><span x-text="$t('tools.triangulatorDesc')"></span></div>
+              <div class="small"><strong x-text="$t('tools.roastLog')"></strong><br><span x-text="$t('tools.roastLogDesc')"></span></div>
+              <button class="btn btn-sm btn-outline-accent mt-1" @click="printRoastLog()" x-text="$t('tools.printLog')"></button>
+            </div>
+          </div>
+          <!-- Ambient Conditions -->
+          <div class="col-md-6" x-show="showFeature('externalInstruments')">
+            <div class="card-maestro">
+              <div class="card-label mb-1">🌤️ <span x-text="$t('tools.ambient')"></span></div>
+              <div class="row g-1 text-center">
+                <div class="col-4"><div class="small text-muted" x-text="$t('tools.ambientHumidity')"></div><div class="fw-bold" x-text="instruments.data?.Hygrometer?.connected ? instruments.data.Hygrometer.value.toFixed(1)+'%RH' : '--'"></div></div>
+                <div class="col-4"><div class="small text-muted" x-text="$t('tools.ambientPressure')"></div><div class="fw-bold" x-text="instruments.data?.Barometer?.connected ? instruments.data.Barometer.value.toFixed(1)+'hPa' : '--'"></div></div>
+                <div class="col-4"><div class="small text-muted" x-text="$t('tools.ambientTemp')"></div><div class="fw-bold">--</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════ SETTINGS ══════ -->
+      <div x-show="activeTab === 'settings'" x-transition:enter="animate-fade-in">
+        <div class="d-flex justify-content-between align-items-center mb-2"><h5 class="mb-0 fw-semibold" x-text="$t('settings.title')"></h5><button class="btn btn-sm btn-outline-secondary py-0 px-2" @click="openHelp('settings')">?</button></div>
+        <div class="row g-2">
+          <div class="col-md-6">
+            <div class="card-maestro">
+              <div class="card-label" x-text="$t('settings.preferences')"></div>
+              <!-- PIN-protected settings (including GUI mode) -->
+              <div x-show="settingsUnlocked">
+                <div class="mb-2">
+                  <label class="small text-muted" x-text="$t('settings.guiMode')"></label>
+                  <select class="form-maestro form-select" x-model="guiMode" @change="setGuiMode(guiMode)">
+                    <option value="monitoring"><img src="icons/eye.svg" class="icon" alt=""> <span x-text="$t('settings.modeMonitoring')"></span></option>
+                    <option value="easy"><img src="icons/hand-thumbs-up.svg" class="icon" alt=""> <span x-text="$t('settings.modeEasy')"></span></option>
+                    <option value="full"><img src="icons/lightning.svg" class="icon" alt=""> <span x-text="$t('settings.modeFull')"></span></option>
+                  </select>
+                </div>
+                <div class="mb-2"><label class="small text-muted" x-text="$t('settings.language')"></label>
+                  <select class="form-maestro form-select" x-model="settings.language" @change="changeLanguage()">
+                    <option value="en">English</option><option value="it">Italiano</option><option value="es">Español</option>
+                    <option value="fr">Français</option><option value="de">Deutsch</option><option value="ru">Русский</option>
+                  </select>
+                </div>
+                <div class="mb-2"><label class="small text-muted" x-text="$t('settings.temperatureUnit')"></label>
+                  <select class="form-maestro form-select" x-model="settings.tempUnit"><option value="C">°C</option><option value="F">°F</option></select>
+                </div>
+                <div class="mb-2"><label class="small text-muted" x-text="$t('settings.server')"></label><input class="form-maestro form-control" type="text" x-model="settings.serverUrl" /></div>
+                <button class="btn btn-sm btn-outline-accent" @click="resetSettings()" x-text="$t('settings.reset')"></button>
+                <hr class="my-2">
+                <div class="card-label mb-1" x-text="$t('settings.changePin')"></div>
+                <div class="d-flex gap-1 mb-1">
+                  <input class="form-maestro form-control form-control-sm" type="password" x-bind:placeholder="$t('settings.currentPin')" x-model="pinEdit.old" />
+                  <input class="form-maestro form-control form-control-sm" type="password" x-bind:placeholder="$t('settings.newPin')" x-model="pinEdit.new1" />
+                  <input class="form-maestro form-control form-control-sm" type="password" x-bind:placeholder="$t('settings.confirmPin')" x-model="pinEdit.new2" />
+                </div>
+                <div class="d-flex gap-1">
+                  <button class="btn btn-sm btn-accent" @click="doChangePin()" x-text="$t('settings.savePin')"></button>
+                  <button class="btn btn-sm btn-outline-danger" @click="doRemovePin()" x-text="$t('settings.removePin')"></button>
+                </div>
+                <small x-show="pinEdit.msg" class="text-primary mt-1 d-block" x-text="pinEdit.msg"></small>
+                <div class="mb-2 mt-1">
+                  <label class="small text-muted" x-text="$t('settings.uiScale')"></label>
+                  <select class="form-maestro form-select" x-model="uiScale" @change="localStorage.setItem('maestro-ui-scale', uiScale)">
+                    <option value="normal" x-text="$t('settings.uiNormal')"></option>
+                    <option value="large" x-text="$t('settings.uiLarge')"></option>
+                  </select>
+                </div>
+              </div>
+              <div x-show="!settingsUnlocked" class="mt-1">
+                <button class="btn btn-sm btn-accent" @click="showPinDialog('settings')"><img src="icons/lock.svg" class="icon" alt=""> <span x-text="$t('settings.unlock')"></span></button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <!-- Machine Identity -->
+            <div class="card-maestro" x-show="showFeature('cloudMessaging') && settingsUnlocked">
+              <div class="card-label"><img src="icons/robot.svg" class="icon" alt=""> <span x-text="$t('identity.machineIdentity')"></span></div>
+              <div class="mb-1"><input class="form-maestro form-control form-control-sm" type="text" x-bind:placeholder="$t('identity.cloudEndpoint')" x-model="cloud.endpoint" /></div>
+              <button class="btn btn-sm btn-accent w-100 mb-1" @click="initCloud()"><img src="icons/key.svg" class="icon" alt=""> <span x-text="$t('identity.init')"></span></button>
+              <div x-show="cloud.identity" class="small mb-1"><div class="fw-semibold text-primary" x-text="'ID: '+cloud.identity?.machineId"></div></div>
+              <div class="d-flex gap-1 mb-1">
+                <input class="form-maestro form-control form-control-sm" type="text" x-bind:placeholder="$t('identity.command')" x-model="cloud.cmd" />
+                <input class="form-maestro form-control form-control-sm" type="text" x-bind:placeholder="$t('identity.payload')" x-model="cloud.payload" />
+                <button class="btn btn-sm btn-outline-accent" @click="sendToCloud()" x-text="$t('identity.send')"></button>
+              </div>
+              <div class="d-flex gap-1">
+                <button class="btn btn-sm btn-outline-accent" @click="exportMachineKey()" x-text="$t('identity.exportKey')"></button>
+                <button class="btn btn-sm btn-outline-accent" @click="trainModel()" x-text="$t('identity.trainModel')"></button>
+                <button class="btn btn-sm btn-outline-accent" @click="getTrainingStatus()" x-text="$t('identity.status')"></button>
+              </div>
+              <div x-show="cloud.result" class="mt-1"><pre class="mb-0 small text-muted" style="max-height:60px;overflow:auto;" x-text="cloud.result"></pre></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ─── Scripts ──────────────────────────────────────────── -->
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/echarts.min.js"></script>
+<script src="js/api-client.js"></script>
+<script src="js/app.js?v=2"></script>
+<script src="js/diagnostic.js"></script>
+<script defer src="js/alpine.min.js"></script>
+
+<script>
+function appState() {
+  return {
+    activeTab: 'dashboard',
+    tabs: [
+      { id: 'dashboard', label: 'nav.dashboard' },
+      { id: 'roast',     label: 'nav.roast' },
+      { id: 'profiles',  label: 'nav.profiles' },
+      { id: 'analysis',  label: 'nav.analysis' },
+      { id: 'batches',   label: 'nav.batches' },
+      { id: 'pid',       label: 'nav.pid' },
+      { id: 'diagnostics', label: 'nav.diagnostics' },
+      { id: 'tools', label: 'nav.tools' },
+      { id: 'settings',  label: 'nav.settings' }
+    ],
+    guiMode: localStorage.getItem('maestro-gui-mode') || 'easy',
+    pin: localStorage.getItem('maestro-pin') || '0000',
+    settingsUnlocked: false,
+    pinDialog: { open: false, input: '', error: '', target: '' },
+    pinEdit: { old: '', new1: '', new2: '', msg: '' },
+    features: { enabled: true, profileGeneration: true, energyAnalysis: true, certificateGeneration: true, supplyChain: true, cupping: true, crackDetection: true, predictiveTrainer: true, cloudMessaging: true, machineIdentity: true, blockchain: true, spectroscopy: true, hybridHeating: true, extraSensors: true, profileSigning: true, importExport: true },
+    serverOnline: false,
+    dashboard: { activeSessions: 0, savedProfiles: 0, serverTime: '--', uptime: '--', lastRoast: null },
+    roast: { sessionId: null, time: '--', bt: '--', et: '--', ror: '--', delta: '--', dtr: '0%', chargeTemp: '--', powerPct: 0, airflowPct: 0, phase: '--', phaseClass: '', selectedEvent: 'FirstCrackStart', eventLabel: '' },
+    phaseBar: { dryPct: 1, maiPct: 0, devPct: 0, dryPctText: '', maiPctText: '', devPctText: '' },
+    roastChart: null, extraChart: null, roastPoll: null, chartResizeInitialized: false,
+    roastTimeData: [], roastBtData: [], roastEtData: [], roastRorData: [],
+    alarmSet: { name: '', index: 0 }, alarmSets: { list: [] },
+    weight: { current: null, input: '' },
+    extraChannels: [],
+    bbp: { status: null },
+    autosave: { enabled: false },
+    ai: { density: 700, moisture: 11, agtronGreen: 85, flavor: 'balanced', body: 'medium', development: 'medium', profile: null },
+    aiChart: null,
+    profiles: { list: [], meta: {} },
+    designer: { chargeTemp: 180, dryEndTime: 240, dryEndTemp: 160, fcsTime: 420, fcsTemp: 190, dropTime: 600, dropTemp: 205 },
+    props: { profile: '', data: null },
+    transform: { profile: '', op: 'timescale', factor: 1.5 },
+    io: { filename: '', content: '', format: 'json', exportProfile: '', result: '', dragOver: false, dropText: '' },
+    phaseRanges: { profile: '', dryEndTemp: 160, fcsTemp: 190, scsTemp: 215 },
+    analysis: { profile: '', metrics: null },
+    compare: { a: '', b: '' },
+    cupping: { profile: '', scores: { FragranceAroma: 0, Flavor: 0, Aftertaste: 0, Acidity: 0, Body: 0, Balance: 0, Sweetness: 0, CleanCup: 0, Uniformity: 0 } },
+    report: { profile: '', html: '' },
+    energy: { profile: '', report: null },
+    blockchain: { profile: '', result: '' },
+    batches: { current: 0, setVal: 0, report: null },
+    pid: { kp: 20, ki: 0.05, kd: 5, setpointVal: 200, steps: 60 },
+    diagnostics: { status: null, logs: [] },
+    settings: { language: (()=>{ let c = localStorage.getItem('maestro-lang'); if (c) return c; c = navigator.language?.split('-')[0]; return ['en','it','es','fr','de','ru'].includes(c) ? c : 'en'; })(), tempUnit: 'C', serverUrl: 'http://localhost:5252' },
+    uiScale: localStorage.getItem('maestro-ui-scale') || 'normal',
+    calc: { tempVal: 200, tempFrom: 'C', tempTo: 'F', tempResult: '', weightVal: 1000, weightFrom: 'g', weightTo: 'kg', weightResult: '', brewG: 250, tds: 1.35, coffeeG: 18, yieldResult: '', densityW: 500, densityV: 1000, densityResult: '' },
+    spectra: { sessionId: '', wavelengths: '', intensities: '', result: '' },
+    crack: { amplitude: 0.8, timeSec: 0, threshold: 0.6, count: 0, result: '' },
+    heating: { traditional: 50, microwave: 30, infrared: 20, frequency: 2450, status: null },
+    variacControl: { setpoint: 0, result: '' },
+    instruments: { data: null, coAlarm: false },
+    cloud: { endpoint: 'http://localhost:8080', identity: null, cmd: 'syncProfile', payload: '{}', result: '' },
+    sig: { profile: '', privKey: '', pubKey: '', keys: null, result: '' },
+    help: { open: false, title: '', html: '' },
+    glossary: { open: false },
+
+    initApp() {
+      const savedUrl = localStorage.getItem('maestro-server-url');
+      if (savedUrl) { this.settings.serverUrl = savedUrl; client.base = savedUrl; }
+      this.guiMode = localStorage.getItem('maestro-gui-mode') || 'easy';
+      this.refreshDashboard();
+      this.loadProfiles();
+      this.loadProductionReport();
+      setInterval(() => this.refreshDashboard(), 30000);
+      this.loadFeatures();
+      if (this.guiMode === 'monitoring') this.startMonitoringPoll();
+    },
+
+    /* ── FEATURE FLAGS ── */
+    async loadFeatures() {
+      const r = await client.misc.getEnabledFeatures();
+      if (r && typeof r === 'object' && !r.error) Object.assign(this.features, r);
+    },
+    showFeature(key) { return this.features?.[key] !== false; },
+
+    /* ── HELP (local HTML files, no server round-trip) ── */
+    async openHelp(tabId) {
+      const lang = this.settings.language || 'en';
+      // Map tab IDs to local help file names
+      const fileMap = { dashboard:'dashboard', roast:'roast', profiles:'profiles', analysis:'analysis',
+        batches:'analysis', pid:'pid', diagnostics:'settings', tools:'roast', settings:'settings' };
+      const file = fileMap[tabId] || tabId;
+      const tryFetch = async (l) => {
+        try { const r = await fetch(`help/${l}/${file}.html`); if (r.ok) return r.text(); } catch(e) {}
+        return null;
+      };
+      let html = await tryFetch(lang);
+      if (!html && lang !== 'en') html = await tryFetch('en');
+      if (html) { this.help.html = html; this.help.title = tabId; this.help.open = true; return; }
+      // Fallback: inline help if fetch fails (file:// or server not serving help/)
+      const t = (k) => this.$t(k);
+      const fallback = {
+        dashboard: `<h2>${t('dashboard.title')}</h2><p>${t('dashboard.status')}: ${t('dashboard.activeSessions')}, ${t('dashboard.savedProfiles')}, ${t('dashboard.serverTime')}, ${t('diagnostics.uptime')}. LED verde = server ok. ${t('dashboard.lastRoast')}.</p><h3>${t('settings.guiMode')}</h3><p>${t('settings.modeMonitoring')} — solo osservazione. ${t('settings.modeEasy')} — base. ${t('settings.modeFull')} — tutto.</p>`,
+        roast: `<h2>${t('roast.title')}</h2><p><b>1. ${t('roast.start')}</b> → carica caffè (CHARGE). <b>2.</b> Osserva BT (blu), ET (arancione), RoR (verde). <b>3. ${t('roast.drop')}</b> per scarico. <b>4. ${t('roast.end')}</b> per salvare.</p><p>Telemetria: ${t('roast.time')}, ${t('roast.bt')}, ${t('roast.et')}, ${t('roast.ror')}, ${t('roast.delta')}, ${t('roast.dtr')}, ${t('roast.chargeTemp')}. Potenza e flusso sotto.</p><p>Eventi: seleziona e premi ${t('roast.mark')}. Campioni: ${t('roast.sample')}. ${t('roast.spikeFilter')} e ${t('roast.medianFilter')}. ${t('roast.cooling')}, ${t('roast.batchEnd')}, ${t('roast.autoSave')}. Canali extra, bilancia, allarmi, AI profilo.</p>`,
+        profiles: `<h2>${t('profiles.title')}</h2><p>${t('profiles.list')}: carica/elimina profili. ${t('profiles.designer.title')}: Charge/Dry/FC/Drop. ${t('profiles.phaseRanges')}: soglie fasi. Proprietà: peso, colore.</p><p>${t('profiles.transformer')}: scala tempo, offset temp, inverti, C→F. ${t('profiles.importExport')}: drag&drop .maestro/.alog/.json. ${t('profiles.signing')}: firma RSA.</p>`,
+        analysis: `<h2>${t('analysis.title')}</h2><p>${t('analysis.stats')}: DTR %, AUC, RoR, ΔTemp, fasi %, ${t('analysis.weightLoss')} %. Seleziona profilo e calcola.</p><p>${t('analysis.compare')}: due profili sovrapposti. ${t('analysis.cupping')}: punteggi SCA. ${t('analysis.energyReport')}, blockchain, ${t('analysis.reports')}.</p><h2>${t('batches.title')}</h2><p>${t('batches.counter')}: numero lotti. ${t('batches.register')}: registra. ${t('batches.production')}: totale, kg, perdita media.</p>`,
+        batches: `<h2>${t('batches.title')}</h2><p>${t('batches.counter')}, ${t('batches.register')}, ${t('batches.production')} — ${t('batches.total')}, ${t('batches.greenKg')}, ${t('batches.avgLoss')}.</p>`,
+        pid: `<h2>${t('pid.title')}</h2><p>${t('pid.tuning')}: ${t('pid.kp')}, ${t('pid.ki')}, ${t('pid.kd')}. ${t('pid.setpoint')}, ${t('pid.simulate')} con grafico. Prova prima in simulazione.</p>`,
+        diagnostics: `<h2>${t('diagnostics.title')}</h2><p>${t('diagnostics.status')}: ${t('diagnostics.server')}, ${t('diagnostics.device')}, ${t('diagnostics.uptime')}. ${t('diagnostics.test')}, ${t('diagnostics.logs')}. ${t('hardware.emergencyStop')} rosso per emergenze.</p>`,
+        settings: `<h2>${t('settings.title')}</h2><p>${t('settings.language')}, ${t('settings.temperatureUnit')}, ${t('settings.server')}. ${t('settings.guiMode')}: ${t('settings.modeMonitoring')}, ${t('settings.modeEasy')}, ${t('settings.modeFull')}. PIN e ${t('settings.uiScale')}.</p>`,
+        tools: `<h2>${t('calc.title')}</h2><p>${t('calc.temp')} C↔F, ${t('calc.weight')}, ${t('calc.extractionYield')}, ${t('calc.density')}. ${t('tools.nir')}, ${t('tools.crack')}, ${t('tools.heating')}. ${t('instruments.title')}: Variac.</p>`
+      };
+      this.help.html = fallback[tabId] || `<h2>${tabId}</h2><p>Help content unavailable.</p>`;
+      this.help.title = tabId;
+      this.help.open = true;
+    },
+    closeHelp() { this.help.open = false; },
+
+    /* ── GLOSSARY ── */
+    openGlossary() { this.glossary.open = true; },
+    closeGlossary() { this.glossary.open = false; },
+
+    /* ── GUI MODE ── */
+    isMode(mode) { return this.guiMode === mode; },
+    setGuiMode(mode) {
+      this.guiMode = mode; localStorage.setItem('maestro-gui-mode', mode);
+      if (mode === 'monitoring') this.startMonitoringPoll();
+      else { if (this.monitoringPoll) { clearInterval(this.monitoringPoll); this.monitoringPoll = null; } }
+    },
+    startMonitoringPoll() {
+      if (this.monitoringPoll) { clearInterval(this.monitoringPoll); this.monitoringPoll = null; }
+      if (!this.isMode('monitoring')) return;
+      const poll = async () => {
+        if (!this.isMode('monitoring')) { clearInterval(this.monitoringPoll); this.monitoringPoll = null; return; }
+        try {
+          const sessions = await client.roast.active();
+          const sid = Array.isArray(sessions) && sessions.length > 0
+            ? (sessions[0].sessionId || (typeof sessions[0] === 'string' ? sessions[0] : null))
+            : null;
+          if (sid && sid !== this.roast.sessionId) {
+            this.roast.sessionId = sid;
+            this.initTabCharts('roast');
+            this.resizeCharts();
+          } else if (!sid) {
+            this.roast.sessionId = null;
+          }
+          if (this.roast.sessionId) await this.pollRoast();
+        } catch(e) {}
+      };
+      this.monitoringPoll = setInterval(poll, 3000);
+    },
+
+    /* ── PIN PROTECTION ── */
+    showPinDialog(target) {
+      if (!this.pin) { // PIN removed — unlock without dialog
+        if (target === 'settings') this.settingsUnlocked = true;
+        return;
+      }
+      this.pinDialog = { open: true, input: '', error: '', target: target };
+    },
+    closePinDialog() { this.pinDialog = { open: false, input: '', error: '', target: '' }; },
+    checkPin() {
+      if (this.pinDialog.input === this.pin) {
+        if (this.pinDialog.target === 'settings') this.settingsUnlocked = true;
+        this.closePinDialog();
+      } else {
+        this.pinDialog.error = 'PIN errato';
+      }
+    },
+    changePin(oldPin, newPin) {
+      if (oldPin === this.pin) { this.pin = newPin; localStorage.setItem('maestro-pin', newPin); return true; }
+      return false;
+    },
+    doChangePin() {
+      if (this.pinEdit.old !== this.pin) { this.pinEdit.msg = '❌ PIN errato'; return; }
+      if (!this.pinEdit.new1 || this.pinEdit.new1.length < 4) { this.pinEdit.msg = '❌ PIN troppo corto (min 4 caratteri)'; return; }
+      if (this.pinEdit.new1 !== this.pinEdit.new2) { this.pinEdit.msg = '❌ I PIN non corrispondono'; return; }
+      this.pin = this.pinEdit.new1;
+      localStorage.setItem('maestro-pin', this.pin);
+      this.pinEdit.msg = '✅ PIN cambiato';
+      this.pinEdit.old = ''; this.pinEdit.new1 = ''; this.pinEdit.new2 = '';
+    },
+    doRemovePin() {
+      if (this.pinEdit.old !== this.pin) { this.pinEdit.msg = '❌ PIN errato'; return; }
+      this.pin = '';
+      localStorage.setItem('maestro-pin', '');
+      this.pinEdit.msg = '✅ PIN rimosso';
+      this.pinEdit.old = ''; this.pinEdit.new1 = ''; this.pinEdit.new2 = '';
+      this.settingsUnlocked = false;
+    },
+
+    /* ── INIT CHARTS ── */
+    initTabCharts(tabId) {
+      if (tabId === 'roast' && document.getElementById('roastChart') && !this.roastChart) {
+        this.roastChart = echarts.init(document.getElementById('roastChart'), { backgroundColor: 'transparent' });
+        this.roastChart.setOption({
+          tooltip: { trigger: 'axis', axisPointer: { type: 'cross' }, formatter: (params) => {
+            const t = params[0]?.axisValue;
+            const mm = Math.floor(t/60), ss = Math.floor(t%60);
+            let s = `<b>${mm}:${(ss<10?'0':'')+ss}</b><br/>`;
+            params.forEach(p => { if (p.value != null) s += `${p.marker}${p.seriesName}: <b>${Array.isArray(p.value)?p.value[1]?.toFixed(1):p.value?.toFixed(1)}</b><br/>`; });
+            return s;
+          }},
+          legend: { data: ['BT', 'ET', 'RoR', 'Target BT'], bottom: 0, itemGap: 12, textStyle: { fontSize: 11 } },
+          grid: { top: 12, right: 18, bottom: 60, left: 60 },
+          xAxis: { type: 'value', min: 0, boundaryGap: false,
+            axisLabel: { formatter: (val) => { const m=Math.floor(val/60),s=Math.floor(val%60); return m+':'+(s<10?'0':'')+s; } },
+            splitLine: { lineStyle: { color: '#f3f4f6' } }, minorSplitLine: { show: false }
+          },
+          yAxis: [
+            { type: 'value', name: '\u00b0C', nameLocation: 'center', nameGap: 42, splitLine: { lineStyle: { color: '#f3f4f6' } } },
+            { type: 'value', name: '\u00b0C/min', min: -5, max: 30, nameLocation: 'center', nameGap: 38, splitLine: { show: false } }
+          ],
+          series: [
+            { name: 'BT', type: 'line', smooth: false, data: [], symbol: 'none',
+              lineStyle: { color: '#2563eb', width: 2.5 },
+              areaStyle: { color: 'rgba(37,99,235,0.05)' },
+              markLine: { silent: true, symbol: 'none', animation: false,
+                lineStyle: { type: 'dashed' }, label: { fontSize: 10, fontWeight: 'bold', padding: [2,4] },
+                data: [] },
+              markPoint: { symbolSize: 1, label: { show: true, fontSize: 9, color: '#1e293b',
+                formatter: (p) => p.data.label || '' },
+                itemStyle: { color: 'transparent', borderColor: 'transparent' },
+                data: [] },
+              markArea: { silent: true, data: [] }
+            },
+            { name: 'ET', type: 'line', smooth: false, data: [], symbol: 'none',
+              lineStyle: { color: '#ea580c', width: 2 },
+              areaStyle: { color: 'rgba(234,88,12,0.03)' } },
+            { name: 'RoR', type: 'line', smooth: true, yAxisIndex: 1, data: [], symbol: 'none',
+              lineStyle: { color: '#059669', width: 1.5, type: 'dashed' } },
+            { name: 'Target BT', type: 'line', smooth: true, data: [], symbol: 'none',
+              lineStyle: { color: '#7c3aed', width: 2, type: 'dotted' } }
+          ]
+        });
+        this.resizeCharts();
+        if (!this.chartResizeInitialized) {
+          window.addEventListener('resize', () => this.resizeCharts());
+          this.chartResizeInitialized = true;
+        }
+        // Extra channels chart
+        this.extraChart = echarts.init(document.getElementById('extraChart'), { backgroundColor: 'transparent' });
+        this.extraChart.setOption({
+          tooltip: { trigger: 'axis' }, legend: { bottom: 0 },
+          grid: { top: 5, right: 10, bottom: 25, left: 40 },
+          xAxis: { type: 'value', name: 'Time (s)' },
+          yAxis: { type: 'value', name: '°C' }, series: []
+        });
+      }
+      if (tabId === 'analysis' && document.getElementById('compareChart')) {
+        echarts.init(document.getElementById('compareChart'), { backgroundColor: 'transparent' }).setOption({
+          tooltip: { trigger: 'axis' }, legend: { bottom: 0 }, grid: { top: 10, right: 10, bottom: 35, left: 50 },
+          xAxis: { type: 'value' }, yAxis: { type: 'value', name: '°C' }, series: []
+        });
+      }
+      if (tabId === 'pid' && document.getElementById('pidChart')) {
+        echarts.init(document.getElementById('pidChart'), { backgroundColor: 'transparent' }).setOption({
+          tooltip: { trigger: 'axis' }, legend: { data: ['Measurement', 'Setpoint'], bottom: 0 },
+          grid: { top: 10, right: 10, bottom: 35, left: 50 },
+          xAxis: { type: 'value', name: 'Step' }, yAxis: { type: 'value', name: '°C' },
+          series: [
+            { name: 'Measurement', type: 'line', smooth: true, data: [], lineStyle: { color: '#2563eb' } },
+            { name: 'Setpoint', type: 'line', smooth: true, data: [], lineStyle: { color: '#ea580c', type: 'dashed' } }
+          ]
+        });
+      }
+      if (tabId === 'roast' && document.getElementById('aiChart') && !this.aiChart) {
+        this.aiChart = echarts.init(document.getElementById('aiChart'), { backgroundColor: 'transparent' });
+        this.aiChart.setOption({
+          grid: { top: 5, right: 10, bottom: 20, left: 40 },
+          xAxis: { type: 'value' }, yAxis: { type: 'value', name: '°C' },
+          series: [{ name: 'AI Target', type: 'line', smooth: true, data: [], lineStyle: { color: '#059669', width: 2 } }]
+        });
+      }
+    },
+    resizeCharts() {
+      if (this.roastChart) this.roastChart.resize();
+      if (this.extraChart) this.extraChart.resize();
+      if (this.aiChart) this.aiChart.resize();
+    },
+
+    /* ── DASHBOARD ── */
+    async refreshDashboard() {
+      const res = await client.diagnostics.status();
+      if (res && !res.error) {
+        this.diagnostics.status = res; this.serverOnline = true;
+        this.dashboard.serverTime = res.serverTime ? new Date(res.serverTime).toLocaleTimeString() : '--';
+        this.dashboard.uptime = res.uptimeHours?.toFixed(1) + 'h' || '--';
+        this.dashboard.activeSessions = res.activeSessions ?? 0;
+        this.dashboard.savedProfiles = res.savedProfiles ?? 0;
+      } else this.serverOnline = false;
+    },
+
+    /* ── ROAST ── */
+    async startRoast() {
+      if (this.isMode('monitoring') || this.roast.sessionId) return;
+      const res = await client.roast.start('Ethiopia Yirgacheffe', 1000);
+      if (res?.sessionId) {
+        this.roast.sessionId = res.sessionId; this.roastTimeData = []; this.roastBtData = []; this.roastEtData = []; this.roastRorData = [];
+        this.roastPoll = setInterval(() => this.pollRoast(), 2000);
+        this.activeTab = 'roast'; // Auto-switch to roast dashboard
+        setTimeout(() => { this.initTabCharts('roast'); this.resizeCharts(); }, 50);
+      }
+    },
+    /* DROP = bean ejection event (Artisan-standard: marks Drop timestamp, polling continues for cooling curve)
+       END  = machine stop + session close (equivalent to Artisan's END button) */
+    async dropRoast() {
+      if (this.isMode('monitoring') || !this.roast.sessionId || this.roast.stopped) return;
+      await client.roast.recordEvent(this.roast.sessionId, 'Drop');
+      this.roast.stopped = true;
+      // Polling continues via existing interval — operator sees cooling curve until Fine/END
+    },
+    async endRoast() {
+      if (this.isMode('monitoring')) return;
+      if (this.roastPoll) { clearInterval(this.roastPoll); this.roastPoll = null; }
+      if (this.roast.sessionId) await client.roast.stop(this.roast.sessionId);
+      this.roast.sessionId = null;
+      this.roast.stopped = false;
+      this.roast.phase = 'complete';
+      this.loadProfiles();
+    },
+    async addSample() { if (this.roast.sessionId) { await client.roast.addSample(this.roast.sessionId); await this.pollRoast(); } },
+    async pollRoast() {
+      if (!this.roast.sessionId) return;
+      const data = await client.roast.getData(this.roast.sessionId);
+      if (data?.error) return;
+      this.roast.time = formatTime(data.latestTime);
+      this.roast.bt = formatTemp(data.latestBt);
+      this.roast.et = formatTemp(data.latestEt);
+      this.roast.ror = data.roRate?.toFixed(1) + '°C/min' ?? '--';
+      this.roast.delta = (data.latestBt && data.latestEt) ? (data.latestBt - data.latestEt).toFixed(1) + '°C' : '--';
+      this.roast.dtr = '0%'; // computed on stop via metrics
+      this.roast.chargeTemp = formatTemp(data.phaseEvents?.find(function(e){return (e.Type||e.type)==='Charge';})?.Bt || data.latestBt);
+      this.roast.powerPct = 0;
+      this.roast.airflowPct = 0;
+      this.roast.phase = phaseLabel(data.phase);
+      this.roast.phaseClass = data.phase;
+      this.phaseBar.dryPct = 0; this.phaseBar.maiPct = 0; this.phaseBar.devPct = 0;
+      this.roastTimeData.push(data.latestTime); this.roastBtData.push(data.latestBt); this.roastEtData.push(data.latestEt); this.roastRorData.push(data.roRate ?? 0);
+      // Fetch simulator status periodically for power/airflow telemetry
+      if (this.roastTimeData.length % 5 === 0) {
+        var self = this;
+        client._post('/api','SimulatorCommand',{command:'status'}).then(function(s) {
+          if (s && !s.error) { self.roast.powerPct = Math.round(s.heaterPower || 0); self.roast.airflowPct = Math.round(s.airflow || 0); }
+        });
+      }
+      if (this.roastChart && this.roastTimeData.length > 2) {
+        var phaseEvents = data.phaseEvents || [];
+        // Helper: find event time in seconds
+        var evTime = function(type) {
+          var ev = phaseEvents.find(function(e){ return (e.Type||e.type) === type; });
+          return ev ? (ev.TimeSec || ev.timeSec || null) : null;
+        };
+        var evBt = function(type) {
+          var ev = phaseEvents.find(function(e){ return (e.Type||e.type) === type; });
+          return ev ? (ev.Bt || ev.bt || null) : null;
+        };
+        var fmtMM = function(sec) { if (sec == null) return ''; var m=Math.floor(sec/60),s=Math.floor(sec%60); return m+':'+(s<10?'0':'')+s; };
+
+        // ── markLine: event vertical dashed lines ──────────────
+        var mlData = [];
+        var mlDefs = [
+          { type: 'Charge',          label: 'CHARGE',  color: '#1e293b', width: 2,   dash: 'solid'  },
+          { type: 'TurningPoint',    label: 'TP',      color: '#64748b', width: 1,   dash: 'dashed' },
+          { type: 'DryEnd',          label: 'DE',      color: '#d97706', width: 1.5, dash: 'dashed' },
+          { type: 'FirstCrackStart', label: 'FCs',     color: '#dc2626', width: 2,   dash: 'dashed' },
+          { type: 'FirstCrackEnd',   label: 'FCe',     color: '#dc2626', width: 1,   dash: 'dashed' },
+          { type: 'SecondCrackStart',label: 'SCs',     color: '#9333ea', width: 2,   dash: 'dashed' },
+          { type: 'SecondCrackEnd',  label: 'SCe',     color: '#9333ea', width: 1,   dash: 'dashed' },
+          { type: 'Drop',            label: 'DROP',    color: '#b91c1c', width: 2.5, dash: 'solid'  }
+        ];
+        var chargeTime = evTime('Charge') || 0;
+        mlDefs.forEach(function(def) {
+          var t = evTime(def.type);
+          if (t == null) return;
+          var bt = evBt(def.type);
+          // elapsed time from CHARGE
+          var elapsed = t - chargeTime;
+          var elapsedStr = def.type === 'Charge' ? '' : ' +' + fmtMM(elapsed);
+          var btStr = bt != null ? bt.toFixed(0) + '\u00b0C\n' : '';
+          mlData.push({
+            xAxis: t,
+            label: { formatter: btStr + def.label + elapsedStr, fontSize: 9, color: def.color, position: 'insideStartTop', padding: [1,3] },
+            lineStyle: { color: def.color, type: def.dash, width: def.width }
+          });
+        });
+
+        // ── markArea: phase background shading ─────────────────
+        var maData = [];
+        var tCharge = evTime('Charge');
+        var tDE     = evTime('DryEnd');
+        var tFCs    = evTime('FirstCrackStart');
+        var tDrop   = evTime('Drop');
+        var tCool   = evTime('CoolStart');
+        if (tCharge != null && tDE != null)
+          maData.push([{ xAxis: tCharge, itemStyle: { color: 'rgba(254,240,138,0.18)' } }, { xAxis: tDE }]);
+        if (tDE != null && tFCs != null)
+          maData.push([{ xAxis: tDE, itemStyle: { color: 'rgba(187,247,208,0.18)' } }, { xAxis: tFCs }]);
+        if (tFCs != null && (tDrop || this.roastTimeData[this.roastTimeData.length-1]))
+          maData.push([{ xAxis: tFCs, itemStyle: { color: 'rgba(254,202,202,0.22)' } }, { xAxis: tDrop || this.roastTimeData[this.roastTimeData.length-1] }]);
+        if (tDrop != null)
+          maData.push([{ xAxis: tDrop, itemStyle: { color: 'rgba(186,230,253,0.25)' } }, { xAxis: this.roastTimeData[this.roastTimeData.length-1] + 30 }]);
+
+        this.roastChart.setOption({
+          xAxis: { max: Math.max(...this.roastTimeData) + 30 },
+          series: [
+            { data: this.roastTimeData.map((t, i) => [t, this.roastBtData[i]]),
+              markLine: { silent: true, symbol: 'none', animation: false, data: mlData },
+              markArea: { silent: true, data: maData } },
+            { data: this.roastTimeData.map((t, i) => [t, this.roastEtData[i]]) },
+            { data: this.roastTimeData.map((t, i) => [t, this.roastRorData[i]]) },
+            { data: this.ai?.profile?.targetTime ? this.ai.profile.targetTime.map((t, i) => [t, this.ai.profile.targetBt[i]]) : [] }
+          ]
+        });
+      }
+      if (this.extraChart && data.extraChannels?.length > 0) {
+        const colors = ['#059669', '#7c3aed', '#0891b2', '#d97706', '#2563eb', '#dc2626'];
+        this.extraChart.setOption({
+          legend: { data: data.extraChannels.map(c => c.name) },
+          series: data.extraChannels.map((c, i) => ({ name: c.name, type: 'line', smooth: true, data: c.time.map((t, j) => [t, c.bt[j]]), lineStyle: { color: colors[i % colors.length], width: 1.5 } }))
+        });
+      }
+    },
+    async recordEvent() { if (this.roast.sessionId) { await client.roast.recordEvent(this.roast.sessionId, this.roast.selectedEvent); await this.pollRoast(); } },
+    async addUserEvent() { if (this.roast.sessionId && this.roast.eventLabel) { await client.roast.addUserEvent(this.roast.sessionId, this.roast.eventLabel); this.roast.eventLabel = ''; } },
+    async applySpikeFilter() { if (this.roast.sessionId) { const d = await client.roast.getData(this.roast.sessionId); if (d?.latestBt) await client.misc.filterSpike(d.latestBt); } },
+    async applyMedianFilter() { if (this.roast.sessionId) { const d = await client.roast.getData(this.roast.sessionId); if (d?.latestBt) await client.misc.filterMedian(d.latestBt); } },
+    async addCooling() { if (this.roast.sessionId) { const d = await client.roast.getData(this.roast.sessionId); if (d?.latestBt) await client.misc.addCooling(this.roast.sessionId, d.latestBt, d.latestEt); } },
+    async toggleAutoSave() { await client.misc.setAutoSave(this.autosave.enabled); },
+    async recordBatchEndBbp() {
+      if (!this.roast.sessionId) return;
+      const data = await client.roast.getData(this.roast.sessionId);
+      if (data?.latestBt) { await client.misc.recordBatchEnd(data.latestBt, data.latestEt); const bbpRes = await client.misc.recordNextBatchStart(25, 200, 180); this.bbp.status = bbpRes; }
+    },
+    addExtraChannel() { this.extraChannels.push({ name: 'Ch ' + (this.extraChannels.length + 1), bt: '', et: '' }); },
+    removeExtraChannel(idx) { this.extraChannels.splice(idx, 1); },
+    async addExtraSample(ch) { const c = this.extraChannels[ch]; if (c.bt && c.et && this.roast.sessionId) await client.extra.addSample(this.roast.sessionId, ch, parseFloat(c.bt), parseFloat(c.et)); },
+    async recordWeight() { if (this.weight.input) { await client.scale.record(parseFloat(this.weight.input), true); const r = await client.scale.current(); this.weight.current = r?.weightG; this.weight.input = ''; } },
+
+    /* ── ALARMS ── */
+    async loadAlarmSets() { const r = await client.events.listAlarmSets(); this.alarmSets.list = Array.isArray(r) ? r : []; },
+    async addAlarmSet() { if (this.alarmSet.name) { await client.events.setAlarmSet(parseInt(this.alarmSet.index), this.alarmSet.name, null, 0); this.alarmSet.name = ''; this.loadAlarmSets(); } },
+
+    /* ── AI ── */
+    async generateAiProfile() {
+      const green = JSON.stringify({ densityGL: parseFloat(this.ai.density), moisturePct: parseFloat(this.ai.moisture), colorAgtron: parseFloat(this.ai.agtronGreen), origin: 'AI', variety: '', harvestYear: 2026 });
+      const goal = JSON.stringify({ flavorProfile: this.ai.flavor, bodyLevel: this.ai.body, developmentLevel: this.ai.development });
+      const res = await client.ai.generateProfile(green, goal);
+      this.ai.profile = res;
+      if (this.aiChart && res?.targetTime && res?.targetBt) this.aiChart.setOption({ series: [{ data: res.targetTime.map((t, i) => [t, res.targetBt[i]]) }] });
+    },
+
+    /* ── PROFILES ── */
+    async loadProfiles() { const r = await client.profiles.list(); this.profiles.list = r?.profiles ?? []; },
+    async deleteProfile(name) { await client.profiles.delete(name); this.loadProfiles(); },
+    async createTarget() { const d = this.designer; await client.designer.createTarget(d.chargeTemp, d.dryEndTime, d.dryEndTemp, d.fcsTime, d.fcsTemp, d.dropTime, d.dropTemp, 'Target ' + new Date().toLocaleTimeString()); this.loadProfiles(); },
+    async saveProperties() { if (this.props.profile && this.props.data) await client.properties.update(this.props.profile, JSON.stringify(this.props.data)); },
+    async applyTransform() { if (this.transform.profile) { await client.transform.apply(this.transform.profile, this.transform.op, this.transform.factor, 0, 0); this.loadProfiles(); } },
+    /* ── IMPORT: paste ── */
+    async importPastedFile() { if (this.io.filename && this.io.content) { const r = await client.io.importFile(this.io.filename, this.io.content); this.io.result = r?.error ? '❌ ' + r.error : (r?.duplicated ? '⚠️ Duplicate — not saved' : '✅ Imported'); this.loadProfiles(); } },
+    /* ── IMPORT: drag & drop / file picker ── */
+    async _importFileFromFile(file) {
+      if (!file) return;
+      const text = await file.text();
+      this.io.filename = file.name;
+      this.io.content = text;
+      const r = await client.io.importFile(file.name, text);
+      this.io.result = r?.error ? '❌ ' + r.error : (r?.duplicated ? '⚠️ Duplicate — not saved' : '✅ Imported: ' + file.name);
+      this.io.dropText = r?.error || r?.duplicated ? '⚠️ ' + (r?.duplicated ? 'Duplicate' : r?.error) : '✅ ' + file.name;
+      this.loadProfiles();
+      setTimeout(() => { this.io.dropText = ''; }, 4000);
+    },
+    async handleFileDrop(event) {
+      this.io.dragOver = false;
+      const file = event.dataTransfer?.files?.[0];
+      await this._importFileFromFile(file);
+    },
+    async handleFileSelect(event) {
+      const file = event.target.files?.[0];
+      await this._importFileFromFile(file);
+      event.target.value = ''; // allow re-selecting the same file
+    },
+    async exportFile() { if (this.io.exportProfile) { const r = await client.io.exportFile(this.io.exportProfile, this.io.format); this.io.result = typeof r === 'string' ? r : JSON.stringify(r); } },
+    async generateKeys() { this.sig.keys = await client.signature.generateKeys(); },
+    async signProfile() { if (this.sig.profile && this.sig.privKey) { const r = await client.signature.sign(this.sig.profile, this.sig.privKey); this.sig.result = r?.signature ? '✅ Signed' : '❌ Error'; } },
+    async verifyProfile() { if (this.sig.profile && this.sig.pubKey) { const r = await client.signature.verify(this.sig.profile, this.sig.pubKey); this.sig.result = r?.valid ? '✅ Valid' : '❌ Invalid'; } },
+    async loadPhaseRanges() { if (this.phaseRanges.profile) { const r = await client.misc.getPhaseRanges(this.phaseRanges.profile); if (r?.dryEndTemp) { this.phaseRanges.dryEndTemp = r.dryEndTemp; this.phaseRanges.fcsTemp = r.firstCrackStartTemp; this.phaseRanges.scsTemp = r.secondCrackStartTemp; } } },
+    async savePhaseRanges() { if (this.phaseRanges.profile) await client.misc.setPhaseRanges(this.phaseRanges.profile, this.phaseRanges.dryEndTemp, this.phaseRanges.fcsTemp, this.phaseRanges.scsTemp); },
+
+    /* ── ANALYSIS ── */
+    async computeMetrics() { if (this.analysis.profile) this.analysis.metrics = await client.analysis.compute(this.analysis.profile); },
+    async compareProfiles() { if (!this.compare.a || !this.compare.b) return;
+      const overlay = await client.compare.overlay([this.compare.a, this.compare.b]);
+      const chart = echarts.getInstanceByDom(document.getElementById('compareChart'));
+      if (chart && Array.isArray(overlay)) chart.setOption({ legend: { data: overlay.map(p => p.name) }, series: overlay.map(p => ({ name: p.name, type: 'line', smooth: true, data: p.time.map((t, i) => [t, p.bt[i]]) })) });
+    },
+    async loadCupping() { if (this.cupping.profile) { const r = await client.cupping.get(this.cupping.profile); if (r && !r.error) Object.assign(this.cupping.scores, r); } },
+    cuppingTotal() { const s = this.cupping.scores; return ((s.FragranceAroma||0)+(s.Flavor||0)+(s.Aftertaste||0)+(s.Acidity||0)+(s.Body||0)+(s.Balance||0)+(s.Sweetness||0)+(s.CleanCup||0)+(s.Uniformity||0)).toFixed(1); },
+    async saveCupping() { if (this.cupping.profile) await client.cupping.save(this.cupping.profile, JSON.stringify(this.cupping.scores)); },
+    async generateReport() { if (this.report.profile) { const r = await client.reports.roastReport(this.report.profile); this.report.html = r?.html ?? ''; } },
+    async generateProdReport() { const r = await client.reports.productionReport(); this.report.html = r?.html ?? ''; },
+    async getEnergyReport() { if (this.energy.profile) this.energy.report = await client.ai.getEnergyReport(this.energy.profile); },
+    async timestampCertificate() {
+      if (!this.blockchain.profile) return;
+      const hash = 'SHA256_' + Date.now();
+      const r = await client.ai.timestampCert(this.blockchain.profile, hash);
+      this.blockchain.result = r?.blockHash ? '✅ Block ' + r.blockIndex + ': ' + r.blockHash?.substring(0, 12) + '...' : '❌ Error';
+    },
+
+    /* ── BATCHES ── */
+    async loadProductionReport() { this.batches.report = await client.batches.report(50); },
+    async setBatchCounter() { await client.batches.setCounter(this.batches.setVal); const r = await client.batches.counter(); this.batches.current = r?.batchNumber ?? 0; },
+
+    /* ── PID ── */
+    async updatePidTuning() { await client.pid.setTuning(this.pid.kp, this.pid.ki, this.pid.kd); },
+    async simulatePid() {
+      const r = await client.pid.simulate(this.pid.setpointVal, this.pid.steps, 1);
+      if (!Array.isArray(r)) return;
+      const chart = echarts.getInstanceByDom(document.getElementById('pidChart'));
+      if (chart) chart.setOption({ series: [{ data: r.map(p => [p.step, p.measurement]) }, { data: r.map(p => [p.step, p.setpoint]) }] });
+    },
+
+    /* ── DIAGNOSTICS ── */
+    async testDevice() { await client.diagnostics.test(); this.loadLogs(); this.refreshDashboard(); },
+    async loadLogs() { const r = await client.diagnostics.log(50); this.diagnostics.logs = r?.entries ?? []; },
+    /* ── HARDWARE ── */
+    async emergencyStop() { if (!confirm(this.$t('hardware.emergencyStopConfirm') ?? 'Emergency stop — are you sure?')) return; await client.hardware.emergencyStop(); this.loadLogs(); this.refreshDashboard(); },
+
+    /* ── SETTINGS ── */
+    async changeLanguage() { if (window.setLanguage) window.setLanguage(this.settings.language); },
+    async resetSettings() { await client.settings.reset(); },
+
+    /* ── CLOUD ── */
+    async initCloud() { if (this.cloud.endpoint) this.cloud.identity = await client.ai.initCloud(this.cloud.endpoint); },
+    async sendToCloud() { const r = await client.ai.sendToCloud(this.cloud.cmd, this.cloud.payload); this.cloud.result = JSON.stringify(r, null, 2); },
+    async exportMachineKey() { const r = await client.ai.exportKey(); this.cloud.result = JSON.stringify(r, null, 2); },
+    async trainModel() { const r = await client.ai.trainModel(); this.cloud.result = JSON.stringify(r, null, 2); },
+    async getTrainingStatus() { const r = await client.ai.getTrainingStatus(); this.cloud.result = JSON.stringify(r, null, 2); },
+
+    /* ── CALCULATOR ── */
+    async doConvertTemp() { const r = await client.calc.convertTemp(this.calc.tempVal, this.calc.tempFrom, this.calc.tempTo); this.calc.tempResult = r?.value ? `${this.calc.tempVal}°${this.calc.tempFrom} = ${r.value}°${this.calc.tempTo}` : 'Error'; },
+    async doConvertWeight() { const r = await client.calc.convertWeight(this.calc.weightVal, this.calc.weightFrom, this.calc.weightTo); this.calc.weightResult = r?.value ? `${this.calc.weightVal} ${this.calc.weightFrom} = ${r.value} ${this.calc.weightTo}` : 'Error'; },
+    async doExtractionYield() { const r = await client.calc.extractionYield(this.calc.brewG, this.calc.tds, this.calc.coffeeG); this.calc.yieldResult = r?.extractionYield ? `Yield: ${r.extractionYield}% | Ratio: 1:${r.brewRatio}` : 'Error'; },
+    async doCalcDensity() { const r = await client.misc.calcDensity(this.calc.densityW, this.calc.densityV); this.calc.densityResult = r?.densityGL ? `${r.densityGL} g/L` : 'Error'; },
+
+    /* ── TOOLS: NIR ── */
+    async recordSpectra() { const w = this.spectra.wavelengths.split(',').map(Number); const i = this.spectra.intensities.split(',').map(Number); const r = await client.ai.recordSpectra(this.spectra.sessionId, w, i); this.spectra.result = r?.success ? '✅ Recorded' : '❌ Error'; },
+    async getSpectra() { const r = await client.ai.getSpectra(this.spectra.sessionId, 5); this.spectra.result = JSON.stringify(r); },
+
+    /* ── TOOLS: Crack ── */
+    async detectCrack() { const r = await client.ai.detectCrack(this.crack.amplitude, this.crack.timeSec, ''); if (r && !r.error) { this.crack.count = r.crackCount ?? 0; this.crack.result = r.crackDetected ? `✅ Crack #${r.crackCount} @ ${r.lastCrackTime?.toFixed(1) ?? this.crack.timeSec}s` : '❌ No crack'; } },
+    async setCrackThreshold() { const r = await client.ai.setCrackThreshold(this.crack.threshold); this.crack.result = r?.success ? '✅ Threshold set' : '❌ Error'; },
+    async resetCrackDetector() { const r = await client.ai.resetCrackDetector(); this.crack.count = 0; this.crack.result = '✅ Reset'; },
+
+    /* ── TOOLS: Hybrid Heating ── */
+    async setHybridHeating() { const r = await client.ai.setHeating(this.heating.traditional, this.heating.microwave, this.heating.infrared, this.heating.frequency); this.heating.status = r ?? { error: 'No response' }; },
+    async getHeatingStatus() { const r = await client.ai.getHeatingStatus(''); this.heating.status = r; },
+
+    /* ── TOOLS: External Instruments ── */
+    async pollInstruments() {
+      const r = await client.instruments.getAll();
+      if (r && typeof r === 'object' && !r.error) {
+        this.instruments.data = r;
+        this.instruments.coAlarm = r._coAlarm === true;
+      }
+    },
+    async setVariacVoltage() {
+      const v = parseFloat(this.variacControl.setpoint);
+      if (isNaN(v)) return;
+      const r = await client.instruments.setVariac(v);
+      this.variacControl.result = r?.success ? `✅ Set to ${v}V` : '❌ Error';
+    },
+    printRoastLog() {
+      const now = new Date().toLocaleString();
+      const win = window.open('', '_blank');
+      win.document.write(`<html><head><title>Roast Log</title><style>body{font-family:sans-serif;padding:2em}table{width:100%;border-collapse:collapse}td,th{border:1px solid #ccc;padding:6px}th{background:#eee}.header{text-align:center;margin-bottom:2em}</style></head><body><div class="header"><h1>Maestro AI — Roast Log</h1><p>Date: ${now} | Batch: ______ | Bean: ______ | Weight: ______ g</p></div><table><tr><th>Time</th><th>BT (°C)</th><th>ET (°C)</th><th>RoR</th><th>Event</th><th>Notes</th></tr><tr><td></td><td></td><td></td><td></td><td>Charge</td><td></td></tr><tr><td></td><td></td><td></td><td></td><td>Dry End</td><td></td></tr><tr><td></td><td></td><td></td><td></td><td>FC Start</td><td></td></tr><tr><td></td><td></td><td></td><td></td><td>Drop</td><td></td></tr></table><p style="margin-top:2em"><strong>Cupping Notes:</strong><br>Fragrance: ___ / Flavor: ___ / Aftertaste: ___ / Acidity: ___ / Body: ___ / Balance: ___<br><strong>Total:</strong> ___ / 100</p><p><strong>Weather:</strong> Humidity: ___ % &nbsp; Pressure: ___ hPa &nbsp; Temp: ___ °C</p></body></html>`);
+      win.document.close();
+      win.print();
+    },
+  };
+}
+</script>
+
+</body>
+</html>

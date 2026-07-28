@@ -1,0 +1,61 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Analysis — Understanding Your Roast</h2>
+<p>The Analysis panel takes a saved profile and calculates all the important numbers that tell you how the roast went. Use it to understand what happened, compare two roasts side by side, and track your improvement over time.</p>
+
+<h3>Statistics — the numbers that matter</h3>
+<p>Select a profile from the dropdown and press <b>Compute Metrics</b>. Maestro AI calculates these numbers:</p>
+<table>
+<tr><th>Metric</th><th>What it tells you</th></tr>
+<tr><td><b>DTR %</b> (Development Time Ratio)</td><td>What percentage of the total roast time happened after First Crack. This is the most important number for flavor. Specialty coffee target: <b>20–25%</b>. Below 15% the coffee will taste grassy and sour (underdeveloped). Above 30% it will taste dark and roasty.</td></tr>
+<tr><td><b>AUC</b> (Area Under Curve)</td><td>The total amount of heat energy that went into the beans during the roast. Think of it as the "heat dose." Useful when comparing roasts that used different temperature profiles — even if the final temperature was the same, the total energy might be different.</td></tr>
+<tr><td><b>Avg RoR</b></td><td>The average Rate of Rise across the whole roast. Helps you see if your overall heat application was aggressive or gentle.</td></tr>
+<tr><td><b>ΔTemp</b></td><td>The temperature difference between BT and ET. Large gaps mean the machine is working hard; small gaps mean the beans are keeping up with the heat.</td></tr>
+<tr><td><b>Drying %</b></td><td>What portion of the total time was spent in the drying phase (from CHARGE to Dry End).</td></tr>
+<tr><td><b>Maillard %</b></td><td>What portion was spent in the Maillard (browning) phase (from Dry End to First Crack).</td></tr>
+<tr><td><b>Development %</b></td><td>What portion was spent in the Development phase (from First Crack to DROP).</td></tr>
+<tr><td><b>Weight Loss %</b></td><td>How much weight the beans lost during roasting. Green coffee contains water; as it evaporates, the beans get lighter. Light roasts lose 12–16%, medium roasts 16–20%.</td></tr>
+</table>
+
+<h3>Comparing two profiles</h3>
+<p>Select two profiles (A and B) and press <b>Compare</b>. The chart overlays both temperature curves so you can see the differences. Use this to:</p>
+<ul style="margin:4px 0;padding-left:16px;font-size:12px">
+<li><b>Check consistency</b> — did you roast the same coffee the same way twice? The lines should be nearly identical.</li>
+<li><b>Compare developments</b> — see how a light vs medium roast of the same coffee changes the curve.</li>
+<li><b>Learn from mistakes</b> — compare a great roast with a bad one to see exactly where things went wrong.</li>
+</ul>
+
+<h3>Cupping — scoring your coffee</h3>
+<p>If you do a cupping (professional tasting) of your roasted coffee, you can record the scores here. The system follows the SCA (Specialty Coffee Association) standard form with these categories:</p>
+<p style="font-size:12px">Fragrance, Flavor, Aftertaste, Acidity, Body, Balance, Sweetness, Clean Cup, Uniformity</p>
+<p>Enter a score from 0 to 10 for each category (in 0.5 steps). The total is automatically calculated. A score of <b>80 or higher</b> means the coffee is specialty grade. The scores are saved with the profile so you can track how different roasts of the same bean taste.</p>
+<div class="tip">An SCA score of 80+ is the specialty coffee standard. Use the cupping form consistently to track your improvement.</div>
+
+<h3>Energy Report</h3>
+<p>Full mode only. Calculates the total energy consumed during the roast and the estimated CO₂ emissions. Useful for tracking your environmental impact and comparing the efficiency of different roast profiles.</p>
+
+<h3>Blockchain Certificate</h3>
+<p>Full mode only. You can create a tamper-proof timestamp for your roast profile on a blockchain. This is a digital certificate that proves the roast existed at a specific date and time. Useful for competitions, auctions, or quality certification.</p>
+
+<h3>Reports</h3>
+<p>Generate a printable HTML report for a profile. The report includes all metrics, the chart, events, and session notes. You can also generate a <b>Production Report</b> that summarizes multiple batches over time.</p>
+
+<h2>Batches Tab — Production Tracking</h2>
+<p>The Batches tab helps you keep count of how many roasts you produce. This is useful if you are roasting commercially and need to track batch numbers for traceability.</p>
+
+<h3>Batch Counter</h3>
+<p>A simple counter that increases every time you register a batch. You can manually set it to any number (for example, if you want to start from 1 on the first day of the year).</p>
+
+<h3>Register Batch</h3>
+<p>When you finish a roast, press <b>Register Batch</b> to record it in the production log. The counter goes up by one automatically.</p>
+
+<h3>Production Report</h3>
+<p>Shows a summary of all registered batches: total number of batches, total green coffee used (in kg), and average weight loss percentage. Use this to track your production volume and consistency over time.</p>

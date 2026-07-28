@@ -1,0 +1,39 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Dashboard — Schermata Principale</h2>
+<p>La Dashboard è la prima cosa che vedi quando apri Maestro AI. Ti dà una panoramica veloce di tutto: il server è in funzione, quante tostature hai salvato, quante ne stanno accadendo in questo momento. Pensala come la finestra della sala di controllo.</p>
+
+<h3>Cosa vedi sulla Dashboard</h3>
+
+<table>
+<tr><th>Indicatore</th><th>Cosa ti dice</th></tr>
+<tr><td><b>Sessioni Attive</b></td><td>Quante tostature sono in esecuzione sul server in questo momento. Se vedi un numero maggiore di 0, qualcuno (o tu) sta tostando ora.</td></tr>
+<tr><td><b>Profili Salvati</b></td><td>Quanti profili di tostatura sono memorizzati sul server. Ogni profilo è una registrazione completa di una tostatura che hai fatto, con temperature, tempi ed eventi.</td></tr>
+<tr><td><b>Ora Server</b></td><td>La data e l'ora corrente del server Maestro AI. Si aggiorna ogni 30 secondi così sai sempre che il server è vivo.</td></tr>
+<tr><td><b>Uptime</b></td><td>Da quanto tempo il server è in esecuzione senza interruzioni dall'ultimo riavvio. Un numero alto indica che il sistema è stabile.</td></tr>
+</table>
+
+<h3>LED di Stato</h3>
+<p>In cima a ogni schermata vedi un piccolo LED verde o rosso. <b>Verde</b> significa che il server è connesso e funziona. <b>Rosso</b> significa che la connessione è persa — verifica che il server Maestro AI sia in esecuzione e che l'URL nelle Impostazioni sia corretto.</p>
+
+<h3>Ultima Tostatura</h3>
+<p>Il riquadro in fondo mostra il nome della tostatura più recente che hai salvato. Se non hai ancora fatto tostature, ti dirà gentilmente di iniziarne una.</p>
+
+<h3>Modalità Operative</h3>
+<p>Maestro AI ha tre modi di utilizzo. Puoi scegliere la modalità nel pannello Impostazioni.</p>
+<table>
+<tr><th>Modalità</th><th>Quando usarla</th></tr>
+<tr><td><b>Monitoraggio</b></td><td>Solo visualizzazione. Il grafico segue la tostatura in corso sul server, ma non puoi avviare o fermare nulla. Perfetto per un secondo schermo o per guardare la tostatura di un collega.</td></tr>
+<tr><td><b>Facile</b></td><td>Vista semplificata. Mostra solo i comandi essenziali per tostare e i pannelli più importanti. Ottima se sei nuovo con Maestro AI o vuoi uno schermo pulito e focalizzato.</td></tr>
+<tr><td><b>Completa</b></td><td>Tutto è visibile. Ogni pannello, ogni pulsante, ogni funzione avanzata. Usala quando hai bisogno di profili AI, sensori extra, firme digitali o analisi energetiche.</td></tr>
+</table>
+
+<div class="tip">Il LED verde in alto indica che il server è online. Se rimane rosso, vai in Impostazioni e controlla che l'URL del Server sia corretto.</div>

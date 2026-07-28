@@ -1,0 +1,26 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+
+# Node.js / Client
+node_modules/
+package-lock.json
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Build output
+*.exe
+*.dll
+*.pdb
+*.so
+*.dylib
+
+# Test artifacts
+TestResults/

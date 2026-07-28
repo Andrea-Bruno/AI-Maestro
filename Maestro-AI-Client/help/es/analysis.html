@@ -1,0 +1,53 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Análisis — Comprende tu Tostado</h2>
+<p>El panel Análisis toma un perfil guardado y calcula todos los números importantes que te indican cómo fue el tostado. Úsalo para entender qué pasó, comparar dos tostados lado a lado y seguir tu progreso.</p>
+
+<h3>Estadísticas — los números que importan</h3>
+<p>Selecciona un perfil del menú desplegable y presiona <b>Calcular Métricas</b>. Maestro AI calcula estos números:</p>
+<table>
+<tr><th>Métrica</th><th>Qué te indica</th></tr>
+<tr><td><b>DTR %</b> (Development Time Ratio)</td><td>Qué porcentaje del tiempo total de tostado ocurrió después del Primer Crack. El número más importante para el sabor. Café specialty: <b>20–25%</b>. Por debajo de 15% el café sabrá a hierba y ácido (subdesarrollado). Por encima de 30% sabrá oscuro y quemado.</td></tr>
+<tr><td><b>AUC</b> (Area Under Curve)</td><td>La cantidad total de energía térmica que se transmitió a los granos durante el tostado. Útil para comparar tostados con diferentes perfiles de temperatura.</td></tr>
+<tr><td><b>RoR Promedio</b></td><td>La velocidad media de aumento de temperatura (RoR) durante todo el tostado. Te ayuda a ver si tu aplicación de calor fue agresiva o suave.</td></tr>
+<tr><td><b>ΔTemp</b></td><td>La diferencia de temperatura entre BT y ET. Una brecha grande significa que la máquina está trabajando duro; una brecha pequeña significa que los granos siguen bien el calor.</td></tr>
+<tr><td><b>Secado %</b></td><td>Qué parte del tiempo total se dedicó a la fase de secado (de CHARGE a Fin Secado).</td></tr>
+<tr><td><b>Maillard %</b></td><td>Qué parte se dedicó a la fase Maillard (dorado) (de Fin Secado al Primer Crack).</td></tr>
+<tr><td><b>Desarrollo %</b></td><td>Qué parte se dedicó a la fase de Desarrollo (del Primer Crack a DROP).</td></tr>
+<tr><td><b>Pérdida de Peso %</b></td><td>Cuánto peso perdieron los granos durante el tostado. El café verde contiene agua; al evaporarse, los granos se vuelven más ligeros. Tostados claros: 12–16%, medios: 16–20%.</td></tr>
+</table>
+
+<h3>Comparar dos perfiles</h3>
+<p>Selecciona dos perfiles (A y B) y presiona <b>Comparar</b>. El gráfico superpone ambas curvas de temperatura para ver las diferencias. Úsalo para verificar la consistencia entre lotes o para aprender de tus errores.</p>
+
+<h3>Catación — puntuar tu café</h3>
+<p>Si haces una cata profesional de tu café tostado, puedes registrar las puntuaciones aquí. El sistema sigue el formulario estándar SCA. Una puntuación de <b>80 o más</b> significa que el café es de calidad specialty.</p>
+
+<h3>Informe Energético</h3>
+<p>Solo modo Completo. Calcula la energía total consumida durante el tostado y las emisiones estimadas de CO₂. Útil para seguir tu impacto ambiental.</p>
+
+<h3>Certificado Blockchain</h3>
+<p>Solo modo Completo. Crea una prueba a prueba de manipulaciones de tu perfil de tostado en una blockchain. Útil para competiciones o certificación de calidad.</p>
+
+<h3>Informes</h3>
+<p>Genera un informe HTML imprimible para un perfil. El informe incluye todas las métricas, el gráfico, los eventos y las notas de la sesión.</p>
+
+<h2>Pestaña Lotes — Seguimiento de Producción</h2>
+<p>La pestaña Lotes te ayuda a llevar la cuenta de cuántos tostados produces. Útil si tuestas comercialmente.</p>
+
+<h3>Contador de Lotes</h3>
+<p>Un contador simple que aumenta cada vez que registras un lote. Puedes ajustarlo manualmente.</p>
+
+<h3>Registrar Lote</h3>
+<p>Cuando termines un tostado, presiona <b>Registrar Lote</b> para añadirlo al registro de producción.</p>
+
+<h3>Informe de Producción</h3>
+<p>Muestra un resumen: número total de lotes, café verde total usado (kg) y porcentaje medio de pérdida de peso.</p>

@@ -1,0 +1,63 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+.warn{background:#fffbeb;border-left:3px solid #f59e0b;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Profiles — Your Roast Library</h2>
+<p>The Profiles panel is where you manage all the roasts you have saved. Every time you end a roast, it becomes a profile — a complete record with temperatures, times, events, and notes. Think of it as a library of every roast you have ever done.</p>
+
+<h3>Profile List</h3>
+<p>When you open the Profiles tab, you see a list of all saved profiles. Click a profile name to view it. The refresh button reloads the list from the server (useful if another computer saved a new profile).</p>
+<p>From the list you can:</p>
+<table>
+<tr><th>Action</th><th>How to do it</th></tr>
+<tr><td><b>View a profile</b></td><td>Click its name. It loads into the Analysis panel where you can see all the numbers.</td></tr>
+<tr><td><b>Delete a profile</b></td><td>Only in Full mode. Click the X button next to the profile name to remove it permanently.</td></tr>
+</table>
+
+<h3>Target Curve Designer</h3>
+<p>Before you start a roast, you can design an ideal temperature curve. Enter four key points and Maestro AI draws a reference line that you can follow during the roast.</p>
+<table>
+<tr><th>What to enter</th><th>What it means</th></tr>
+<tr><td><b>Charge Temp</b></td><td>The temperature of the drum when you load the coffee.</td></tr>
+<tr><td><b>Dry End</b></td><td>The temperature you want at the end of the drying phase (beans turn from green to yellow, around 160°C).</td></tr>
+<tr><td><b>FC Start</b></td><td>The temperature where you want First Crack to happen (usually around 190–200°C).</td></tr>
+<tr><td><b>Drop</b></td><td>The temperature at which you plan to take the beans out.</td></tr>
+</table>
+<p>Press <b>Create Target</b> and the reference curve appears on the chart during your roast as a purple dotted line.</p>
+
+<h3>Phase Ranges</h3>
+<p>You can tell Maestro AI what temperatures mark the start of each phase. This helps the system correctly identify when the beans enter Drying, Maillard, and Development phases. If your machine runs hot or cold, adjusting these ranges makes the phase detection more accurate.</p>
+
+<h3>Properties</h3>
+<p>When you load a profile, you can edit its properties: weight in and weight out (to calculate loss), and the whole-bean color (Agtron value). These numbers are saved with the profile and used in the Analysis panel.</p>
+
+<h3>Transformer</h3>
+<p>Sometimes you have a profile that was made with a different batch size or machine, and you want to adapt it. The Transformer lets you:</p>
+<table>
+<tr><th>Operation</th><th>What it does</th></tr>
+<tr><td><b>Time Scale</b></td><td>Stretch or shrink the time axis. Useful if the original roast was 10 minutes and yours needs to be 12.</td></tr>
+<tr><td><b>Temp Offset</b></td><td>Shift all temperatures up or down by a fixed amount. Useful if your machine runs 5°C hotter than the original.</td></tr>
+<tr><td><b>Invert</b></td><td>Flip the curve upside down (rarely used, but handy for special analyses).</td></tr>
+<tr><td><b>C → F</b></td><td>Convert all temperatures from Celsius to Fahrenheit.</td></tr>
+</table>
+
+<h3>Import and Export</h3>
+<p>You can bring profiles in from other programs or share your profiles with others.</p>
+<p><b>To import a profile:</b></p>
+<ul style="margin:4px 0;padding-left:16px;font-size:12px">
+<li>Drag and drop a .maestro, .alog (Artisan), or .json file onto the drop zone.</li>
+<li>Or click the Import button to select a file from your computer.</li>
+<li>Or paste the file content into the text area.</li>
+</ul>
+<p><b>To export a profile:</b> pick a format (JSON or .alog), select which profile to export, and press Export. Use this to back up your profiles or share them with another roaster.</p>
+<div class="tip">Artisan profiles (.alog) are automatically converted when imported — all events and temperature data are preserved.</div>
+
+<h3>Digital Signing</h3>
+<p>In Full mode, you can sign your profiles with a digital signature. This guarantees that the profile was created by you and has not been tampered with. You need a private key to sign, and anyone with your public key can verify the signature. Useful for competitions or when sharing profiles professionally.</p>

@@ -1,0 +1,75 @@
+﻿<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;padding:0;margin:0}
+h2{color:#2563eb;font-size:15px;margin:12px 0 6px}h3{font-size:13px;color:#475569;margin:8px 0 4px}
+p{margin:4px 0 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px}
+th{background:#f1f5f9;text-align:left;padding:5px 8px;font-weight:600;border-bottom:2px solid #e2e8f0}
+td{padding:4px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.tip{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+.warn{background:#fffbeb;border-left:3px solid #f59e0b;padding:6px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:12px}
+</style>
+
+<h2>Impostazioni — Come Configurare Maestro AI</h2>
+<p>Il pannello Impostazioni è dove configuri come Maestro AI si connette al server, che lingua parla, come misura le temperature, e chi può cambiare le impostazioni.</p>
+
+<h3>Connessione Server</h3>
+<p>Maestro AI deve parlare con un server per salvare i profili e controllare l'hardware. Inserisci qui l'indirizzo del server.</p>
+<table>
+<tr><th>Situazione</th><th>Cosa inserire</th></tr>
+<tr><td>Maestro AI in esecuzione sullo stesso computer di questo schermo</td><td><code>http://localhost:5252</code> (questo è il default)</td></tr>
+<tr><td>Maestro AI su un altro computer nella tua rete</td><td><code>http://192.168.1.XXX:5252</code> — usa l'indirizzo IP del server</td></tr>
+<tr><td>Maestro AI su una rete diversa</td><td>Devi configurare il port forwarding sul router e usare l'IP pubblico</td></tr>
+</table>
+<div class="warn">Dopo aver cambiato l'URL del server, la pagina tenta di riconnettersi. Se il LED in alto rimane rosso, verifica che il server sia in esecuzione e che il firewall permetta connessioni sulla porta 5252.</div>
+
+<h3>Lingua</h3>
+<p>Scegli la lingua per l'interfaccia. Tutti i pulsanti, le etichette e i testi di aiuto passeranno alla lingua selezionata. Attualmente supportate: Italiano, Inglese, Francese, Tedesco, Spagnolo, Russo.</p>
+
+<h3>Unità di Temperatura</h3>
+<p>Scegli tra Celsius (°C) e Fahrenheit (°F). La maggior parte dei torrefattori usa Celsius, ma se sei abituato a Fahrenheit, cambialo qui.</p>
+
+<h3>Modalità GUI</h3>
+<p>Maestro AI ha tre modalità di interfaccia. Scegli quella che si adatta a quello che stai facendo.</p>
+<table>
+<tr><th>Modalità</th><th>Ideale per</th></tr>
+<tr><td><b>Monitoraggio</b></td><td>Guardare una tostatura senza toccare nulla. Il grafico si aggiorna in tempo reale, ma non vengono mostrati pulsanti per avviare o fermare. Buono per un secondo schermo o un display pubblico.</td></tr>
+<tr><td><b>Facile</b></td><td>Tostatura quotidiana. Mostra solo i controlli di cui hai più bisogno: pannello tostatura, elenco profili, diagnostica e impostazioni. Le funzioni avanzate (AI, sensori extra, firma, ecc.) sono nascoste.</td></tr>
+<tr><td><b>Completa</b></td><td>Tutto. Tutti i pannelli, tutti i pulsanti, tutte le funzioni avanzate. Usala quando hai bisogno di generazione profili AI, canali extra, firme digitali, analisi energetiche, BBP, servizi cloud, spettroscopia e riscaldamento ibrido.</td></tr>
+</table>
+
+<h3>Protezione PIN</h3>
+<p>Puoi proteggere il pannello Impostazioni con un PIN da 4 a 6 cifre. Questo impedisce a qualcuno di cambiare accidentalmente l'URL del server o di cambiare modalità durante una tostatura.</p>
+<p><b>Impostare un PIN:</b> Inserisci un nuovo PIN in entrambi i campi e premi <b>Salva</b>. La prossima volta che qualcuno cerca di aprire Impostazioni, dovrà prima inserire il PIN.</p>
+<p><b>Rimuovere il PIN:</b> Lascia vuoto il campo "Nuovo PIN" e premi <b>Salva</b>.</p>
+<p><b>PIN predefinito:</b> <b>0000</b> (se non lo hai mai cambiato).</p>
+<div class="tip">Se dimentichi il PIN, apri la console del browser (F12) e digita: <code>localStorage.setItem('maestro-pin','')</code>. Questo resetta il PIN.</div>
+
+<h3>Scala UI</h3>
+<p>Rendi l'interfaccia più grande o più piccola. Usa <b>Grande</b> se stai usando un touchscreen, un display ad alta risoluzione, o se guardi lo schermo da lontano.</p>
+
+<h2>Tab Diagnostica — Controllare la Salute del Sistema</h2>
+<p>Il tab Diagnostica mostra la salute del tuo sistema Maestro AI. Usalo per verificare se tutto funziona o per trovare problemi.</p>
+
+<h3>Stato Sistema</h3>
+<p>La scheda principale mostra tre cose:</p>
+<table>
+<tr><th>Elemento</th><th>Cosa ti dice</th></tr>
+<tr><td><b>Server</b></td><td>Una luce verde significa che il server Maestro AI è in esecuzione e risponde. Rossa significa che il server è offline o non raggiungibile.</td></tr>
+<tr><td><b>Dispositivo</b></td><td>Una luce verde significa che l'hardware (tostatrice, sensori) è connesso. Rossa significa che nessun dispositivo è rilevato — controlla cavi e alimentazione.</td></tr>
+<tr><td><b>Uptime</b></td><td>Da quanto tempo il server è in esecuzione dall'ultimo avvio. Utile per sapere se il sistema è stato recentemente riavviato o è crashato.</td></tr>
+</table>
+
+<h3>Test Dispositivo</h3>
+<p>Premi <b>Test Dispositivo</b> per eseguire un rapido test di comunicazione con l'hardware collegato. Il risultato appare nel registro eventi qui sotto. Se il test fallisce, controlla le connessioni hardware e riavvia il server.</p>
+
+<h3>Arresto Macchina</h3>
+<p>Il pulsante rosso <b>Arresto Macchina</b> è solo per situazioni urgenti. Premendolo:</p>
+<ul style="margin:4px 0;padding-left:16px;font-size:12px">
+<li>Disconnette immediatamente tutto l'hardware (riscaldatore, sensori, motore tamburo).</li>
+<li>Ferma qualsiasi sessione di tostatura attiva.</li>
+<li>Registra l'evento nel registro di diagnostica.</li>
+</ul>
+<p>Apparirà un dialogo di conferma che ti chiederà se sei sicuro prima di procedere. Questo <b>non</b> è come terminare una tostatura normalmente — usa DROP e END nel pannello Tostatura per il completamento normale.</p>
+
+<h3>Registro Eventi</h3>
+<p>Il registro in fondo mostra una lista di eventi recenti: avvii del server, test dispositivo, chiamate API, errori e arresti di emergenza. Ogni voce ha un timestamp. Usalo per diagnosticare problemi o per vedere cosa è successo mentre eri via. Premi il pulsante di aggiornamento per caricare nuove voci.</p>
