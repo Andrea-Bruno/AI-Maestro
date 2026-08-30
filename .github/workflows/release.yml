@@ -8,6 +8,11 @@
 
 name: Build and Release
 
+# The default GITHUB_TOKEN is read-only on some repositories: creating the GitHub
+# release (and the v* tag it pins) requires write access to contents.
+permissions:
+  contents: write
+
 on:
   push:
     branches: [main]
