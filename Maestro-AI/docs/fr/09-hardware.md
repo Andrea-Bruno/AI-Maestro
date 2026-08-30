@@ -116,13 +116,67 @@ The full configuration with defaults:
 
 #### GPIO — SBC 40-pin (Raspberry Pi / Orange Pi)
 
-> **Orange Pi 5 Pro :** voir la section dédiée du guide anglais (`docs/en/09-hardware.md` → « GPIO — Orange Pi 5 Pro ») : mappage des broches (BCM → « chip:line ») et prérequis (libgpiod, overlays).
+#### GPIO — Orange Pi 5 Pro (connecteur 40 broches)
+
+Le pilote GPIO cible le **connecteur 40 broches du Raspberry Pi** (numérotation BCM = lignes brutes de gpiochip0). Sur une **Orange Pi 5 Pro**, les numéros BCM ne **correspondent PAS** aux lignes gpiochip — les piloter à l'aveugle agirait sur les mauvaises broches physiques. Maestro-AI gère cela en toute sécurité :
+
+- **Détection de la carte** : le pilote lit `/proc/device-tree/model` ; sur toute carte non-Raspberry Pi, il **refuse d'ouvrir la GPIO sans carte de broches explicite** et bascule en simulation avec une erreur claire (il ne pilote jamais silencieusement les mauvaises broches).
+- **Carte des broches** : configurez `Hardware.GpioPinMap` (broche BCM → `"chip:line"`).
+
+##### Prérequis Orange Pi 5 Pro
+
+| Prérequis | Détails |
+|---|---|
+| **libgpiod** | `System.Device.Gpio` nécessite la bibliothèque native `libgpiod` (`libgpiod2` sur Debian Bookworm). L'installeur en une ligne l'installe automatiquement ; sans elle, le pilote GPIO bascule en simulation avec une erreur. |
+| **Accès root** | Les puces GPIO (`/dev/gpiochip0-5`) ne sont lisibles/écrivables que par root. Exécutez Maestro-AI comme service systemd `maestro-ai` (par défaut) — un `dotnet run` manuel en utilisateur normal donne le mode simulation. |
+| **1-Wire (DS18B20)** | Non activé par défaut : pas de bus `/sys/bus/w1`. Activez l'overlay 1-Wire dans le device tree (`/boot/orangepiEnv.txt` : `overlay=w1-gpio` + le GPIO correct) avant d'utiliser un DS18B20. |
+| **SPI (thermocouple MAX31855)** | Non activé par défaut (pas de `/dev/spidev*`). Le lecteur SPI MAX31855 n'est de toute façon pas implémenté dans le pilote — le tableau des limitations s'applique sur toutes les cartes. |
+| **Série** | Seul `/dev/ttyS9` est exposé ; le Modbus RTU vers une machine nécessite un adaptateur USB-RS485 (le nœud USB-série apparaît comme `/dev/ttyUSB0`). |
+
+##### Carte des broches Orange Pi 5 Pro (vérifiée avec `gpio readall` / WiringOP)
+
+| Fonction | BCM (Raspberry Pi) | Broche physique (OPi 5 Pro) | chip:line |
+|---|---|---|---|
+| SSR chauffage | 17 | 11 | `4:10` |
+| Ventilateur | 18 | 12 | `1:7` |
+| Relais moteur du tambour | 22 | 15 | `1:14` |
+| Relais plateau de refroidissement | 23 | 16 | `1:1` |
+| LED d'état | 24 | 18 | `1:0` |
+| Alarme | 25 | 22 | `1:8` |
+| Électroaimant prise d'échantillon | 27 | 13 | `4:11` |
+| DS18B20 (1-Wire) | 4 | 7 | `1:15` |
+
+`appsettings.json` (Orange Pi 5 Pro) :
+
+```json
+"Hardware": {
+  "Enabled": true,
+  "MachineType": "52Pi EP-0129 GPIO 40-PIN Hat",
+  "GpioPinMap": {
+    "17": "4:10", "18": "1:7",  "22": "1:14", "23": "1:1",
+    "24": "1:0",  "25": "1:8",  "27": "4:11", "4":  "1:15"
+  }
+}
+```
+
+Vérifiez d'abord le mappage de votre carte avec `gpio readall` (WiringOP) : la colonne « GPIO » est le numéro de ligne global, `chip = GPIO / 32`, `line = GPIO % 32`.
+
+##### Schémas de connexion (Orange Pi)
+
+| Schéma | Faisabilité sur l'Orange Pi | Notes |
+|---|---|---|
+| **UI web ⇄ Serveur ⇄ GPIO Orange Pi ⇄ carte relais/SSR** | ✅ possible | Nécessite libgpiod + la carte des broches ci-dessus ; la machine doit être DIY/simple pilotée par relais/SSR. Le PWM est numérique on/off (seuil), pas proportionnel — pour un chauffage précis, utilisez un convertisseur PWM→0-10V externe ou une machine à PID. |
+| **UI web ⇄ Serveur ⇄ PLC (S7 / Modbus TCP) ⇄ machine** | ✅ recommandé | Les machines à PLC intégré parlent S7 (Siemens) ou Modbus TCP sur le LAN — pas besoin de GPIO, voie la plus fiable pour les machines industrielles. |
+| **UI web ⇄ Serveur ⇄ broker MQTT ⇄ machine** | ✅ possible | Pour les machines compatibles MQTT (Roest, Petroncini, ...). |
+| **UI web ⇄ Serveur ⇄ Série RS485 (Modbus RTU) ⇄ machine** | ✅ avec adaptateur USB-RS485 | `/dev/ttyS9` seul n'est pas du RS485 ; utilisez un dongle USB-RS485 (`/dev/ttyUSB0`). |
+| **Thermocouple via SPI (MAX31855)** | ❌ pas par défaut | Overlay SPI non activé et lecteur SPI non implémenté — utilisez un DS18B20 (après activation du 1-Wire) ou une machine avec sa propre sortie numérique. |
+| **DS18B20 1-Wire** | ⚠️ overlay requis | Activez le 1-Wire dans le device tree avant utilisation. |
 
 **Device:** [52Pi EP-0129 GPIO Screw Terminal Hat](https://wiki.52pi.com/index.php?title=EP-0129)  
 **Manufacturer:** 52Pi  
 **Type:** Passive GPIO breakout board — exposes Raspberry Pi 40-pin GPIO to screw terminals with LED indicators.  
 **NuGet:** `System.Device.Gpio` v3.2.0  
-**Platform:** Linux ARM (Raspberry Pi OS 64-bit). Simulation mode on Windows.  
+**Plateforme :** Linux ARM — Raspberry Pi OS 64-bit (numérotation BCM, aucune carte requise) ou Orange Pi 5 Pro et autres SBC 40 broches (nécessite `Hardware.GpioPinMap`, voir la section « GPIO — Orange Pi 5 Pro » ci-dessous). Sous Windows : mode simulation.  
 **Pin numbering:** BCM (Broadcom).
 
 ##### Typical wiring for coffee roasting

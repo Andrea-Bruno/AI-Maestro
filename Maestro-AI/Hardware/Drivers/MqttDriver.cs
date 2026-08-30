@@ -1,8 +1,15 @@
-namespace Maestro_AI.Hardware.Drivers;
-
+using MQTTnet;
+using MQTTnet.Protocol;
 using System.Text;
 using System.Text.Json;
+using Maestro_AI.Models;
 
+namespace Maestro_AI.Hardware.Drivers;
+
+/// <summary>
+/// MQTT driver based on the MQTTnet library (correct MQTT 3.1.1/5 protocol, broker
+/// authentication supported). Reads {"bt": x, "et": y} JSON payloads on the configured topic.
+/// </summary>
 public class MqttDriver : IHardwareDriver
 {
     public string Name => $"MQTT:{_broker}:{_port}/{_topic}";
@@ -11,76 +18,88 @@ public class MqttDriver : IHardwareDriver
     public event Action<DeviceSample>? OnSampleReceived;
     public event Action<DeviceStatus>? OnStatusChanged;
 
-    private readonly string _broker, _topic;
+    private readonly string _broker, _topic, _user, _password;
     private readonly int _port;
-    private System.Net.Sockets.TcpClient? _tcp;
-    private System.IO.Stream? _stream;
-    private CancellationTokenSource? _cts;
+    private IMqttClient? _client;
+    private DateTime _startTime;
 
-    public MqttDriver(string broker, int port, string topic, string? user = null)
-        => (_broker, _port, _topic) = (broker, port, topic);
+    public MqttDriver(string broker, int port, string topic, string? user = null, string? password = null)
+        => (_broker, _port, _topic, _user, _password) = (broker, port, topic, user ?? "", password ?? "");
 
     public async Task<bool> ConnectAsync(CancellationToken ct = default)
     {
         try
         {
-            _cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-            _tcp = new System.Net.Sockets.TcpClient();
-            await _tcp.ConnectAsync(_broker, _port, ct);
-            _stream = _tcp.GetStream();
+            var factory = new MqttClientFactory();
+            _client = factory.CreateMqttClient();
 
-            // MQTT CONNECT + SUBSCRIBE
-            await _stream.WriteAsync(new byte[] { 0x10, 0x0E, 0x00, 0x04, 0x4D, 0x51, 0x54, 0x54, 0x05, 0x02, 0x00, 0x3C, 0x00, 0x00, 0x00, 0x00 }, ct);
-            await _stream.ReadAsync(new byte[4], 0, 4, ct);
-            var sub = new byte[] { 0x82, 0x00 };
-            sub[1] = (byte)(2 + _topic.Length);
-            var pkt = sub.Concat(new byte[] { 0x00, 0x01 }).Concat(Encoding.UTF8.GetBytes(_topic)).Concat(new byte[] { 0x00 }).ToArray();
-            pkt[1] = (byte)(pkt.Length - 2);
-            await _stream.WriteAsync(pkt, ct);
+            var builder = new MqttClientOptionsBuilder()
+                .WithTcpServer(_broker, _port)
+                .WithClientId($"MaestroAI-{Environment.MachineName}");
+            if (!string.IsNullOrEmpty(_user)) builder.WithCredentials(_user, _password);
+            var options = builder.Build();
 
-            _ = Task.Run(() => ReceiveLoopAsync(_cts.Token));
-            Status = DeviceStatus.Connected; OnStatusChanged?.Invoke(Status); return true;
+            await _client.ConnectAsync(options, ct);
+            if (!_client.IsConnected)
+            {
+                LastError = "MQTT connect failed (broker rejected the connection)";
+                Status = DeviceStatus.Error;
+                OnStatusChanged?.Invoke(Status);
+                return false;
+            }
+
+            await _client.SubscribeAsync(new MqttTopicFilterBuilder().WithTopic(_topic).Build(), ct);
+            _client.ApplicationMessageReceivedAsync += OnMessageAsync;
+
+            _startTime = DateTime.UtcNow;
+            Status = DeviceStatus.Connected;
+            OnStatusChanged?.Invoke(Status);
+            return true;
         }
-        catch (Exception ex) { LastError = ex.Message; Status = DeviceStatus.Error; OnStatusChanged?.Invoke(Status); return false; }
+        catch (Exception ex)
+        {
+            LastError = ex.Message;
+            Status = DeviceStatus.Error;
+            OnStatusChanged?.Invoke(Status);
+            return false;
+        }
     }
 
-    private async Task ReceiveLoopAsync(CancellationToken ct)
+    private Task OnMessageAsync(MqttApplicationMessageReceivedEventArgs e)
     {
-        var buf = new byte[4096];
         try
         {
-            while (!ct.IsCancellationRequested && _stream != null)
+            var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+            using var doc = JsonDocument.Parse(payload);
+            var root = doc.RootElement;
+            if (root.TryGetProperty("bt", out var b) && root.TryGetProperty("et", out var et))
             {
-                int n = await _stream.ReadAsync(buf, 0, buf.Length, ct);
-                if (n < 2) continue;
-                if (buf[0] == 0x30) // PUBLISH
+                OnSampleReceived?.Invoke(new DeviceSample
                 {
-                    int off = 2 + ((buf[2] << 8) | buf[3]);
-                    if (n > off) ParsePayload(Encoding.UTF8.GetString(buf, off, n - off));
-                }
+                    TimeSec = (DateTime.UtcNow - _startTime).TotalSeconds,
+                    Bt = b.GetDouble(), Et = et.GetDouble(), IsValid = true
+                });
             }
         }
-        catch (OperationCanceledException) { }
-    }
-
-    private void ParsePayload(string json)
-    {
-        try
-        {
-            var r = JsonDocument.Parse(json).RootElement;
-            double bt = r.TryGetProperty("bt", out var b) ? b.GetDouble() : 0;
-            double et = r.TryGetProperty("et", out var e) ? e.GetDouble() : 0;
-            if (bt > 0 || et > 0) OnSampleReceived?.Invoke(new DeviceSample { TimeSec = DateTime.UtcNow.Ticks / 10_000_000.0, Bt = bt, Et = et, IsValid = true });
-        }
         catch { }
+        return Task.CompletedTask;
     }
 
     public Task DisconnectAsync()
     {
-        _cts?.Cancel(); _stream?.Close(); _tcp?.Close();
-        Status = DeviceStatus.Disconnected; OnStatusChanged?.Invoke(Status); return Task.CompletedTask;
+        try
+        {
+            if (_client != null && _client.IsConnected)
+                _client.DisconnectAsync().GetAwaiter().GetResult();
+            _client?.Dispose();
+        }
+        catch { }
+        _client = null;
+        Status = DeviceStatus.Disconnected;
+        OnStatusChanged?.Invoke(Status);
+        return Task.CompletedTask;
     }
 
     public Task<DeviceSample> ReadSampleAsync(CancellationToken ct = default)
-        => Task.FromResult(new DeviceSample { IsValid = false });
+        => Task.FromResult(new DeviceSample { IsValid = false }); // data pushed via subscription
 }

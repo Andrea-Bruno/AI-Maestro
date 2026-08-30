@@ -54,11 +54,11 @@ public class HardwareManager : IDisposable
                 regAddr: profile?.RegisterAddress ?? 1000,
                 funcCode: profile?.FunctionCode ?? 4,
                 div10: profile?.DivideBy10 ?? true),
-            DeviceProtocol.ModbusTCP => new ModbusDriver(cfg.TcpHost, cfg.TcpPort, cfg.UnitId),
+            DeviceProtocol.ModbusTCP => new ModbusDriver(cfg.TcpHost, cfg.TcpPort, cfg.UnitId, cfg.BtChannel, cfg.EtChannel),
             DeviceProtocol.BLE => new BleDriver(cfg.BleDeviceName, cfg.BleAddress),
             DeviceProtocol.WebSocket => new WebSocketDriver(cfg.WsUrl),
-            DeviceProtocol.MQTT => new MqttDriver(cfg.MqttBroker, cfg.MqttPort, cfg.MqttTopic, cfg.MqttUsername),
-            DeviceProtocol.S7PLC => new S7Driver(cfg.TcpHost, cfg.TcpPort, cfg.S7Rack, cfg.S7Slot, cfg.S7BtAddress, cfg.S7EtAddress),
+            DeviceProtocol.MQTT => new MqttDriver(cfg.MqttBroker, cfg.MqttPort, cfg.MqttTopic, cfg.MqttUsername, cfg.MqttPassword),
+            DeviceProtocol.S7PLC => new S7Driver(cfg.TcpHost, cfg.S7Port, cfg.S7Rack, cfg.S7Slot, cfg.S7BtAddress, cfg.S7EtAddress),
             DeviceProtocol.Gpio => CreateGpioDriver(cfg),
             _ => new SimulatedDriver()
         };

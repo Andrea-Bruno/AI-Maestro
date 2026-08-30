@@ -23,7 +23,7 @@ public static class DiagnosticsAPI
             logEntries = Log.Count,
             simulatorOnline = true,
             deviceConnected = false, // simulated
-            uptimeHours = Math.Round((DateTime.UtcNow - System.Diagnostics.Process.GetCurrentProcess().StartTime).TotalHours, 1)
+            uptimeHours = Math.Round((DateTime.UtcNow - System.Diagnostics.Process.GetCurrentProcess().StartTime.ToUniversalTime()).TotalHours, 1)
         });
     }
 

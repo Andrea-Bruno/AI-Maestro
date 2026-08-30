@@ -38,6 +38,7 @@ public class HardwareConfig
     // ── S7 PLC ──
     public int S7Rack { get; set; } = 0;
     public int S7Slot { get; set; } = 1;
+    public int S7Port { get; set; } = 102;
     public string S7BtAddress { get; set; } = "DB1.DBD0";
     public string S7EtAddress { get; set; } = "DB1.DBD4";
 

@@ -36,10 +36,12 @@ public class BleDriver : IHardwareDriver
                 return true;
             }
 #endif
-            // Fallback: return connected (data comes via simulation until real BLE is tested)
-            Status = DeviceStatus.Connected;
+            // BLE is not implemented on this platform: never claim "connected" without data.
+            LastError = "BLE is not implemented on this platform (Linux): connect the scale/machine " +
+                        "via its supported protocol instead. Running in simulation mode.";
+            Status = DeviceStatus.Error;
             OnStatusChanged?.Invoke(Status);
-            return true;
+            return false;
         }
         catch (Exception ex)
         {

@@ -15,6 +15,7 @@ public class WebSocketDriver : IHardwareDriver
     private readonly string _url;
     private ClientWebSocket? _ws;
     private CancellationTokenSource? _cts;
+    private DateTime _startTime;
 
     public WebSocketDriver(string url) => _url = url;
 
@@ -25,6 +26,7 @@ public class WebSocketDriver : IHardwareDriver
             _ws = new ClientWebSocket();
             _cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
             await _ws.ConnectAsync(new Uri(_url), _cts.Token);
+            _startTime = DateTime.UtcNow;
             Status = DeviceStatus.Connected; OnStatusChanged?.Invoke(Status);
             _ = Task.Run(() => ReceiveLoopAsync(_cts.Token)); return true;
         }
@@ -45,7 +47,7 @@ public class WebSocketDriver : IHardwareDriver
                     var doc = JsonDocument.Parse(Encoding.UTF8.GetString(buf, 0, r.Count));
                     var root = doc.RootElement;
                     if (root.TryGetProperty("bt", out var b) && root.TryGetProperty("et", out var e))
-                        OnSampleReceived?.Invoke(new DeviceSample { TimeSec = DateTime.UtcNow.Ticks / 10_000_000.0, Bt = b.GetDouble(), Et = e.GetDouble(), IsValid = true });
+                        OnSampleReceived?.Invoke(new DeviceSample { TimeSec = (DateTime.UtcNow - _startTime).TotalSeconds, Bt = b.GetDouble(), Et = e.GetDouble(), IsValid = true });
                 }
                 catch { }
             }

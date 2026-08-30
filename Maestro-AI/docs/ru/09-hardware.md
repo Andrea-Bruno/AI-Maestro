@@ -116,13 +116,67 @@ The full configuration with defaults:
 
 #### GPIO — SBC 40-pin (Raspberry Pi / Orange Pi)
 
-> **Orange Pi 5 Pro:** см. соответствующий раздел в английском руководстве (`docs/en/09-hardware.md` → «GPIO — Orange Pi 5 Pro»): карта выводов (BCM → "chip:line") и требования (libgpiod, overlays).
+#### GPIO — Orange Pi 5 Pro (40-контактный разъём)
+
+Драйвер GPIO рассчитан на **40-контактный разъём Raspberry Pi** (нумерация BCM = «сырые» линии gpiochip0). На **Orange Pi 5 Pro** номера BCM **НЕ** совпадают с линиями gpiochip — управление ими вслепую задействовало бы не те физические контакты. Maestro-AI решает это безопасно:
+
+- **Определение платы**: драйвер читает `/proc/device-tree/model`; на любой плате, отличной от Raspberry Pi, он **отказывается открывать GPIO без явной карты контактов** и переходит в режим симуляции с понятной ошибкой (он никогда молча не управляет не теми контактами).
+- **Карта контактов**: настройте `Hardware.GpioPinMap` (контакт BCM → `"chip:line"`).
+
+##### Требования Orange Pi 5 Pro
+
+| Требование | Подробности |
+|---|---|
+| **libgpiod** | `System.Device.Gpio` требует нативную библиотеку `libgpiod` (`libgpiod2` на Debian Bookworm). Установщик одной командой ставит её автоматически; без неё драйвер GPIO переходит в симуляцию с ошибкой. |
+| **Доступ root** | Чипы GPIO (`/dev/gpiochip0-5`) доступны только root. Запускайте Maestro-AI как systemd-службу `maestro-ai` (по умолчанию) — ручной `dotnet run` от обычного пользователя даёт режим симуляции. |
+| **1-Wire (DS18B20)** | По умолчанию не включён: нет шины `/sys/bus/w1`. Включите оверлей 1-Wire в device tree (`/boot/orangepiEnv.txt`: `overlay=w1-gpio` + нужный GPIO) перед использованием DS18B20. |
+| **SPI (термопара MAX31855)** | По умолчанию не включён (нет `/dev/spidev*`). Чтение SPI для MAX31855 в драйвере всё равно не реализовано — таблица ограничений действует на всех платах. |
+| **Последовательный порт** | Доступен только `/dev/ttyS9`; Modbus RTU к машине требует адаптер USB-RS485 (узел USB-serial появляется как `/dev/ttyUSB0`). |
+
+##### Карта контактов Orange Pi 5 Pro (проверено через `gpio readall` / WiringOP)
+
+| Функция | BCM (Raspberry Pi) | Физический контакт (OPi 5 Pro) | chip:line |
+|---|---|---|---|
+| SSR нагрева | 17 | 11 | `4:10` |
+| Вентилятор | 18 | 12 | `1:7` |
+| Реле двигателя барабана | 22 | 15 | `1:14` |
+| Реле лотка охлаждения | 23 | 16 | `1:1` |
+| Светодиод состояния | 24 | 18 | `1:0` |
+| Сигнализация | 25 | 22 | `1:8` |
+| Соленоид пробоотборника | 27 | 13 | `4:11` |
+| DS18B20 (1-Wire) | 4 | 7 | `1:15` |
+
+`appsettings.json` (Orange Pi 5 Pro):
+
+```json
+"Hardware": {
+  "Enabled": true,
+  "MachineType": "52Pi EP-0129 GPIO 40-PIN Hat",
+  "GpioPinMap": {
+    "17": "4:10", "18": "1:7",  "22": "1:14", "23": "1:1",
+    "24": "1:0",  "25": "1:8",  "27": "4:11", "4":  "1:15"
+  }
+}
+```
+
+Сначала проверьте карту своей платы через `gpio readall` (WiringOP): колонка «GPIO» — это глобальный номер линии, `chip = GPIO / 32`, `line = GPIO % 32`.
+
+##### Схемы подключения (Orange Pi)
+
+| Схема | Возможность на Orange Pi | Примечания |
+|---|---|---|
+| **UI web ⇄ Сервер ⇄ GPIO Orange Pi ⇄ плата реле/SSR** | ✅ возможно | Требуются libgpiod + карта контактов выше; машина должна быть DIY/простой, управляемой реле/SSR. PWM цифровой on/off (пороговый), не пропорциональный — для точного нагрева используйте внешний преобразователь PWM→0-10V или машину с PID. |
+| **UI web ⇄ Сервер ⇄ ПЛК (S7 / Modbus TCP) ⇄ машина** | ✅ рекомендуется | Машины со встроенным ПЛК общаются по S7 (Siemens) или Modbus TCP через LAN — GPIO не нужен, самый надёжный путь для промышленных машин. |
+| **UI web ⇄ Сервер ⇄ MQTT-брокер ⇄ машина** | ✅ возможно | Для машин с поддержкой MQTT (Roest, Petroncini, ...). |
+| **UI web ⇄ Сервер ⇄ RS485 (Modbus RTU) ⇄ машина** | ✅ с адаптером USB-RS485 | `/dev/ttyS9` сам по себе не RS485; используйте USB-RS485 переходник (`/dev/ttyUSB0`). |
+| **Термопара через SPI (MAX31855)** | ❌ не из коробки | Оверлей SPI не включён, чтение SPI не реализовано — используйте DS18B20 (после включения 1-Wire) или машину с собственным цифровым выходом. |
+| **DS18B20 1-Wire** | ⚠️ нужен оверлей | Включите 1-Wire в device tree перед использованием. |
 
 **Device:** [52Pi EP-0129 GPIO Screw Terminal Hat](https://wiki.52pi.com/index.php?title=EP-0129)  
 **Manufacturer:** 52Pi  
 **Type:** Passive GPIO breakout board — exposes Raspberry Pi 40-pin GPIO to screw terminals with LED indicators.  
 **NuGet:** `System.Device.Gpio` v3.2.0  
-**Platform:** Linux ARM (Raspberry Pi OS 64-bit). Simulation mode on Windows.  
+**Платформа:** Linux ARM — Raspberry Pi OS 64-bit (нумерация BCM, карта не требуется) или Orange Pi 5 Pro и другие SBC с 40 контактами (требуется `Hardware.GpioPinMap`, см. раздел «GPIO — Orange Pi 5 Pro» ниже). Под Windows — режим симуляции.  
 **Pin numbering:** BCM (Broadcom).
 
 ##### Typical wiring for coffee roasting

@@ -116,13 +116,67 @@ Configurazione completa con valori predefiniti:
 
 #### GPIO — SBC 40-pin (Raspberry Pi / Orange Pi)
 
-> **Orange Pi 5 Pro:** vedi la sezione dedicata nella guida inglese (`docs/en/09-hardware.md` → «GPIO — Orange Pi 5 Pro»): mappa dei pin (BCM → "chip:line") e requisiti (libgpiod, overlay).
+#### GPIO — Orange Pi 5 Pro (header 40-pin)
+
+Il driver GPIO è pensato per l'**header 40-pin del Raspberry Pi** (numerazione BCM = linee raw di gpiochip0). Su una **Orange Pi 5 Pro** i numeri BCM **NON** corrispondono alle linee gpiochip — guidarli alla cieca agirebbe sui pin fisici sbagliati. Maestro-AI gestisce questo in sicurezza:
+
+- **Rilevamento scheda**: il driver legge `/proc/device-tree/model`; su qualsiasi scheda non-Raspberry Pi **rifiuta di aprire la GPIO senza una mappa pin esplicita** e cade in simulazione con un errore chiaro (non pilota mai silenziosamente i pin sbagliati).
+- **Mappa pin**: configura `Hardware.GpioPinMap` (pin BCM → `"chip:line"`).
+
+##### Requisiti Orange Pi 5 Pro
+
+| Requisito | Dettagli |
+|---|---|
+| **libgpiod** | `System.Device.Gpio` richiede la libreria nativa `libgpiod` (`libgpiod2` su Debian Bookworm). L'installer one-line la installa automaticamente; senza, il driver GPIO cade in simulazione con un errore. |
+| **Accesso root** | I chip GPIO (`/dev/gpiochip0-5`) sono leggibili/scrivibili solo da root. Esegui Maestro-AI come servizio systemd `maestro-ai` (default) — un `dotnet run` manuale come utente normale ottiene la modalità simulazione. |
+| **1-Wire (DS18B20)** | Non abilitato di default: niente bus `/sys/bus/w1`. Abilita l'overlay 1-Wire nel device tree (`/boot/orangepiEnv.txt`: `overlay=w1-gpio` + la GPIO corretta) prima di usare un DS18B20. |
+| **SPI (termocoppia MAX31855)** | Non abilitato di default (niente `/dev/spidev*`). Il lettore SPI MAX31855 non è comunque implementato nel driver — la tabella delle limitazioni vale su ogni scheda. |
+| **Seriale** | È esposta solo `/dev/ttyS9`; il Modbus RTU verso una macchina richiede un adattatore USB-RS485 (il nodo USB-serial appare come `/dev/ttyUSB0`). |
+
+##### Mappa pin Orange Pi 5 Pro (verificata con `gpio readall` / WiringOP)
+
+| Funzione | BCM (Raspberry Pi) | Pin fisico (OPi 5 Pro) | chip:line |
+|---|---|---|---|
+| SSR riscaldamento | 17 | 11 | `4:10` |
+| Ventola | 18 | 12 | `1:7` |
+| Relè motore tamburo | 22 | 15 | `1:14` |
+| Relè vassoio raffreddamento | 23 | 16 | `1:1` |
+| LED di stato | 24 | 18 | `1:0` |
+| Allarme | 25 | 22 | `1:8` |
+| Elettrocalamita prelievo chicchi | 27 | 13 | `4:11` |
+| DS18B20 (1-Wire) | 4 | 7 | `1:15` |
+
+`appsettings.json` (Orange Pi 5 Pro):
+
+```json
+"Hardware": {
+  "Enabled": true,
+  "MachineType": "52Pi EP-0129 GPIO 40-PIN Hat",
+  "GpioPinMap": {
+    "17": "4:10", "18": "1:7",  "22": "1:14", "23": "1:1",
+    "24": "1:0",  "25": "1:8",  "27": "4:11", "4":  "1:15"
+  }
+}
+```
+
+Verifica prima la mappatura della tua scheda con `gpio readall` (WiringOP): la colonna "GPIO" è il numero di linea globale, `chip = GPIO / 32`, `line = GPIO % 32`.
+
+##### Schemi di collegamento (Orange Pi)
+
+| Schema | Fattibilità sulla Orange Pi | Note |
+|---|---|---|
+| **UI web ⇄ Server ⇄ GPIO Orange Pi ⇄ scheda relè/SSR** | ✅ possibile | Richiede libgpiod + la mappa pin sopra; la macchina deve essere fai-da-te/semplice pilotata da relè/SSR. Il PWM è digitale on/off (soglia), non proporzionale — per un riscaldamento preciso usa un convertitore PWM→0-10V esterno o una macchina con PID. |
+| **UI web ⇄ Server ⇄ PLC (S7 / Modbus TCP) ⇄ macchina** | ✅ consigliato | Le macchine con PLC integrato parlano S7 (Siemens) o Modbus TCP via LAN — niente GPIO, percorso più affidabile per macchine industriali. |
+| **UI web ⇄ Server ⇄ broker MQTT ⇄ macchina** | ✅ possibile | Per macchine compatibili MQTT (Roest, Petroncini, ...). |
+| **UI web ⇄ Server ⇄ Seriale RS485 (Modbus RTU) ⇄ macchina** | ✅ con adattatore USB-RS485 | `/dev/ttyS9` da solo non è RS485; usa un dongle USB-RS485 (`/dev/ttyUSB0`). |
+| **Termocoppia via SPI (MAX31855)** | ❌ non di default | Overlay SPI non abilitato e lettore SPI non implementato — usa DS18B20 (dopo aver abilitato 1-Wire) o una macchina con uscita digitale propria. |
+| **DS18B20 1-Wire** | ⚠️ richiede overlay | Abilita 1-Wire nel device tree prima dell'uso. |
 
 **Dispositivo:** [52Pi EP-0129 GPIO Screw Terminal Hat](https://wiki.52pi.com/index.php?title=EP-0129)  
 **Produttore:** 52Pi  
 **Tipo:** **Passive GPIO breakout board** — non ha un protocollo di comunicazione proprio, espone i 40 pin GPIO del Raspberry Pi a morsettiere a vite con LED di stato colorati.  
 **NuGet:** `System.Device.Gpio` v3.2.0 (aggiunto automaticamente al build)  
-**Piattaforma:** Linux ARM (Raspberry Pi OS 64-bit). Su Windows il driver cade in **modalità simulazione**.  
+**Piattaforma:** Linux ARM — Raspberry Pi OS 64-bit (numerazione BCM, nessuna mappa richiesta) oppure Orange Pi 5 Pro e altre SBC 40-pin (richiede `Hardware.GpioPinMap`, vedi la sezione "GPIO — Orange Pi 5 Pro" sotto). Su Windows il driver cade in **modalità simulazione**.  
 **Numerazione:** **BCM (Broadcom)** — non la numerazione fisica dei pin!
 
 > ⚠️ **Importante:** La EP-0129 **non** è un termometro, PID controller o datalogger. È solo un adattatore che trasforma i pin GPIO in morsetti a vite. Il Raspberry Pi fa tutto il lavoro.

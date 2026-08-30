@@ -218,6 +218,12 @@ public static class RoastAPI
 
         // Save auto
         ProfileSerializer.Save(profile);
+
+        // Disconnect hardware and stop the poll loop: reset all output pins to INPUT
+        // (safe state, SSR/relays off). Without this the driver stays connected and the
+        // polling loop keeps feeding the (now removed) session.
+        HardwareManager.Instance.StopAsync().GetAwaiter().GetResult();
+
         SessionManager.Remove(sessionId);
 
         return JsonSerializer.Serialize(new { success = true, profileName = profile.Name });

@@ -15,6 +15,7 @@ public class SerialDriver : IHardwareDriver
     private readonly byte _funcCode;
     private readonly bool _div10;
     private SerialPort? _port;
+    private DateTime _startTime;
 
     public SerialDriver(string port, int baud = 9600, int dataBits = 8, string parity = "None",
         int unitId = 1, int regAddr = 1000, int funcCode = 4, bool div10 = true)
@@ -30,6 +31,7 @@ public class SerialDriver : IHardwareDriver
             var p = _parity.ToLower() switch { "even" => Parity.Even, "odd" => Parity.Odd, _ => Parity.None };
             _port = new SerialPort(_portName, _baud, p, _dataBits, StopBits.One) { ReadTimeout = 2000, WriteTimeout = 1000 };
             _port.Open();
+            _startTime = DateTime.UtcNow;
             Status = DeviceStatus.Connected; OnStatusChanged?.Invoke(Status); return Task.FromResult(true);
         }
         catch (Exception ex) { LastError = ex.Message; Status = DeviceStatus.Error; OnStatusChanged?.Invoke(Status); return Task.FromResult(false); }
@@ -47,11 +49,11 @@ public class SerialDriver : IHardwareDriver
         if (_port == null || !_port.IsOpen) return new DeviceSample { IsValid = false };
         try
         {
-            // Modbus RTU read: FC=_funcCode, reg=_regAddr, count=1
+            // Modbus RTU read: FC=_funcCode, start=_regAddr, count=2 (BT, ET adjacent)
             byte[] req = new byte[8];
             req[0] = (byte)_unitId; req[1] = _funcCode;
             req[2] = (byte)(_regAddr >> 8); req[3] = (byte)_regAddr;
-            req[4] = 0; req[5] = 1; // 1 register
+            req[4] = 0; req[5] = 2; // 2 registers
             ushort crc = Crc16(req, 6);
             req[6] = (byte)(crc & 0xFF); req[7] = (byte)((crc >> 8) & 0xFF);
 
@@ -59,16 +61,17 @@ public class SerialDriver : IHardwareDriver
             _port.Write(req, 0, 8);
             await Task.Delay(80, ct); // non-blocking wait for response
 
-            if (_port.BytesToRead < 7) return new DeviceSample { IsValid = false };
+            if (_port.BytesToRead < 9) return new DeviceSample { IsValid = false };
 
             byte[] resp = new byte[_port.BytesToRead];
             _port.Read(resp, 0, resp.Length);
 
-            // Response: [unitId, funcCode, byteCount, dataH, dataL, crcL, crcH]
-            if ((resp[1] == _funcCode || resp[1] == 0x03) && resp.Length >= 5)
+            // Response: [unitId, funcCode, byteCount, btHi, btLo, etHi, etLo, crcL, crcH]
+            if (resp[1] == _funcCode && resp.Length >= 9)
             {
-                float val = ((resp[3] << 8) | resp[4]) / (_div10 ? 10f : 1f);
-                return new DeviceSample { TimeSec = DateTime.UtcNow.Ticks / 10_000_000.0, Bt = val, Et = val, IsValid = true };
+                float bt = ((resp[3] << 8) | resp[4]) / (_div10 ? 10f : 1f);
+                float et = ((resp[5] << 8) | resp[6]) / (_div10 ? 10f : 1f);
+                return new DeviceSample { TimeSec = (DateTime.UtcNow - _startTime).TotalSeconds, Bt = bt, Et = et, IsValid = true };
             }
             return new DeviceSample { IsValid = false };
         }
