@@ -5,7 +5,7 @@
 
 ![License](https://img.shields.io/badge/License-ABL%201.4-blue)
 ![Platform](https://img.shields.io/badge/Platform-Linux%20ARM64%20%7C%20x64-orange)
-![Self-contained](https://img.shields.io/badge/Self-contained-No%20.NET%20needed-green)
+![Self-contained](https://img.shields.io/badge/Self--contained-No%20.NET%20needed-green)
 ![Latest release](https://img.shields.io/github/v/release/Andrea-Bruno/AI-Maestro)
 
 ## AI Roasting Machine — Intelligent Coffee Roasting Platform
