@@ -132,12 +132,22 @@ Maestro-AI provides a comprehensive REST API with 22+ endpoint modules:
 
 All endpoints follow REST conventions and support JSON serialization for seamless integration.
 
+## Quick install (Linux)
+
+One copy-paste command downloads the latest release, unpacks it into `/opt/maestro-ai` and registers it as a service that starts at boot — no .NET runtime, no manual steps:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Andrea-Bruno/AI-Maestro/main/install.sh | bash
+```
+
+The control unit is then available at `http://<machine-ip>:5252` (web UI and API), configured for a certificate-free LAN. See the [installation guide](docs/en/00-installation.md) for prerequisites, options, verification and troubleshooting.
+
 ## System Requirements
 
-- **.NET**: 10.0 or later
-- **Operating System**: Windows, Linux, macOS
+- **.NET**: 10.0 or later (only when building from source — the release archives are self-contained)
+- **Operating System**: Linux (release archives for ARM64 and x64), or Windows/macOS from source
 - **Memory**: Minimum 512 MB (recommended 2 GB+)
-- **Hardware**: Compatible roasting machine with supported drivers
+- **Hardware**: Compatible roasting machine with supported drivers (simulated mode works without hardware)
 - **Browser**: Modern browsers supporting HTML5/ES6 (Chrome, Firefox, Safari, Edge)
 
 ## Project Structure

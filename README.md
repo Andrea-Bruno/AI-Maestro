@@ -1,5 +1,13 @@
 # Maestro-AI
 
+[![Install](https://img.shields.io/badge/Install-One%20command-orange?style=for-the-badge&logo=linux&logoColor=white)](https://raw.githubusercontent.com/Andrea-Bruno/AI-Maestro/main/install.sh)
+[![Download release](https://img.shields.io/badge/Download%20release-latest-blue?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Andrea-Bruno/AI-Maestro/releases/latest)
+
+![License](https://img.shields.io/badge/License-ABL%201.4-blue)
+![Platform](https://img.shields.io/badge/Platform-Linux%20ARM64%20%7C%20x64-orange)
+![Self-contained](https://img.shields.io/badge/Self-contained-No%20.NET%20needed-green)
+![Latest release](https://img.shields.io/github/v/release/Andrea-Bruno/AI-Maestro)
+
 ## AI Roasting Machine — Intelligent Coffee Roasting Platform
 
 Imagine being able to reproduce your best roast **every single time**, even when the green coffee changes from one harvest to the next. Imagine checking the status of your roasting machine from your phone while you are away from the factory, or having every batch automatically certified with a digital birth certificate that your customers can scan and trust.
@@ -298,12 +306,22 @@ Coffee roasting thus becomes the starting point for a broader revolution, where 
 
 ---
 
+## Quick install (Linux)
+
+One copy-paste command downloads the latest release, unpacks it into `/opt/maestro-ai` and registers it as a service that starts at boot — no .NET runtime, no manual steps:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Andrea-Bruno/AI-Maestro/main/install.sh | bash
+```
+
+The control unit is then available at `http://<machine-ip>:5252` (web UI and API), configured for a certificate-free LAN. Full prerequisites, options, verification, updates and troubleshooting are in the [installation guide](INSTALL.md); common questions are answered in the [FAQ](FAQ.md).
+
 ## System Requirements
 
-- **.NET**: 10.0 or later
-- **Operating System**: Windows, Linux, macOS
+- **.NET**: 10.0 or later (only when building from source — the release archives are self-contained)
+- **Operating System**: Linux (release archives for ARM64 and x64), or Windows/macOS from source
 - **Memory**: Minimum 512 MB (recommended 2 GB+)
-- **Hardware**: Compatible roasting machine with supported drivers
+- **Hardware**: Compatible roasting machine with supported drivers (simulated mode works without hardware)
 - **Browser**: Modern browsers supporting HTML5/ES6 (Chrome, Firefox, Safari, Edge)
 
 ## Project Structure
