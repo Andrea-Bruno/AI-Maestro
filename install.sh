@@ -49,6 +49,13 @@ if command -v dpkg >/dev/null 2>&1; then
     sudo apt-get update -qq && sudo apt-get install -y -qq libicu-dev || \
       echo "WARN: libicu install failed (the app may need it on this distro)." >&2
   fi
+  # System.Device.Gpio requires the native libgpiod to drive the 40-pin GPIO header.
+  # Without it the GPIO driver falls back to simulation with a clear error.
+  if ! /sbin/ldconfig -p 2>/dev/null | grep -q 'libgpiod\.so'; then
+    echo "Installing libgpiod (40-pin GPIO support)..."
+    sudo apt-get update -qq && sudo apt-get install -y -qq libgpiod2 || \
+      echo "WARN: libgpiod install failed (GPIO driver will fall back to simulation)." >&2
+  fi
 fi
 
 # --- download the latest (or pinned) release ---

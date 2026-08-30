@@ -58,6 +58,12 @@ public class HardwareConfig
     public string GpioTempType { get; set; } = "ds18b20";
     public string GpioTempAddress { get; set; } = "";
 
+    // ── GPIO pin map (BCM pin -> "chip:line") ──
+    // Required on boards where the BCM numbers do not match the gpiochip lines (Orange Pi
+    // 5 Pro and most non-Raspberry-Pi SBCs). Raspberry Pi uses BCM numbers directly (chip0
+    // raw lines) and needs no map. See docs/en/09-hardware.md for the Orange Pi table.
+    public Dictionary<string, string>? GpioPinMap { get; set; }
+
     // ── Simulation parameters (used when Enabled == false) ──
     public SimulatedConfig Simulated { get; set; } = new();
 }

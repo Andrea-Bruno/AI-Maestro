@@ -439,6 +439,62 @@ tail -f logs/*.txt | grep GpioDriver
 | `SetFanSpeed` | `percent` (0-100) | Set fan speed | On/off threshold at 50%. Only with GPIO driver. |
 | `SetGpioPin` | `pin` (int), `high` (bool) | Set any output pin | Direct GPIO control. Only with GPIO driver. |
 
+#### GPIO — Orange Pi 5 Pro (40-pin header)
+
+The GPIO driver targets the **Raspberry Pi 40-pin header** (BCM numbering = gpiochip0 raw lines). On an **Orange Pi 5 Pro** the BCM numbers do **NOT** match the gpiochip lines — driving them blindly would act on the wrong physical pins. Maestro-AI handles this safely:
+
+- **Board detection**: the driver reads `/proc/device-tree/model`; on any non-Raspberry-Pi board it **refuses to open GPIO without an explicit pin map** and falls back to simulation with a clear error (it never silently drives the wrong pins).
+- **Pin map**: configure `Hardware.GpioPinMap` (BCM pin → `"chip:line"`).
+
+##### Orange Pi 5 Pro requirements
+
+| Requirement | Details |
+|---|---|
+| **libgpiod** | `System.Device.Gpio` needs the native `libgpiod` (`libgpiod2` on Debian Bookworm). The one-line installer installs it automatically; without it the GPIO driver falls back to simulation with an error. |
+| **Root access** | The GPIO chips (`/dev/gpiochip0-5`) are readable/writable by root only. Run Maestro-AI as the `maestro-ai` systemd service (default) — a manual `dotnet run` as a normal user gets simulation mode. |
+| **1-Wire (DS18B20)** | Not enabled out of the box: no `/sys/bus/w1` bus. Enable the 1-Wire overlay in the device tree (`/boot/orangepiEnv.txt`: `overlay=w1-gpio` + the correct GPIO) before using a DS18B20. |
+| **SPI (MAX31855 thermocouple)** | Not enabled out of the box (no `/dev/spidev*`). The MAX31855 SPI reader is not implemented in the driver anyway — the documentation limitation table applies on every board. |
+| **Serial** | Only `/dev/ttyS9` is exposed; Modbus RTU to a machine needs a USB-RS485 adapter (the USB-serial node appears as `/dev/ttyUSB0`). |
+
+##### Orange Pi 5 Pro pin map (verified with `gpio readall` / WiringOP)
+
+| Function | BCM (Raspberry Pi) | Physical pin (OPi 5 Pro) | chip:line |
+|---|---|---|---|
+| Heater SSR | 17 | 11 | `4:10` |
+| Fan | 18 | 12 | `1:7` |
+| Drum motor relay | 22 | 15 | `1:14` |
+| Cooling tray relay | 23 | 16 | `1:1` |
+| Status LED | 24 | 18 | `1:0` |
+| Alarm | 25 | 22 | `1:8` |
+| Bean trier solenoid | 27 | 13 | `4:11` |
+| DS18B20 (1-Wire) | 4 | 7 | `1:15` |
+
+`appsettings.json` (Orange Pi 5 Pro):
+
+```json
+"Hardware": {
+  "Enabled": true,
+  "MachineType": "52Pi EP-0129 GPIO 40-PIN Hat",
+  "GpioPinMap": {
+    "17": "4:10", "18": "1:7",  "22": "1:14", "23": "1:1",
+    "24": "1:0",  "25": "1:8",  "27": "4:11", "4":  "1:15"
+  }
+}
+```
+
+Verify your board's own mapping first with `gpio readall` (WiringOP): the "GPIO" column is the global line number, `chip = GPIO / 32`, `line = GPIO % 32`.
+
+##### Connection schemes (Orange Pi)
+
+| Scheme | Feasibility on the Orange Pi | Notes |
+|---|---|---|
+| **UI web ⇄ Server ⇄ Orange Pi GPIO ⇄ relay/SSR board** | ✅ possible | Requires libgpiod + the pin map above; the machine must be a DIY/simple machine driven by relays/SSRs. PWM is digital on/off (threshold), not proportional — for precise heating use an external PWM→0-10V converter or a PID machine. |
+| **UI web ⇄ Server ⇄ PLC (S7 / Modbus TCP) ⇄ machine** | ✅ recommended | Machines with an integrated PLC talk S7 (Siemens) or Modbus TCP over the LAN — no GPIO needed, most reliable path for industrial machines. |
+| **UI web ⇄ Server ⇄ MQTT broker ⇄ machine** | ✅ possible | For MQTT-capable machines (Roest, Petroncini, ...). |
+| **UI web ⇄ Server ⇄ Serial RS485 (Modbus RTU) ⇄ machine** | ✅ with a USB-RS485 adapter | `/dev/ttyS9` alone is not RS485; use a USB-RS485 dongle (`/dev/ttyUSB0`). |
+| **Thermocouple via SPI (MAX31855)** | ❌ not out of the box | SPI overlay not enabled and the SPI reader is not implemented — use DS18B20 (after enabling 1-Wire) or a machine with its own digital output. |
+| **DS18B20 1-Wire** | ⚠️ needs overlay | Enable 1-Wire in the device tree before use. |
+
 #### Seriale (Fuji PID, CENTER, Arduino TC4)
 ```json
 "Enabled": true,

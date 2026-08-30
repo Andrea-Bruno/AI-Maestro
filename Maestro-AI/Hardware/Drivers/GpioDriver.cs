@@ -1,27 +1,31 @@
-using System.Text.Json;
+using System.Device.Gpio;
+using System.Device.Gpio.Drivers;
 using Maestro_AI.Models;
 
 namespace Maestro_AI.Hardware.Drivers;
 
 /// <summary>
 /// GPIO driver for SBC 40-pin headers (Raspberry Pi, Orange Pi, etc.).
-/// Uses System.Device.Gpio for pin-level I/O.
-/// Device: 52Pi EP-0129 GPIO Screw Terminal Hat (passive breakout).
+/// Uses System.Device.Gpio for pin-level I/O. Target board: 52Pi EP-0129-style passive
+/// screw-terminal breakout.
 ///
-/// Pin mapping (BCM numbering) is configured via HardwareConfig.GpioPins.
-/// Typical wiring for coffee roasting:
-///   GPIO17 — Heater SSR control (PWM)
-///   GPIO18 — Fan PWM control
-///   GPIO22 — Drum motor relay
-///   GPIO27 — Bean trier solenoid
-///   GPIO23 — Cooling tray relay
-///   GPIO24 — Status LED (green)
-///   GPIO25 — Alarm output
-///   GPIO4  — DS18B20 1-Wire temperature sensor
-///   GPIO9  — SPI MISO (MAX31855 thermocouple)
-///   GPIO10 — SPI MOSI
-///   GPIO11 — SPI CLK
-///   GPIO8  — SPI CE0
+/// Pin numbering: on a Raspberry Pi the configured numbers are the BCM numbers (chip0 raw
+/// lines). On other boards (e.g. Orange Pi 5 Pro) the BCM numbers do NOT match the
+/// gpiochip lines, so Hardware.GpioPinMap must map each BCM number to a "chip:line" pair
+/// (see the Orange Pi 5 Pro table in docs/en/09-hardware.md). Without a map on a non-Pi
+/// board the driver refuses to open pins (safety: it must not silently drive the wrong
+/// physical pins) and falls back to simulation with a clear error.
+///
+/// System dependency: the native libgpiod library is required on Linux (the installer
+/// ships libgpiod2); without it System.Device.Gpio cannot start and the driver falls back
+/// to simulation.
+///
+/// Typical wiring for coffee roasting (BCM numbers):
+///   GPIO17 — Heater SSR control      GPIO23 — Cooling tray relay
+///   GPIO18 — Fan control             GPIO24 — Status LED (green)
+///   GPIO22 — Drum motor relay        GPIO25 — Alarm output
+///   GPIO27 — Bean trier solenoid     GPIO4  — DS18B20 1-Wire temperature sensor
+///   GPIO9-11/8 — SPI (MAX31855 thermocouple)
 /// </summary>
 public class GpioDriver : IHardwareDriver, IDisposable
 {
@@ -37,12 +41,10 @@ public class GpioDriver : IHardwareDriver, IDisposable
     private int _sampleCount;
     private double _simulatedBt = 25;
     private double _simulatedEt = 200;
+    private bool _isRaspberryPi;
 
-    // System.Device.Gpio types (late-bound via reflection if library is missing)
-    private dynamic? _controller;
-    private Type? _gpioControllerType;
-    private Type? _pinModeType;
-    private Type? _pinValueType;
+    private Dictionary<int, GpioController> _controllers = new();   // gpiochip -> controller
+    private Dictionary<int, (int Chip, int Line)>? _pinMap;
 
     /// <summary>
     /// Configures the GPIO pin mapping. Called by HardwareManager before ConnectAsync.
@@ -53,6 +55,53 @@ public class GpioDriver : IHardwareDriver, IDisposable
         _config = config;
     }
 
+    /// <summary>True when the running board is a Raspberry Pi (BCM numbering = chip0 raw lines).</summary>
+    private bool DetectRaspberryPi()
+    {
+        try
+        {
+            var model = System.IO.File.ReadAllText("/proc/device-tree/model").TrimEnd('\0');
+            return model.Contains("Raspberry Pi");
+        }
+        catch { return false; }
+    }
+
+    /// <summary>Parses the BCM pin -> "chip:line" map from GpioConfig.PinMap.</summary>
+    private void ParsePinMap()
+    {
+        _pinMap = null;
+        if (_config?.PinMap == null || _config.PinMap.Count == 0) return;
+        _pinMap = new Dictionary<int, (int, int)>();
+        foreach (var kv in _config.PinMap)
+        {
+            if (int.TryParse(kv.Key, out var bcmPin) && kv.Value.Split(':') is [var cs, var ls]
+                && int.TryParse(cs, out var chip) && int.TryParse(ls, out var line))
+            {
+                _pinMap[bcmPin] = (chip, line);
+            }
+        }
+    }
+
+    /// <summary>Resolves a configured (BCM) pin to a (gpiochip, line) pair.</summary>
+    private (int Chip, int Line) ResolvePin(int pin)
+    {
+        if (_pinMap != null && _pinMap.TryGetValue(pin, out var mapped)) return mapped;
+        return (0, pin);   // Raspberry Pi: BCM number = raw line on chip0
+    }
+
+    /// <summary>Gets (creating if needed) the GpioController for a given gpiochip.</summary>
+    private GpioController GetController(int chip)
+    {
+        if (!_controllers.TryGetValue(chip, out var ctrl))
+        {
+            // LibGpiodDriver is System.Device.Gpio 3.x (requires libgpiod on the system);
+            // the driver selects the requested /dev/gpiochipN.
+            ctrl = new GpioController(PinNumberingScheme.Logical, new LibGpiodDriver(chip));
+            _controllers[chip] = ctrl;
+        }
+        return ctrl;
+    }
+
     public async Task<bool> ConnectAsync(CancellationToken ct = default)
     {
         Status = DeviceStatus.Connecting;
@@ -60,46 +109,45 @@ public class GpioDriver : IHardwareDriver, IDisposable
 
         try
         {
-            // Try to load System.Device.Gpio at runtime (late-bound via reflection)
-            // On Windows: assembly may not be available → simulation fallback
-            // On Linux ARM (Raspberry Pi OS): assembly provides full GPIO control
-            var assembly = System.Reflection.Assembly.Load("System.Device.Gpio");
-            _gpioControllerType = assembly.GetType("System.Device.Gpio.GpioController");
-            _pinModeType = assembly.GetType("System.Device.Gpio.PinMode");
-            _pinValueType = assembly.GetType("System.Device.Gpio.PinValue");
+            _isRaspberryPi = DetectRaspberryPi();
+            ParsePinMap();
 
-            if (_gpioControllerType != null)
+            // Safety: on a non-Raspberry-Pi board the configured BCM numbers are NOT the
+            // gpiochip lines — opening them would silently drive the wrong physical pins.
+            // Without an explicit pin map the driver refuses and runs in simulation mode.
+            if (!_isRaspberryPi && _pinMap == null)
             {
-                _controller = Activator.CreateInstance(_gpioControllerType);
-                _gpioAvailable = true;
-
+                LastError = "GPIO pin map required on this board: the BCM pin numbers do not map to the " +
+                            "gpiochip lines. Configure Hardware.GpioPinMap (see docs/en/09-hardware.md) " +
+                            "or connect via a supported protocol (Modbus TCP, MQTT, S7). Running in simulation mode.";
+                _gpioAvailable = false;
+                Log.LogStep($"GpioDriver: {LastError}");
+            }
+            else
+            {
                 // Configure output pins
                 if (_config?.OutputPins != null)
                 {
-                    var outputMode = Enum.Parse(_pinModeType!, "Output");
                     foreach (var pin in _config.OutputPins)
                     {
-                        _controller!.OpenPin(pin, outputMode);
+                        var (chip, line) = ResolvePin(pin);
+                        GetController(chip).OpenPin(line, PinMode.Output);
                     }
                 }
 
                 // Configure input pins
                 if (_config?.InputPins != null)
                 {
-                    var inputMode = Enum.Parse(_pinModeType!, "InputPullDown");
                     foreach (var pin in _config.InputPins)
                     {
-                        _controller!.OpenPin(pin, inputMode);
+                        var (chip, line) = ResolvePin(pin);
+                        GetController(chip).OpenPin(line, PinMode.InputPullDown);
                     }
                 }
 
-                Log.LogStep($"GpioDriver: connected, {_config?.OutputPins?.Length ?? 0} output + {_config?.InputPins?.Length ?? 0} input pins");
-            }
-            else
-            {
-                LastError = "System.Device.Gpio assembly not found — running in simulation mode";
-                _gpioAvailable = false;
-                Log.LogStep($"GpioDriver: {LastError}");
+                _gpioAvailable = true;
+                Log.LogStep($"GpioDriver: connected ({(_isRaspberryPi ? "Raspberry Pi, BCM" : "pin map")}, " +
+                            $"{_controllers.Count} chip(s), {_config?.OutputPins?.Length ?? 0} output + {_config?.InputPins?.Length ?? 0} input pins)");
             }
 
             Status = DeviceStatus.Connected;
@@ -108,7 +156,7 @@ public class GpioDriver : IHardwareDriver, IDisposable
         }
         catch (Exception ex)
         {
-            LastError = $"GPIO init failed: {ex.Message}";
+            LastError = $"GPIO init failed: {ex.Message} (libgpiod installed? See docs/en/09-hardware.md)";
             Status = DeviceStatus.Error;
             OnStatusChanged?.Invoke(Status);
             Log.LogStep($"GpioDriver: {LastError}");
@@ -121,18 +169,22 @@ public class GpioDriver : IHardwareDriver, IDisposable
     {
         try
         {
-            if (_controller != null && _config != null && _gpioAvailable)
+            if (_config != null && _controllers.Count > 0)
             {
                 // Safety: reset all output pins to LOW (INPUT mode) before closing
-                // to prevent SSR/relays from staying on after disconnect
-                var inputMode = Enum.Parse(_pinModeType!, "Input");
+                // to prevent SSR/relays from staying on after disconnect.
                 foreach (var pin in _config.OutputPins ?? [])
                 {
-                    try { _controller.SetPinMode(pin, inputMode); } catch { }
+                    try
+                    {
+                        var (chip, line) = ResolvePin(pin);
+                        if (_controllers.TryGetValue(chip, out var ctrl)) ctrl.SetPinMode(line, PinMode.Input);
+                    }
+                    catch { }
                 }
             }
-            _controller?.Dispose();
-            _controller = null;
+            foreach (var ctrl in _controllers.Values) { try { ctrl.Dispose(); } catch { } }
+            _controllers.Clear();
         }
         catch { }
 
@@ -147,7 +199,7 @@ public class GpioDriver : IHardwareDriver, IDisposable
         _sampleCount++;
         double elapsed = _sampleCount * 2.0; // 2-second intervals
 
-        if (_gpioAvailable && _controller != null && _config != null)
+        if (_gpioAvailable && _controllers.Count > 0 && _config != null)
         {
             try
             {
@@ -158,8 +210,8 @@ public class GpioDriver : IHardwareDriver, IDisposable
                 // Read digital inputs
                 foreach (var inputPin in _config.InputPins ?? [])
                 {
-                    var rawValue = _controller.Read(inputPin);
-                    var value = rawValue?.ToString() == "High" ? 1 : 0;
+                    var (chip, line) = ResolvePin(inputPin);
+                    var value = _controllers[chip].Read(line) == PinValue.High ? 1 : 0;
                     OnDigitalInputReceived(inputPin, value);
                 }
 
@@ -186,7 +238,8 @@ public class GpioDriver : IHardwareDriver, IDisposable
     {
         if (_config?.TemperatureSensorPin >= 0 && _config.TemperatureSensorType == "ds18b20")
         {
-            // DS18B20 1-Wire: read from /sys/bus/w1/devices/ (Linux only)
+            // DS18B20 1-Wire: read from /sys/bus/w1/devices/ (Linux only; the 1-Wire
+            // overlay must be enabled in the device tree, see docs/en/09-hardware.md)
             try
             {
                 string w1Path = $"/sys/bus/w1/devices/28-{_config.TemperatureSensorAddress}/temperature";
@@ -243,15 +296,13 @@ public class GpioDriver : IHardwareDriver, IDisposable
     /// <summary>Set a GPIO output pin state.</summary>
     public void SetOutputPin(int pinNumber, bool high)
     {
-        if (!_gpioAvailable || _controller == null) return;
+        if (!_gpioAvailable || _controllers.Count == 0) return;
 
         try
         {
-            if (_pinValueType != null)
-            {
-                var value = Enum.Parse(_pinValueType, high ? "High" : "Low");
-                _controller.Write(pinNumber, value);
-            }
+            var (chip, line) = ResolvePin(pinNumber);
+            if (!_controllers.TryGetValue(chip, out var ctrl)) return;
+            ctrl.Write(line, high ? PinValue.High : PinValue.Low);
         }
         catch (Exception ex)
         {
@@ -259,7 +310,9 @@ public class GpioDriver : IHardwareDriver, IDisposable
         }
     }
 
-    /// <summary>Set heater PWM duty cycle (0-100). Uses configured heaterPin.</summary>
+    /// <summary>Set heater duty cycle (0-100). Digital on/off threshold: the SBC header has
+    /// no PWM pin in this mapping — proportional control needs hardware PWM or an external
+    /// PWM/SSR module (see docs/en/09-hardware.md).</summary>
     public void SetHeaterPwm(int percent)
     {
         if (_config == null) return;
@@ -268,7 +321,7 @@ public class GpioDriver : IHardwareDriver, IDisposable
             SetOutputPin(_config.HeaterPwmPin, _config.HeaterPwmPercent > 50);
     }
 
-    /// <summary>Set fan speed (0-100). Uses configured fanPin.</summary>
+    /// <summary>Set fan speed (0-100). Digital on/off threshold (see SetHeaterPwm).</summary>
     public void SetFanSpeed(int percent)
     {
         if (_config == null) return;
@@ -286,8 +339,8 @@ public class GpioDriver : IHardwareDriver, IDisposable
 
     public void Dispose()
     {
-        _controller?.Dispose();
-        _controller = null;
+        foreach (var ctrl in _controllers.Values) { try { ctrl.Dispose(); } catch { } }
+        _controllers.Clear();
     }
 }
 
@@ -303,4 +356,8 @@ public class GpioConfig
     public string TemperatureSensorAddress { get; set; } = "";
     public int HeaterPwmPercent { get; set; } = 0;
     public int FanPwmPercent { get; set; } = 0;
+
+    /// <summary>Optional BCM pin -> "chip:line" map for boards where the BCM numbering does
+    /// not match the gpiochip lines (e.g. Orange Pi 5 Pro). See docs/en/09-hardware.md.</summary>
+    public Dictionary<string, string>? PinMap { get; set; }
 }

@@ -101,6 +101,7 @@ public class HardwareManager : IDisposable
             TemperatureSensorPin = cfg.GpioTempPin,
             TemperatureSensorType = cfg.GpioTempType ?? "ds18b20",
             TemperatureSensorAddress = cfg.GpioTempAddress ?? "",
+            PinMap = cfg.GpioPinMap,
         };
         driver.Configure(gpioCfg);
         return driver;

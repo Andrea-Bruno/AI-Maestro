@@ -70,6 +70,8 @@ sudo systemctl restart maestro-ai
 
 The Hardware guide (`docs/en/09-hardware.md`) lists the 88 supported machine profiles across 8 protocols (S7/Modbus PLC, MQTT, serial, BLE, GPIO, WebSocket, ...).
 
+**GPIO (40-pin header):** the driver needs the native `libgpiod` (the installer ships it). On a Raspberry Pi the configured numbers are BCM and work directly; on an **Orange Pi 5 Pro** the BCM numbers do not map to the gpiochip lines — the driver refuses to open GPIO without the explicit `Hardware.GpioPinMap` (the Orange Pi 5 Pro table is in the Hardware guide). For the most reliable path on the Orange Pi, connect the machine via its PLC (S7/Modbus TCP), MQTT, or a serial RS485 adapter.
+
 ## Building from source (any platform)
 
 The project builds with the .NET 10 SDK. The sibling repositories (UISupportBlazor, EncryptedMessaging, SecureStorage, FullDuplexStreamSupport) are resolved automatically: from the source tree they are used as projects, on a clean machine the published NuGet packages are restored instead.
