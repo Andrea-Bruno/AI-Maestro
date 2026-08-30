@@ -7,6 +7,14 @@
     <RootNamespace>Maestro_AI</RootNamespace>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <UserSecretsId>619b5325-302a-4b31-a137-2817a733a16e</UserSecretsId>
+    <!-- Release gate (same scheme as AgentBridge): IsPrerelease=true while iterating →
+         version gets "-prerelease" and release.yml skips. Set IsPrerelease=false only when
+         the test cycles proved the version works → pushing main triggers release.yml, which
+         builds the platform archives and creates the GitHub release (tag v1.yy.MM.dd).
+         Date-based auto version: 1.yy.MM.dd (e.g. 1.26.08.30). -->
+    <IsPrerelease>true</IsPrerelease>
+    <Version Condition="'$(IsPrerelease)' == 'true'">$([System.DateTime]::Now.ToString("1.yy.MM.dd"))-prerelease</Version>
+    <Version Condition="'$(IsPrerelease)' != 'true'">$([System.DateTime]::Now.ToString("1.yy.MM.dd"))</Version>
   </PropertyGroup>
 
   <ItemGroup>

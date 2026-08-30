@@ -1,0 +1,93 @@
+# Maestro-AI release pipeline (same philosophy as AgentBridge).
+# On a push to main with IsPrerelease=false in Maestro-AI/Maestro-AI.csproj, builds the
+# self-contained linux-arm64 and linux-x64 archives and creates the GitHub release
+# v1.yy.MM.dd. The version is date-based (1.yy.MM.dd) and auto-assigned from the build
+# date. Public sibling repos (UISupportBlazor, EncryptedMessaging, SecureStorage) are
+# checked out; private siblings fall back to their published NuGet packages via the
+# dual-reference pattern in the csproj files.
+
+name: Build and Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
+      do_release: ${{ steps.gate.outputs.do_release }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: AI-Maestro
+      - id: ver
+        run: echo "version=1.$(date +%y).$(date +%m).$(date +%d)" >> "$GITHUB_OUTPUT"
+      - id: gate
+        run: |
+          if grep -q '<IsPrerelease>true</IsPrerelease>' AI-Maestro/Maestro-AI/Maestro-AI.csproj; then
+            echo "do_release=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "do_release=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    needs: check-version
+    if: needs.check-version.outputs.do_release == 'true'
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            rid: linux-arm64
+          - os: ubuntu-latest
+            rid: linux-x64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: deps/AI-Maestro
+      - name: Checkout public sibling repos
+        run: |
+          cd deps
+          git clone --depth 1 https://github.com/Andrea-Bruno/UISupportBlazor.git
+          git clone --depth 1 https://github.com/Andrea-Bruno/EncryptedMessaging.git
+          git clone --depth 1 https://github.com/Andrea-Bruno/SecureStorage.git
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Publish
+        run: |
+          cd deps/AI-Maestro/Maestro-AI
+          dotnet publish Maestro-AI.csproj -c Release -r ${{ matrix.rid }} \
+            --self-contained true -p:PublishSingleFile=true \
+            -p:IncludeNativeLibrariesForSelfExtract=true \
+            -p:DebugType=None -p:DebugSymbols=false -o ../../publish
+      - name: Package
+        run: |
+          cd deps/publish
+          tar -czf ../maestro-${{ matrix.rid }}.tar.gz .
+      - name: Upload archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-${{ matrix.rid }}
+          path: deps/maestro-${{ matrix.rid }}.tar.gz
+
+  release:
+    needs: [build, check-version]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.check-version.outputs.version }}
+        run: |
+          gh release create "v$VERSION" artifacts/maestro-*.tar.gz \
+            --repo "${{ github.repository }}" \
+            --title "Maestro-AI v$VERSION" \
+            --notes "Maestro-AI **$VERSION** — self-contained archives (no .NET runtime needed). Install with the one-line installer, see the repository README."

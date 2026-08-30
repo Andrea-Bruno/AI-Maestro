@@ -48,7 +48,11 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// HTTPS redirect is optional: on a LAN appliance (Orange Pi) without certificates the
+// service is served over plain HTTP — set "ForceHttps": false in appsettings.json
+// (the installer does this automatically). Default true keeps the secure behavior.
+if (app.Configuration.GetValue<bool>("ForceHttps", true))
+    app.UseHttpsRedirection();
 
 app.UseCors();
 
