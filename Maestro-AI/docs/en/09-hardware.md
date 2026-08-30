@@ -66,7 +66,7 @@ The full configuration with defaults:
 **Produttore:** 52Pi  
 **Tipo:** **Passive GPIO breakout board** — non ha un protocollo di comunicazione proprio, espone semplicemente i 40 pin GPIO del Raspberry Pi a morsettiere a vite con LED di stato colorati (rosso=5V, rosa=3.3V, blu scuro=pin speciali, azzurro=GPIO ordinari).  
 **NuGet:** `System.Device.Gpio` v3.2.0 (aggiunto automaticamente al build)  
-**Piattaforma:** Linux ARM (Raspberry Pi OS 64-bit). Su Windows il driver cade in **modalità simulazione**.  
+**Piattaforma:** Linux ARM — Raspberry Pi OS 64-bit (numerazione BCM, nessuna mappa richiesta) oppure Orange Pi 5 Pro e altre SBC 40-pin (richiede `Hardware.GpioPinMap`, vedi la sezione "GPIO — Orange Pi 5 Pro" sotto). Su Windows il driver cade in **modalità simulazione**.  
 **Numerazione:** **BCM (Broadcom)** — non la numerazione fisica dei pin!
 
 > ⚠️ **Importante:** La EP-0129 **non** è un termometro, non è un PID controller, non è un datalogger. È solo un *adattatore* che trasforma i pin GPIO del Raspberry Pi in morsetti a vite. Il Raspberry Pi fa tutto il lavoro: legge i sensori, calcola il PID, controlla gli SSR. La EP-0129 rende semplici i collegamenti.

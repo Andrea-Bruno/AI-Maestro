@@ -116,6 +116,8 @@ The full configuration with defaults:
 
 #### GPIO — SBC 40-pin (Raspberry Pi / Orange Pi)
 
+> **Orange Pi 5 Pro :** voir la section dédiée du guide anglais (`docs/en/09-hardware.md` → « GPIO — Orange Pi 5 Pro ») : mappage des broches (BCM → « chip:line ») et prérequis (libgpiod, overlays).
+
 **Device:** [52Pi EP-0129 GPIO Screw Terminal Hat](https://wiki.52pi.com/index.php?title=EP-0129)  
 **Manufacturer:** 52Pi  
 **Type:** Passive GPIO breakout board — exposes Raspberry Pi 40-pin GPIO to screw terminals with LED indicators.  

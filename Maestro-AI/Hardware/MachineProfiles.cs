@@ -177,10 +177,10 @@ public static class MachineProfiles
             Category = MachineCategory.GpioInterface,
             Protocol = DeviceProtocol.Gpio, DefaultBaud = 0,
             Channels = 2,
-            Notes = "Passive GPIO breakout per Raspberry Pi 40-pin header (BCM numbering). " +
-                    "Usa System.Device.Gpio. Nessun protocollo di comunicazione proprio — " +
-                    "espone i pin GPIO a morsettiere a vite. LED di stato per ogni pin. " +
-                    "LEGGERE docs/en/09-hardware.md per wiring e configurazione." },
+            Notes = "Passive GPIO breakout per header 40-pin SBC. Usa System.Device.Gpio (richiede " +
+                    "libgpiod su Linux). Raspberry Pi: numerazione BCM diretta. Orange Pi 5 Pro e altre " +
+                    "SBC: configurare Hardware.GpioPinMap (BCM -> \"chip:line\") — la tabella Orange Pi " +
+                    "5 Pro è in docs/en/09-hardware.md. Nessun protocollo di comunicazione proprio." },
 
         // ═══════════════════════════════════════════════════════
         // Simulator (integrato, per test senza hardware)
